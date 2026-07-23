@@ -1,0 +1,4 @@
+interface:
+  display_name: "Protocol A: Planning"
+  short_description: "Plan non-trivial repository changes safely"
+  default_prompt: "Use $plan-work to prepare an actionable project proposal."

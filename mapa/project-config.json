@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "projectId": "ciezkowice-centrum",
+  "title": "Warstwowa mapa działek w Ciężkowicach",
+  "description": "Mapa pokazuje ortofotomapę, działki, strefy projektu planu, OUZ, budynki, sieci oraz ręczne szkice.",
+  "outputFile": "mapa-ciezkowice.html",
+  "locale": "pl-PL",
+  "crs": "EPSG:2178",
+  "bbox": [7498460, 5515080, 7498940, 5515600],
+  "wms130AxisOrder": "yx",
+  "rasterSize": {
+    "width": 960,
+    "height": 1040
+  },
+  "precinctId": "121601_4.0001",
+  "plan": {
+    "url": "https://bip.malopolska.pl/api/files/4175704",
+    "file": "plan-ogolny-2026-06-17.gml",
+    "date": "2026-06-17",
+    "schemaNamespace": "https://www.gov.pl/static/zagospodarowanieprzestrzenne/schemas/app/2.0",
+    "coordinateOrder": "yx"
+  },
+  "parcels": [
+    {"number": "1089", "file": "1089.txt", "areaHa": 0.08, "kind": "focus", "status": "działka analizowana", "zones": {"39SO": 100.0}},
+    {"number": "1092/1", "file": "1092-1.txt", "areaHa": null, "kind": "focus", "status": "działka analizowana", "zones": {"108SJ": 100.0, "OUZ": 100.0}},
+    {"number": "1092/2", "file": "1092-2.txt", "areaHa": 0.93, "kind": "focus", "status": "działka analizowana", "zones": {"108SJ": 82.7, "39SO": 17.3, "OUZ": 65.6}},
+    {"number": "1095/1", "file": "1095-1.txt", "areaHa": 0.92, "kind": "focus", "status": "działka analizowana", "zones": {"39SO": 100.0, "OUZ": 0.0}},
+    {"number": "1174", "file": "1174.txt", "areaHa": 0.67, "kind": "focus", "status": "działka analizowana", "zones": {"39SO": 100.0}},
+    {"number": "1093", "file": "1093.txt", "kind": "context", "status": "działka kontekstowa"},
+    {"number": "1094", "file": "1094.txt", "kind": "context", "status": "działka kontekstowa"},
+    {"number": "1095/2", "file": "1095-2.txt", "kind": "context", "status": "działka kontekstowa"},
+    {"number": "1096", "file": "1096.txt", "kind": "context", "status": "działka kontekstowa"},
+    {"number": "1097/4", "file": "1097-4.txt", "kind": "context", "status": "działka kontekstowa"},
+    {"number": "1097/5", "file": "1097-5.txt", "kind": "context", "status": "działka kontekstowa"},
+    {"number": "1098", "file": "1098.txt", "kind": "context", "status": "działka kontekstowa"},
+    {"number": "1100", "file": "1100.txt", "kind": "context", "status": "działka kontekstowa"}
+  ],
+  "services": {
+    "uldk": "https://uldk.gugik.gov.pl/",
+    "ortho": "https://mapy.geoportal.gov.pl/wss/service/PZGIK/ORTO/WMS/StandardResolution",
+    "egib": "https://integracja.gugik.gov.pl/cgi-bin/KrajowaIntegracjaEwidencjiGruntow",
+    "utilities": "https://integracja.gugik.gov.pl/cgi-bin/KrajowaIntegracjaUzbrojeniaTerenu",
+    "addresses": "https://mapy.geoportal.gov.pl/wss/ext/KrajowaIntegracjaNumeracjiAdresowej"
+  },
+  "rasters": {
+    "ortho": "assets/ortho.jpg",
+    "egib": "assets/egib-buildings.png",
+    "addresses": "assets/addresses-streets.png",
+    "power": "assets/przewod_elektroenergetyczny.png",
+    "water": "assets/przewod_wodociagowy.png",
+    "sewer": "assets/przewod_kanalizacyjny.png"
+  },
+  "sourceNote": "Źródła: ULDK, GML POG 17.06.2026, ORTO, KIEG, KINA i GESUT GUGiK. Dane i warstwy mają charakter poglądowy."
+}

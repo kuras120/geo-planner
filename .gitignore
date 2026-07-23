@@ -1,0 +1,9 @@
+.idea
+__pycache__/
+*.py[cod]
+
+# Local user data and generated exports. The build creates the overlay file
+# from manual-overlays.example.json when it is missing.
+/mapa/manual-overlays.json
+/mapa/map-fragment.html
+/mapa/mapa-*.html

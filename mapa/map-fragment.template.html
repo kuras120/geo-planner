@@ -1,0 +1,836 @@
+<div id="geo-layer-map">
+  <style>
+    #geo-layer-map {
+      color: var(--foreground);
+      background: transparent;
+      --clm-parcel-label-size: 9px;
+      --clm-manual-label-size: 10px;
+      --clm-label-halo-width: 2px;
+      --clm-manual-stroke-width: 2.25;
+      --clm-planned-road-stroke-width: 4;
+      --clm-manual-fill-opacity: 0.16;
+      --clm-desktop-min-height: 590px;
+      --clm-mobile-min-height: 440px;
+      --clm-sidebar-width: 280px;
+    }
+    #geo-layer-map * { box-sizing: border-box; }
+    #geo-layer-map [hidden] { display: none !important; }
+    #geo-layer-map .clm-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) var(--clm-sidebar-width);
+      gap: 14px;
+      align-items: start;
+    }
+    #geo-layer-map .clm-map {
+      position: relative;
+      min-height: var(--clm-desktop-min-height);
+      overflow: hidden;
+      background: var(--muted);
+    }
+    #geo-layer-map .clm-svg {
+      display: block;
+      width: 100%;
+      min-height: var(--clm-desktop-min-height);
+      touch-action: none;
+      cursor: default;
+    }
+    #geo-layer-map .clm-svg.is-dragging { cursor: grabbing; }
+    #geo-layer-map .clm-map-controls {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 3;
+    }
+    #geo-layer-map .clm-sidebar {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+      grid-auto-rows: max-content;
+      min-width: 0;
+    }
+    #geo-layer-map .clm-sidebar h3 { margin: 0 0 8px; }
+    #geo-layer-map .clm-layer-list { display: grid; gap: 7px; }
+    #geo-layer-map .clm-detail { min-height: 0; }
+    #geo-layer-map .clm-detail p { margin: 4px 0 0; }
+    #geo-layer-map .clm-draw { display: grid; gap: 9px; }
+    #geo-layer-map .clm-draw-actions { display: flex; flex-wrap: wrap; gap: 7px; }
+    #geo-layer-map .clm-zone {
+      stroke: var(--border);
+      stroke-width: 0.8;
+      vector-effect: non-scaling-stroke;
+      fill: var(--viz-series-2);
+      fill-opacity: 0.22;
+    }
+    #geo-layer-map .clm-zone[data-symbol="SO"] { fill: var(--viz-series-3); }
+    #geo-layer-map .clm-zone[data-symbol="SJ"] { fill: var(--viz-series-2); }
+    #geo-layer-map .clm-zone[data-symbol="SC"] { fill: var(--viz-series-6); }
+    #geo-layer-map .clm-ouz {
+      fill: var(--viz-series-4);
+      fill-opacity: 0.12;
+      stroke: var(--viz-series-4);
+      stroke-width: 1.5;
+      stroke-dasharray: 5 3;
+      vector-effect: non-scaling-stroke;
+    }
+    #geo-layer-map .clm-parcel {
+      fill: transparent;
+      stroke: var(--muted-foreground);
+      stroke-width: 1;
+      vector-effect: non-scaling-stroke;
+      cursor: pointer;
+    }
+    #geo-layer-map .clm-parcel[data-kind="focus"] {
+      fill: var(--viz-series-1);
+      fill-opacity: 0.09;
+      stroke: var(--foreground);
+      stroke-width: 2;
+    }
+    #geo-layer-map .clm-parcel.is-selected { stroke: var(--primary); stroke-width: 3; }
+    #geo-layer-map .clm-parcel:focus { outline: none; stroke: var(--primary); stroke-width: 3; }
+    #geo-layer-map .clm-label {
+      fill: var(--foreground);
+      paint-order: stroke;
+      stroke: var(--background);
+      stroke-width: var(--clm-label-halo-width);
+      font-size: var(--clm-parcel-label-size);
+      font-weight: 500;
+      text-anchor: middle;
+      dominant-baseline: central;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+    #geo-layer-map .clm-manual {
+      fill: var(--viz-series-5);
+      fill-opacity: var(--clm-manual-fill-opacity);
+      stroke: var(--viz-series-5);
+      stroke-width: var(--clm-manual-stroke-width);
+      vector-effect: non-scaling-stroke;
+      pointer-events: none;
+    }
+    #geo-layer-map .clm-manual[data-category="planning-proposal"] {
+      fill: var(--viz-series-6);
+      stroke: var(--viz-series-6);
+      fill-opacity: 0.28;
+    }
+    #geo-layer-map .clm-manual[data-category="existing-road-draft"] {
+      fill: none;
+      stroke: var(--viz-series-4);
+      stroke-dasharray: 7 3;
+    }
+    #geo-layer-map .clm-manual[data-category="planned-road"] {
+      fill: none;
+      stroke: var(--viz-series-1);
+      stroke-width: var(--clm-planned-road-stroke-width);
+      stroke-dasharray: 4 3;
+    }
+    #geo-layer-map .clm-manual[data-category="drainage-draft"] {
+      fill: none;
+      stroke: var(--viz-series-2);
+      stroke-width: var(--clm-manual-stroke-width);
+      stroke-dasharray: 2 3;
+    }
+    #geo-layer-map .clm-manual.is-selected {
+      stroke: var(--primary);
+      stroke-width: 6;
+    }
+    #geo-layer-map .clm-manual-hit {
+      fill: transparent;
+      stroke: transparent;
+      stroke-width: 24;
+      vector-effect: non-scaling-stroke;
+      pointer-events: all;
+      cursor: pointer;
+    }
+    #geo-layer-map .clm-manual-hit:focus { outline: none; }
+    #geo-layer-map .clm-manual-label {
+      fill: var(--foreground);
+      paint-order: stroke;
+      stroke: var(--background);
+      stroke-width: var(--clm-label-halo-width);
+      font-size: var(--clm-manual-label-size);
+      font-weight: 500;
+      text-anchor: middle;
+      dominant-baseline: central;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+    #geo-layer-map .clm-draft {
+      fill: var(--accent);
+      fill-opacity: 0.18;
+      stroke: var(--accent-foreground);
+      stroke-width: 2;
+      stroke-dasharray: 4 3;
+      vector-effect: non-scaling-stroke;
+    }
+    #geo-layer-map .clm-raster { pointer-events: none; }
+    #geo-layer-map.clm-hide-parcel-labels .clm-label { display: none; }
+    #geo-layer-map.clm-hide-manual-labels .clm-manual-label { display: none; }
+    #geo-layer-map .clm-source { margin: 0; }
+    @media (max-width: 760px) {
+      #geo-layer-map .clm-layout { grid-template-columns: 1fr; }
+      #geo-layer-map .clm-map,
+      #geo-layer-map .clm-svg { min-height: var(--clm-mobile-min-height); }
+      #geo-layer-map .clm-sidebar { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+    }
+  </style>
+
+  <div class="clm-layout">
+    <div class="clm-map card">
+      <svg class="clm-svg" role="img" aria-labelledby="clm-title clm-desc">
+        <title id="clm-title">Interaktywna mapa warstwowa</title>
+        <desc id="clm-desc">Mapa działek, danych źródłowych i ręcznych szkiców.</desc>
+        <defs><clipPath id="clm-map-clip"><rect></rect></clipPath></defs>
+        <g class="clm-viewport" clip-path="url(#clm-map-clip)">
+          <g data-layer-group="ortho"></g>
+          <g data-layer-group="zones"></g>
+          <g data-layer-group="ouz"></g>
+          <g data-layer-group="egib"></g>
+          <g data-layer-group="addresses"></g>
+          <g data-layer-group="power"></g>
+          <g data-layer-group="water"></g>
+          <g data-layer-group="sewer"></g>
+          <g data-layer-group="parcels"></g>
+          <g data-layer-group="manual"></g>
+          <g data-layer-group="draft"></g>
+          <g data-layer-group="labels"></g>
+        </g>
+      </svg>
+      <div class="viz-controls clm-map-controls" aria-label="Sterowanie widokiem">
+        <button type="button" class="btn" data-action="zoom-in" aria-label="Powiększ">+</button>
+        <button type="button" class="btn" data-action="zoom-out" aria-label="Pomniejsz">−</button>
+        <button type="button" class="btn" data-action="reset">Reset</button>
+      </div>
+    </div>
+
+    <aside class="clm-sidebar">
+      <section>
+        <h3>Warstwy</h3>
+        <div class="clm-layer-list">
+          <label class="form-check form-switch"><input class="form-check-input" type="checkbox" data-layer="ortho" checked><span class="form-check-label">Ortofotomapa</span></label>
+          <label class="form-check form-switch"><input class="form-check-input" type="checkbox" data-layer="parcels" checked><span class="form-check-label">Działki analizowane</span></label>
+          <label class="form-check form-switch"><input class="form-check-input" type="checkbox" data-layer="egib" checked><span class="form-check-label">Budynki i numery EGiB</span></label>
+          <label class="form-check form-switch"><input class="form-check-input" type="checkbox" data-layer="zones" checked><span class="form-check-label">Strefy planu ogólnego</span></label>
+          <label class="form-check form-switch"><input class="form-check-input" type="checkbox" data-layer="ouz"><span class="form-check-label">OUZ</span></label>
+          <label class="form-check form-switch" data-raster-option="addresses"><input class="form-check-input" type="checkbox" data-layer="addresses"><span class="form-check-label">Nazwy ulic i adresy GUGiK</span></label>
+          <label class="form-check form-switch"><input class="form-check-input" type="checkbox" data-layer="power"><span class="form-check-label">Sieć elektroenergetyczna</span></label>
+          <label class="form-check form-switch"><input class="form-check-input" type="checkbox" data-layer="water"><span class="form-check-label">Wodociąg</span></label>
+          <label class="form-check form-switch"><input class="form-check-input" type="checkbox" data-layer="sewer"><span class="form-check-label">Kanalizacja</span></label>
+          <label class="form-check form-switch"><input class="form-check-input" type="checkbox" data-layer="manual" checked><span class="form-check-label">Ręczne szkice</span></label>
+        </div>
+      </section>
+
+      <section class="clm-detail" aria-live="polite">
+        <label class="form-label" for="clm-parcel-select">Wybierz działkę
+          <select id="clm-parcel-select" class="form-select">
+            <option value="">— brak —</option>
+          </select>
+        </label>
+        <p class="clm-current-selection text-small">Aktualnie zaznaczone: brak</p>
+        <h3 class="clm-detail-title">Wybierz działkę lub szkic</h3>
+        <p class="clm-detail-status text-muted"></p>
+        <p class="clm-detail-zones text-small"></p>
+      </section>
+
+      <section class="clm-draw">
+        <h3>Szkice i rysowanie</h3>
+        <label class="form-label" for="clm-manual-select">Wybrany szkic
+          <select id="clm-manual-select" class="form-select">
+            <option value="">— brak —</option>
+          </select>
+        </label>
+        <p class="clm-manual-selection text-small" aria-live="polite">Aktualnie zaznaczony: brak</p>
+        <label class="form-label" for="clm-draw-mode">Rodzaj
+          <select id="clm-draw-mode" class="form-select">
+            <option value="none">Bez rysowania</option>
+            <option value="Point">Punkt / obiekt</option>
+            <option value="LineString">Droga / rura</option>
+            <option value="Polygon">Obszar</option>
+          </select>
+        </label>
+        <label class="form-label" for="clm-draw-name">Nazwa
+          <input id="clm-draw-name" class="form-control" type="text" placeholder="np. planowana droga">
+        </label>
+        <div class="clm-draw-actions">
+          <button type="button" class="btn" data-action="finish-draw">Zakończ</button>
+          <button type="button" class="btn btn-ghost" data-action="undo-point">Cofnij punkt</button>
+          <button type="button" class="btn btn-ghost" data-action="undo-feature">Usuń ostatni szkic</button>
+          <button type="button" class="btn btn-ghost" data-action="delete-selected">Usuń wybrany szkic</button>
+          <button type="button" class="btn btn-ghost" data-action="clear-local">Wyczyść wszystkie szkice</button>
+          <button type="button" class="btn" data-action="export">Eksport GeoJSON</button>
+        </div>
+        <p class="clm-draw-status text-small text-muted">Wybierz rodzaj i klikaj na mapie. Szkice zapisują się lokalnie w przeglądarce.</p>
+      </section>
+
+      <p class="clm-source text-small text-muted"></p>
+    </aside>
+  </div>
+
+  <script type="module">
+    import { geoIdentity, geoPath } from "https://cdn.jsdelivr.net/npm/d3-geo@3/+esm";
+
+    const root = document.getElementById("geo-layer-map");
+    const project = __PROJECT_CONFIG__;
+    const data = __MAP_DATA__;
+    const rasters = __RASTER_DATA__;
+    const repositoryManual = __MANUAL_DATA__;
+    const config = __MAP_CONFIG__;
+    const svg = root.querySelector(".clm-svg");
+    const viewport = root.querySelector(".clm-viewport");
+    const clipRect = root.querySelector("#clm-map-clip rect");
+    const groups = Object.fromEntries([...root.querySelectorAll("[data-layer-group]")].map(node => [node.dataset.layerGroup, node]));
+    const detail = {
+      title: root.querySelector(".clm-detail-title"),
+      status: root.querySelector(".clm-detail-status"),
+      zones: root.querySelector(".clm-detail-zones")
+    };
+    const drawMode = root.querySelector("#clm-draw-mode");
+    const drawName = root.querySelector("#clm-draw-name");
+    const drawStatus = root.querySelector(".clm-draw-status");
+    const parcelSelect = root.querySelector("#clm-parcel-select");
+    const currentSelectionStatus = root.querySelector(".clm-current-selection");
+    const manualSelect = root.querySelector("#clm-manual-select");
+    const manualSelectionStatus = root.querySelector(".clm-manual-selection");
+    const deleteSelectedButton = root.querySelector('[data-action="delete-selected"]');
+    const localKey = `geo-planner:${project.projectId}:manual-overlays:v1`;
+    let localFeatures = [];
+    let draftPoints = [];
+    let projection;
+    let path;
+    let width = 0;
+    let height = 0;
+    let transform = { x: 0, y: 0, k: 1 };
+    let drag = null;
+    let selected = null;
+    let selectedManualKey = null;
+
+    const numberSetting = (value, fallback, minimum, maximum) => {
+      const parsed = Number(value);
+      return Number.isFinite(parsed) ? Math.min(maximum, Math.max(minimum, parsed)) : fallback;
+    };
+    root.style.setProperty("--clm-parcel-label-size", `${numberSetting(config.labels?.parcelFontSizePx, 9, 6, 24)}px`);
+    root.style.setProperty("--clm-manual-label-size", `${numberSetting(config.labels?.manualFontSizePx, 10, 6, 24)}px`);
+    root.style.setProperty("--clm-label-halo-width", `${numberSetting(config.labels?.haloWidthPx, 2, 0, 6)}px`);
+    root.style.setProperty("--clm-manual-stroke-width", numberSetting(config.manualOverlays?.strokeWidthPx, 2.25, 0.5, 12));
+    root.style.setProperty("--clm-planned-road-stroke-width", numberSetting(config.manualOverlays?.plannedRoadStrokeWidthPx, 4, 0.5, 16));
+    root.style.setProperty("--clm-manual-fill-opacity", numberSetting(config.manualOverlays?.fillOpacity, 0.16, 0, 1));
+    root.style.setProperty("--clm-desktop-min-height", `${numberSetting(config.map?.desktopMinHeightPx, 590, 320, 1200)}px`);
+    root.style.setProperty("--clm-mobile-min-height", `${numberSetting(config.map?.mobileMinHeightPx, 440, 280, 900)}px`);
+    root.style.setProperty("--clm-sidebar-width", `${numberSetting(config.map?.sidebarWidthPx, 280, 220, 420)}px`);
+    root.classList.toggle("clm-workspace", config.map?.workspaceMode !== false);
+    root.classList.toggle("clm-hide-parcel-labels", config.labels?.showParcelNumbers === false);
+    root.classList.toggle("clm-hide-manual-labels", config.labels?.showManualNames === false);
+    root.querySelector("#clm-title").textContent = project.title;
+    root.querySelector("#clm-desc").textContent = project.description;
+    root.querySelector(".clm-source").textContent = project.sourceNote || "";
+
+    root.querySelectorAll("[data-layer]").forEach(input => {
+      const initial = config.initialLayers?.[input.dataset.layer];
+      if (typeof initial === "boolean") input.checked = initial;
+    });
+
+    root.querySelectorAll("[data-raster-option]").forEach(option => {
+      option.hidden = !rasters[option.dataset.rasterOption];
+    });
+
+    try { localFeatures = JSON.parse(localStorage.getItem(localKey) || "[]"); } catch { localFeatures = []; }
+
+    function svgNode(name, attributes = {}) {
+      const node = document.createElementNS("http://www.w3.org/2000/svg", name);
+      Object.entries(attributes).forEach(([key, value]) => node.setAttribute(key, value));
+      return node;
+    }
+
+    function frameFeature() {
+      const [minX, minY, maxX, maxY] = data.bbox;
+      return { type: "Feature", geometry: { type: "Polygon", coordinates: [[[minX,minY],[maxX,minY],[maxX,maxY],[minX,maxY],[minX,minY]]] } };
+    }
+
+    function setTransform() {
+      viewport.setAttribute("transform", `translate(${transform.x} ${transform.y}) scale(${transform.k})`);
+    }
+
+    function setLayerVisibility(key, visible) {
+      groups[key].style.display = visible ? "" : "none";
+      if (key === "parcels") groups.labels.style.display = visible ? "" : "none";
+    }
+
+    function rasterImage(key) {
+      if (!rasters[key]) return;
+      const [minX, minY, maxX, maxY] = data.bbox;
+      const topLeft = projection([minX, maxY]);
+      const bottomRight = projection([maxX, minY]);
+      groups[key].append(svgNode("image", {
+        href: rasters[key], x: topLeft[0], y: topLeft[1],
+        width: bottomRight[0] - topLeft[0], height: bottomRight[1] - topLeft[1],
+        preserveAspectRatio: "none", class: "clm-raster"
+      }));
+    }
+
+    function renderPlan() {
+      groups.zones.replaceChildren();
+      groups.ouz.replaceChildren();
+      data.zones.features.forEach(feature => groups.zones.append(svgNode("path", {
+        d: path(feature), class: "clm-zone", "data-symbol": feature.properties.symbol
+      })));
+      data.ouz.features.forEach(feature => groups.ouz.append(svgNode("path", { d: path(feature), class: "clm-ouz" })));
+    }
+
+    function selectParcel(feature) {
+      selected = feature.properties.number;
+      selectedManualKey = null;
+      parcelSelect.value = selected;
+      const parcelLayer = root.querySelector('[data-layer="parcels"]');
+      parcelLayer.checked = true;
+      groups.parcels.style.display = "";
+      groups.labels.style.display = "";
+      syncManualSelectionControls();
+      const props = feature.properties;
+      detail.title.textContent = `Działka ${props.number}`;
+      detail.status.textContent = props.status;
+      const area = props.area_ha == null ? "" : `${props.area_ha.toLocaleString(project.locale)} ha`;
+      const zones = Object.entries(props.zones || {}).map(([key, value]) => `${key}: ${value.toLocaleString(project.locale)}%`).join(" · ");
+      detail.zones.textContent = [area, zones].filter(Boolean).join(" · ") || "Działka kontekstowa";
+      currentSelectionStatus.textContent = `Aktualnie zaznaczone: działka ${props.number}`;
+      root.querySelectorAll(".clm-parcel").forEach(node => node.classList.toggle("is-selected", node.dataset.number === selected));
+      root.querySelectorAll(".clm-label").forEach(node => {
+        node.textContent = node.dataset.number === selected ? `✓ ${node.dataset.number}` : node.dataset.number;
+      });
+      root.querySelectorAll(".clm-manual").forEach(node => node.classList.remove("is-selected"));
+    }
+
+    function renderParcels() {
+      groups.parcels.replaceChildren();
+      groups.labels.replaceChildren();
+      data.parcels.features.forEach(feature => {
+        const props = feature.properties;
+        const choose = event => {
+          if (drawMode.value !== "none") return;
+          event.preventDefault();
+          event.stopPropagation();
+          selectParcel(feature);
+        };
+        const node = svgNode("path", {
+          d: path(feature), class: "clm-parcel", "data-kind": props.kind, "data-number": props.number,
+          "data-map-selectable": "true", role: "button", tabindex: "0", "aria-label": `Działka ${props.number}`
+        });
+        node.addEventListener("click", choose);
+        node.addEventListener("keydown", event => {
+          if ((event.key === "Enter" || event.key === " ") && drawMode.value === "none") {
+            choose(event);
+          }
+        });
+        groups.parcels.append(node);
+        if (props.kind !== "context") {
+          const [x, y] = path.centroid(feature);
+          const label = svgNode("text", {
+            x, y, class: "clm-label", "data-number": props.number, "data-map-selectable": "true",
+            role: "button", tabindex: "0", "aria-label": `Wybierz działkę ${props.number}`
+          });
+          label.textContent = props.number === selected ? `✓ ${props.number}` : props.number;
+          label.addEventListener("click", choose);
+          label.addEventListener("keydown", event => {
+            if (event.key === "Enter" || event.key === " ") choose(event);
+          });
+          groups.labels.append(label);
+        }
+      });
+    }
+
+    function manualFeatureIdentity(feature) {
+      const id = feature.properties?.id;
+      if (id) return `id:${String(id)}`;
+      const name = feature.properties?.name || feature.properties?.label;
+      if (name) return `name:${String(name).trim().toLocaleLowerCase(project.locale)}`;
+      return `geometry:${JSON.stringify(feature.geometry)}`;
+    }
+
+    function allManualFeatures() {
+      const byIdentity = new Map();
+      (repositoryManual.features || []).forEach(feature => byIdentity.set(manualFeatureIdentity(feature), feature));
+      // Szkic lokalny o tej samej nazwie zastępuje wersję wbudowaną z repo.
+      localFeatures.forEach(feature => byIdentity.set(manualFeatureIdentity(feature), feature));
+
+      const byGeometry = new Map();
+      [...byIdentity.values()].forEach(feature => {
+        byGeometry.set(JSON.stringify(feature.geometry), feature);
+      });
+      return [...byGeometry.values()];
+    }
+
+    const directFileMode = typeof window.geoPlannerSaveManual === "function";
+    if (directFileMode) {
+      // W edytorze localhost jedna lista jest źródłem prawdy. Dzięki temu
+      // cofanie i czyszczenie usuwa obiekty również z zapisywanego pliku.
+      localFeatures = allManualFeatures();
+      repositoryManual.features = [];
+      persistLocal();
+    }
+
+    function renderManual() {
+      groups.manual.replaceChildren();
+      const features = allManualFeatures();
+      features.forEach(feature => {
+        const key = manualFeatureIdentity(feature);
+        const category = feature.properties?.category || "manual";
+        const label = feature.properties?.name || feature.properties?.label;
+        const hit = svgNode("path", {
+          d: path(feature), class: "clm-manual-hit", role: "button", tabindex: "0",
+          "data-map-selectable": "true", "aria-label": `Szkic: ${label || "bez nazwy"}`
+        });
+        const select = event => {
+          if (drawMode.value !== "none") return;
+          event.preventDefault();
+          event.stopPropagation();
+          selectManual(feature);
+        };
+        hit.addEventListener("click", select);
+        hit.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") select(event);
+        });
+        groups.manual.append(hit);
+        const node = svgNode("path", {
+          d: path(feature), class: `clm-manual${key === selectedManualKey ? " is-selected" : ""}`,
+          "data-category": category
+        });
+        if (label) node.setAttribute("aria-label", label);
+        groups.manual.append(node);
+        if (label && feature.geometry?.type !== "Point") {
+          const [x, y] = path.centroid(feature);
+          const text = svgNode("text", {
+            x, y, class: "clm-manual-label", role: "button", tabindex: "0",
+            "data-map-selectable": "true", "aria-label": `Wybierz szkic: ${label}`
+          });
+          text.textContent = key === selectedManualKey ? `✓ ${label}` : label;
+          text.addEventListener("click", select);
+          text.addEventListener("keydown", event => {
+            if (event.key === "Enter" || event.key === " ") select(event);
+          });
+          groups.manual.append(text);
+        }
+      });
+      syncManualSelectionControls(features);
+    }
+
+    function syncManualSelectionControls(features = allManualFeatures()) {
+      const previousValue = selectedManualKey || "";
+      manualSelect.replaceChildren();
+      const empty = document.createElement("option");
+      empty.value = "";
+      empty.textContent = "— brak —";
+      manualSelect.append(empty);
+      features.forEach(feature => {
+        const option = document.createElement("option");
+        option.value = manualFeatureIdentity(feature);
+        option.textContent = feature.properties?.name || feature.properties?.label || "Szkic bez nazwy";
+        manualSelect.append(option);
+      });
+      manualSelect.value = features.some(feature => manualFeatureIdentity(feature) === previousValue) ? previousValue : "";
+      const selectedFeature = features.find(feature => manualFeatureIdentity(feature) === selectedManualKey);
+      const selectedLabel = selectedFeature?.properties?.name || selectedFeature?.properties?.label;
+      manualSelectionStatus.textContent = selectedLabel
+        ? `Aktualnie zaznaczony: ${selectedLabel}`
+        : "Aktualnie zaznaczony: brak";
+    }
+
+    function selectManual(feature) {
+      selected = null;
+      selectedManualKey = manualFeatureIdentity(feature);
+      parcelSelect.value = "";
+      const manualLayer = root.querySelector('[data-layer="manual"]');
+      manualLayer.checked = true;
+      groups.manual.style.display = "";
+      const props = feature.properties || {};
+      const label = props.name || props.label || "Szkic bez nazwy";
+      const category = props.category && props.category !== "manual" ? `Kategoria: ${props.category}` : "Szkic ręczny";
+      detail.title.textContent = label;
+      detail.status.textContent = [category, `Geometria: ${feature.geometry?.type || "brak"}`].join(" · ");
+      detail.zones.textContent = [props.status, props.description].filter(Boolean).join(" · ") || "Brak dodatkowego opisu";
+      currentSelectionStatus.textContent = `Aktualnie zaznaczone: szkic ${label}`;
+      drawStatus.textContent = `Zaznaczono szkic „${label}”.`;
+      root.querySelectorAll(".clm-parcel").forEach(node => node.classList.remove("is-selected"));
+      renderManual();
+    }
+
+    function clearManualSelection() {
+      selectedManualKey = null;
+      detail.title.textContent = "Wybierz działkę lub szkic";
+      detail.status.textContent = "";
+      detail.zones.textContent = "";
+      currentSelectionStatus.textContent = "Aktualnie zaznaczone: brak";
+      syncManualSelectionControls();
+    }
+
+    function draftFeature() {
+      if (!draftPoints.length) return null;
+      if (drawMode.value === "Point") return { type: "Feature", geometry: { type: "Point", coordinates: draftPoints[0] } };
+      if (drawMode.value === "LineString") return { type: "Feature", geometry: { type: "LineString", coordinates: draftPoints } };
+      if (drawMode.value === "Polygon") {
+        const ring = draftPoints.length > 2 ? [...draftPoints, draftPoints[0]] : draftPoints;
+        return { type: "Feature", geometry: { type: "Polygon", coordinates: [ring] } };
+      }
+      return null;
+    }
+
+    function renderDraft() {
+      groups.draft.replaceChildren();
+      const feature = draftFeature();
+      if (feature) groups.draft.append(svgNode("path", { d: path(feature), class: "clm-draft" }));
+    }
+
+    function persistLocal() {
+      localStorage.setItem(localKey, JSON.stringify(localFeatures));
+    }
+
+    async function saveManualIfConnected(successMessage) {
+      if (typeof window.geoPlannerSaveManual !== "function") {
+        drawStatus.textContent = `${successMessage} Zapisano lokalnie w przeglądarce.`;
+        return;
+      }
+      drawStatus.textContent = `${successMessage} Zapisuję do manual-overlays.json…`;
+      try {
+        await window.geoPlannerSaveManual({
+          type: "FeatureCollection",
+          features: allManualFeatures(),
+          instructions: repositoryManual.instructions || `Warstwa ręczna w ${project.crs}.`
+        });
+        drawStatus.textContent = `${successMessage} Zapisano bezpośrednio do manual-overlays.json.`;
+      } catch (error) {
+        drawStatus.textContent = `${successMessage} Zapis lokalny działa, ale zapis pliku nie powiódł się: ${error.message}`;
+      }
+    }
+
+    function finishDrawing() {
+      const mode = drawMode.value;
+      const minimum = mode === "Polygon" ? 3 : mode === "LineString" ? 2 : 1;
+      if (mode === "none" || draftPoints.length < minimum) {
+        drawStatus.textContent = `Za mało punktów: wymagane ${minimum}.`;
+        return;
+      }
+      let geometry;
+      if (mode === "Point") geometry = { type: mode, coordinates: draftPoints[0] };
+      if (mode === "LineString") geometry = { type: mode, coordinates: [...draftPoints] };
+      if (mode === "Polygon") geometry = { type: mode, coordinates: [[...draftPoints, draftPoints[0]]] };
+      localFeatures.push({
+        type: "Feature",
+        properties: {
+          id: `manual-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
+          name: drawName.value.trim() || "Szkic",
+          category: "manual"
+        },
+        geometry
+      });
+      persistLocal();
+      draftPoints = [];
+      renderDraft();
+      renderManual();
+      saveManualIfConnected("Zapisano szkic.");
+    }
+
+    function exportGeoJson() {
+      const collection = { type: "FeatureCollection", features: allManualFeatures() };
+      const blob = new Blob([JSON.stringify(collection, null, 2)], { type: "application/geo+json" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = "manual-overlays.json";
+      anchor.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function undoLastFeature() {
+      if (!localFeatures.length) {
+        drawStatus.textContent = "Brak własnych szkiców do usunięcia.";
+        return;
+      }
+      const removed = localFeatures.pop();
+      if (removed && manualFeatureIdentity(removed) === selectedManualKey) clearManualSelection();
+      persistLocal();
+      renderManual();
+      saveManualIfConnected("Usunięto ostatni własny szkic.");
+    }
+
+    function deleteSelectedManual() {
+      if (!selectedManualKey) {
+        manualSelectionStatus.textContent = "Aktualnie zaznaczony: brak — wybierz szkic z listy albo kliknij jego linię lub nazwę.";
+        drawStatus.textContent = "Nie usunięto niczego, ponieważ żaden szkic nie jest zaznaczony.";
+        return;
+      }
+      const repositoryFeature = (repositoryManual.features || []).some(feature => manualFeatureIdentity(feature) === selectedManualKey);
+      if (!directFileMode && repositoryFeature) {
+        drawStatus.textContent = "Ten szkic jest wbudowany w plik. Uruchom mapę przez edit-map.sh, aby go usunąć.";
+        return;
+      }
+      const index = localFeatures.findIndex(feature => manualFeatureIdentity(feature) === selectedManualKey);
+      if (index < 0) {
+        drawStatus.textContent = "Nie znaleziono wybranego szkicu w edytowalnej warstwie.";
+        return;
+      }
+      const feature = localFeatures[index];
+      const label = feature.properties?.name || feature.properties?.label || "szkic bez nazwy";
+      if (!window.confirm(`Usunąć szkic „${label}”?`)) return;
+      localFeatures.splice(index, 1);
+      clearManualSelection();
+      persistLocal();
+      renderManual();
+      saveManualIfConnected(`Usunięto szkic „${label}”.`);
+    }
+
+    function clearLocalFeatures() {
+      if (!localFeatures.length) {
+        drawStatus.textContent = "Brak własnych szkiców do wyczyszczenia.";
+        return;
+      }
+      const question = directFileMode
+        ? "Usunąć wszystkie szkice z manual-overlays.json?"
+        : "Usunąć wszystkie własne szkice zapisane w tej przeglądarce?";
+      if (!window.confirm(question)) return;
+      localFeatures = [];
+      clearManualSelection();
+      persistLocal();
+      renderManual();
+      saveManualIfConnected("Usunięto wszystkie własne szkice.");
+    }
+
+    function render() {
+      const bounds = svg.getBoundingClientRect();
+      width = Math.max(320, bounds.width);
+      height = Math.max(width < 500 ? 440 : 590, bounds.height);
+      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      clipRect.setAttribute("width", width);
+      clipRect.setAttribute("height", height);
+      projection = geoIdentity().reflectY(true).fitExtent([[0, 0], [width, height]], frameFeature());
+      path = geoPath(projection);
+      ["ortho", "egib", "addresses", "power", "water", "sewer"].forEach(key => { groups[key].replaceChildren(); rasterImage(key); });
+      renderPlan();
+      renderParcels();
+      renderManual();
+      renderDraft();
+      setTransform();
+      root.querySelectorAll("[data-layer]").forEach(input => {
+        setLayerVisibility(input.dataset.layer, input.checked);
+      });
+      if (selected) {
+        const feature = data.parcels.features.find(item => item.properties.number === selected);
+        if (feature) selectParcel(feature);
+      }
+    }
+
+    function zoomAt(factor, centerX = width / 2, centerY = height / 2) {
+      const next = Math.max(1, Math.min(8, transform.k * factor));
+      const ratio = next / transform.k;
+      transform.x = centerX - (centerX - transform.x) * ratio;
+      transform.y = centerY - (centerY - transform.y) * ratio;
+      transform.k = next;
+      if (next === 1) transform = { x: 0, y: 0, k: 1 };
+      setTransform();
+    }
+
+    root.querySelectorAll("[data-layer]").forEach(input => input.addEventListener("change", () => {
+      setLayerVisibility(input.dataset.layer, input.checked);
+    }));
+    root.querySelector('[data-action="zoom-in"]').addEventListener("click", () => zoomAt(1.35));
+    root.querySelector('[data-action="zoom-out"]').addEventListener("click", () => zoomAt(1 / 1.35));
+    root.querySelector('[data-action="reset"]').addEventListener("click", () => { transform = { x: 0, y: 0, k: 1 }; setTransform(); });
+    root.querySelector('[data-action="finish-draw"]').addEventListener("click", finishDrawing);
+    root.querySelector('[data-action="undo-point"]').addEventListener("click", () => { draftPoints.pop(); renderDraft(); });
+    root.querySelector('[data-action="undo-feature"]').addEventListener("click", undoLastFeature);
+    deleteSelectedButton.addEventListener("click", deleteSelectedManual);
+    data.parcels.features.forEach(feature => {
+      const option = document.createElement("option");
+      option.value = feature.properties.number;
+      option.textContent = feature.properties.number;
+      parcelSelect.append(option);
+    });
+    parcelSelect.addEventListener("change", () => {
+      const feature = data.parcels.features.find(item => item.properties.number === parcelSelect.value);
+      if (!feature) {
+        selected = null;
+        clearManualSelection();
+        root.querySelectorAll(".clm-parcel").forEach(node => node.classList.remove("is-selected"));
+        root.querySelectorAll(".clm-label").forEach(node => { node.textContent = node.dataset.number; });
+        renderManual();
+        return;
+      }
+      drawMode.value = "none";
+      draftPoints = [];
+      renderDraft();
+      selectParcel(feature);
+      drawStatus.textContent = "Działka wybrana z listy.";
+    });
+    manualSelect.addEventListener("change", () => {
+      const feature = allManualFeatures().find(item => manualFeatureIdentity(item) === manualSelect.value);
+      if (!feature) {
+        clearManualSelection();
+        renderManual();
+        return;
+      }
+      drawMode.value = "none";
+      draftPoints = [];
+      renderDraft();
+      selectManual(feature);
+      drawStatus.textContent = "Szkic wybrany z listy. Możesz go teraz usunąć.";
+    });
+    root.querySelector('[data-action="clear-local"]').addEventListener("click", clearLocalFeatures);
+    root.querySelector('[data-action="export"]').addEventListener("click", exportGeoJson);
+    drawMode.addEventListener("change", () => {
+      draftPoints = [];
+      renderDraft();
+      drawStatus.textContent = drawMode.value === "none"
+        ? "Rysowanie wyłączone. Kliknij szkic na mapie albo wybierz go z listy."
+        : "Klikaj kolejne punkty na mapie. Zaznaczanie szkiców jest w tym trybie wyłączone.";
+    });
+
+    svg.addEventListener("click", event => {
+      if (drawMode.value === "none" || drag) return;
+      const rect = svg.getBoundingClientRect();
+      const screenX = (event.clientX - rect.left) * width / rect.width;
+      const screenY = (event.clientY - rect.top) * height / rect.height;
+      const localX = (screenX - transform.x) / transform.k;
+      const localY = (screenY - transform.y) / transform.k;
+      draftPoints.push(projection.invert([localX, localY]));
+      if (drawMode.value === "Point") finishDrawing(); else renderDraft();
+    });
+    svg.addEventListener("wheel", event => {
+      event.preventDefault();
+      const rect = svg.getBoundingClientRect();
+      zoomAt(event.deltaY < 0 ? 1.18 : 1 / 1.18, event.clientX - rect.left, event.clientY - rect.top);
+    }, { passive: false });
+    svg.addEventListener("pointerdown", event => {
+      if (event.button !== 1) return;
+      event.preventDefault();
+      drag = {
+        pointerId: event.pointerId,
+        x: event.clientX,
+        y: event.clientY,
+        tx: transform.x,
+        ty: transform.y
+      };
+      svg.setPointerCapture(event.pointerId);
+      svg.classList.add("is-dragging");
+    });
+    svg.addEventListener("pointermove", event => {
+      if (!drag) return;
+      transform.x = drag.tx + event.clientX - drag.x;
+      transform.y = drag.ty + event.clientY - drag.y;
+      setTransform();
+    });
+    const stopDragging = event => {
+      if (!drag || (event.pointerId != null && event.pointerId !== drag.pointerId)) return;
+      if (svg.hasPointerCapture?.(drag.pointerId)) svg.releasePointerCapture(drag.pointerId);
+      drag = null;
+      svg.classList.remove("is-dragging");
+    };
+    svg.addEventListener("pointerup", stopDragging);
+    svg.addEventListener("pointercancel", stopDragging);
+    svg.addEventListener("lostpointercapture", stopDragging);
+    svg.addEventListener("auxclick", event => {
+      if (event.button === 1) event.preventDefault();
+    });
+
+    new ResizeObserver(render).observe(root.querySelector(".clm-map"));
+    if (directFileMode) {
+      drawStatus.textContent = "Tryb edycji repo: zakończone szkice zapisują się bezpośrednio do manual-overlays.json.";
+    }
+    render();
+  </script>
+</div>

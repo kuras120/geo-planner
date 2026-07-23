@@ -1,0 +1,32 @@
+{
+  "labels": {
+    "parcelFontSizePx": 9,
+    "manualFontSizePx": 10,
+    "haloWidthPx": 2,
+    "showParcelNumbers": true,
+    "showManualNames": true
+  },
+  "manualOverlays": {
+    "strokeWidthPx": 2.25,
+    "plannedRoadStrokeWidthPx": 4,
+    "fillOpacity": 0.16
+  },
+  "map": {
+    "desktopMinHeightPx": 590,
+    "mobileMinHeightPx": 440,
+    "workspaceMode": true,
+    "sidebarWidthPx": 280
+  },
+  "initialLayers": {
+    "ortho": true,
+    "parcels": true,
+    "egib": true,
+    "zones": true,
+    "ouz": false,
+    "addresses": false,
+    "power": false,
+    "water": false,
+    "sewer": false,
+    "manual": true
+  }
+}

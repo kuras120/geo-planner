@@ -1,0 +1,4 @@
+interface:
+  display_name: "Protocol B: Implementation"
+  short_description: "Implement approved changes with verification"
+  default_prompt: "Use $implement-change to deliver an approved repository change."

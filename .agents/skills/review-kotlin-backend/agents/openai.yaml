@@ -1,0 +1,4 @@
+interface:
+  display_name: "Kotlin Backend Principal Review"
+  short_description: "Review Kotlin backend semantics and architecture"
+  default_prompt: "Use $review-kotlin-backend to review this Kotlin backend change without implementing it."

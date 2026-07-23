@@ -1,6 +1,10 @@
 # Geo Planner
 
-Geo Planner builds a self-contained, layered HTML map for parcel analysis and local sketching. A project configuration defines the area, coordinate system, parcels, planning data, raster services, and output name; the same map engine can therefore be reused for another fragment of Poland without editing source code.
+Geo Planner builds a self-contained, layered HTML map for parcel analysis and
+local sketching. Configuration holds the area, coordinate system, parcels,
+planning data, established raster services, and output name. Compatible areas
+can be prepared without changing the core geometry or build logic; adding new
+layer types may still require code.
 
 The checked-in example covers parcels in Ciężkowice. Government layers are informative and may be incomplete or out of date. Manual overlays are sketches, not surveying or legal evidence.
 
@@ -21,14 +25,9 @@ To configure another area, copy `mapa/project-config.json`, change its project i
 ## Documentation
 
 - [Repository guide](docs/guidelines/repository-guide.md)
-- [Map domain and data contracts](docs/domain/map-domain.md)
 - [Engineering guide](docs/guidelines/engineering-guide.md)
+- [Map domain and data contracts](docs/domain/map-domain.md)
 - [Project lifecycle and work protocols](docs/guidelines/project-lifecycle.md)
-- [Map build flow](docs/architecture/map-build-flow.md)
-- [Candidate map layers](docs/research/additional-map-layers.md)
-- [Privacy and data-separation audit](docs/research/privacy-and-data-separation-audit.md)
-- [Frontend technology options](docs/research/frontend-technology-options.md)
-- [Productization and generic map workflow proposal](docs/projects/productization-and-generic-map-workflow.md)
 - [Map interface details](mapa/README.md)
 
 Run `./scripts/verify.sh` for the complete local quality gate. It uses checked-in data and does not access the network.

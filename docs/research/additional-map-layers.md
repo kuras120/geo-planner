@@ -27,12 +27,8 @@ Status checked: 20 July 2026. Service capabilities and legal meaning must be rec
 - On 6 July 2026 GUGiK announced Rejestr Urbanistyczny services for general plans, MPZP, landscape resolutions, regional plans, and landscape audits, with older GUGiK planning services entering a transition period: [Rejestr Urbanistyczny announcement](https://www.gov.pl/web/gugik/nowe-uslugi-w-geoportalu--rejestr-urbanistyczny).
 - GUGiK provides EZiUDP registry coverage through WMS for locating available public spatial datasets and services: [EZiUDP WMS](https://www.gov.pl/web/gugik/ewidencja-zbiorow-i-uslug-danych-przestrzennych-dostepna-z-poziomu-geoportalu-w-postaci-uslugi-wms).
 
-## Suggested Delivery Order
+## Evaluation Rule
 
-1. Add a generic raster-layer schema to project config (`id`, label, service, version, layer names, format, optionality, opacity, source note) so new WMS layers do not require template edits.
-2. Implement NMT hillshade and SOPO as the first portability test: they exercise generic rasters and have high local value.
-3. Add flood and nature-protection layers with explicit evidence/status legends.
-4. Add queryable vector adapters only when property inspection is needed; avoid prematurely building one parser per provider.
-5. Add per-layer acquisition timestamps, GetCapabilities snapshots, and a stale-data indicator before the layer catalog becomes large.
-
-The current implementation centralizes the six established raster paths but the interface still knows their standard IDs. A generic raster catalog is therefore the next architectural increment, not part of the current portability baseline.
+Promote a source to the trusted catalog only after capability, licensing,
+coverage, update-cadence, and reliability review. Delivery order belongs to an
+owner-approved feature plan.

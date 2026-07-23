@@ -31,6 +31,11 @@
 - Keep fixtures small. Use checked-in source snapshots only for build smoke verification.
 - Finish changes with `./scripts/verify.sh` and report any manual spatial validation still required.
 
+## Specialized Guides
+
+- `angular-engineering-guide.md` defines Angular, API-client, component-composition, state, OpenLayers, and frontend testing standards.
+- `kotlin-backend-engineering-guide.md` defines Kotlin semantics, Spring boundaries, Gradle Kotlin DSL, Kotest, and backend thin-client standards.
+
 ## Review Standard
 
 Prioritize spatial misalignment, data loss, cross-project leakage, wrong-source attribution, unsafe filesystem paths, parser regressions, unexpected network calls, and claims stronger than their evidence. Require documentation changes when configuration ownership, supported formats, layer meaning, or runtime flow changes.

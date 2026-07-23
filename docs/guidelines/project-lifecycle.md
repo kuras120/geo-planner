@@ -13,7 +13,11 @@ Create one proposal in `docs/projects/` with status `PROPOSED`. Include:
 - staged implementation plan;
 - automated tests, manual spatial checks, and acceptance criteria.
 
-Implementation normally starts after owner approval changes the status to `APPROVED FOR IMPLEMENTATION`. If the owner explicitly requests planning and execution together, that request authorizes the described scope; record the assumption and proceed without an artificial second gate.
+A project file represents one bounded change, not a permanent roadmap or reusable execution loop. Close it after that outcome is accepted. A later substantial feature receives a new plan written from scratch, even when it follows the same delivery cadence or builds on the same foundation.
+
+Project files may link outward to durable documentation. Do not create inbound links to a specific project file from `README.md`, `AGENTS.md`, skills, durable documentation, or another project plan. This keeps temporary plans removable after their decisions and implemented behavior have durable homes.
+
+Implementation starts only after the owner explicitly approves it or explicitly requests planning and execution together for a named scope. The agent must not change a plan to `APPROVED FOR IMPLEMENTATION` based on discussion, review, plan edits, documentation requests, or inferred intent.
 
 ## Protocol B: Implementation (`$implement-change`)
 
@@ -31,7 +35,7 @@ After implementation is accepted, update durable domain, guideline, architecture
 
 | Class | Destination and expected shape |
 | --- | --- |
-| Requirement | Domain/project doc with stable ID, user need, constraints, and acceptance evidence. |
+| Requirement | After authorized discovery, a `docs/requirements/` domain file following `docs/guidelines/requirements-guide.md`. |
 | Backlog | Project proposal candidate with value, rough scope, dependencies, and priority rationale. |
 | Research | `docs/research/` question with provenance, evidence needed, and decision it informs. |
 | Decision | Durable domain/guideline statement with rationale and date when time-sensitive. |
@@ -39,6 +43,12 @@ After implementation is accepted, update durable domain, guideline, architecture
 | Archive | Marked duplicate, obsolete, or rejected note with a short reason. |
 
 An inbox note is not verified fact or implementation authorization. Preserve original wording and provenance until classification is accepted. Process one coherent cluster at a time, ask the smallest useful question, write the destination, link it, and only then remove the inbox entry.
+
+## Backend Principal Review (`$review-kotlin-backend`)
+
+The owner implements the Kotlin backend. Codex reviews designs and changes without editing production code by default. Reviews lead with severity-ranked evidence and cover correctness, thin-client contracts, Kotlin semantics, Spring, Gradle Kotlin DSL, Kotest, security, persistence, and failure behavior.
+
+Changing from review to implementation requires an explicit owner request naming the scope and then follows Protocol B.
 
 ## Project Template
 

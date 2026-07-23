@@ -19,8 +19,8 @@ For another Polish area using compatible ULDK, WMS, and APP planning inputs, por
 - The standalone HTML embeds data but loads `d3-geo` from a CDN, so it is not fully offline.
 - Source availability and coverage differ by authority and region.
 
-## Next Portability Increment
+## Implication
 
-Implement a generic raster catalog in `project-config.json` with labels, WMS parameters, ordering, optionality, opacity, acquisition timestamps, and source notes. Generate layer controls dynamically. NMT hillshade and SOPO are good first test layers because they are valuable around hilly terrain and exercise services beyond the current GUGiK integrations.
-
-See [additional map layers](../docs/research/additional-map-layers.md) and the [repository guide](../docs/guidelines/repository-guide.md).
+Further portability depends on separating acquisition adapters from normalized
+layer data and making the raster catalog configuration-driven. Implementation
+still requires an owner-approved feature plan.

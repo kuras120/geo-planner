@@ -20,8 +20,8 @@ thin Angular/OpenLayers client
        -> snapshot validator and provenance writer
        -> persistence ports
             -> RuntimeStateStore
-                 -> local manifests
-                 -> hosted PostgreSQL
+                 -> local PostgreSQL container
+                 -> hosted managed PostgreSQL
             -> ArtifactStore
                  -> local filesystem
                  -> hosted GCS/S3-compatible object storage
@@ -30,14 +30,16 @@ thin Angular/OpenLayers client
 
 The frontend owns presentation, OpenLayers rendering, forms, and transient interaction state. The backend owns authoritative projects and overlays, trusted provider configuration, acquisition, validation, caching, provenance, and export assembly.
 
-Filesystem and hosted storage are adapters behind deployment-neutral
+PostgreSQL state and filesystem/object artifact storage are adapters behind
+deployment-neutral
 `RuntimeStateStore` and `ArtifactStore` ports. Domain and application services
 never branch on the provider or expose paths or bucket keys as product
-identity. The local/self-hosted filesystem profile remains supported, while a
-commercial deployment replaces runtime state with PostgreSQL and large bytes
-with object storage without changing project, acquisition, provenance,
-overlay, or frontend API contracts. Exact port semantics and migration safety
-are defined in [Local Data Root Contract](local-data-root.md).
+identity. Local and self-hosted profiles use PostgreSQL plus filesystem
+artifacts. A commercial deployment keeps PostgreSQL semantics and replaces only
+the artifact adapter with object storage, without changing project,
+acquisition, provenance, overlay, or frontend API contracts. Exact port
+semantics and migration safety are defined in
+[Local Artifact Data Root Contract](local-data-root.md).
 
 Normal rendering may use validated backend artifacts or controlled live-layer URLs when a source's CORS, performance, licensing, and CRS behavior are known. Acquisition and reproducible export default to backend-owned snapshots. There is no generic remote-URL proxy.
 
@@ -253,12 +255,15 @@ identity, ownership, quotas, retention, cost, and operational boundaries.
 ### Local MVP
 
 - Bind the backend to loopback during local development.
-- Store projects, jobs, manifests, overlays, and artifacts under the
-  configurable ignored data directory defined by
-  [Local Data Root Contract](local-data-root.md).
+- Run PostgreSQL in Docker for projects, AOI state, jobs, manifests, overlays,
+  revisions, imports, and storage-schema version.
+- Store only artifact/export bytes and acquisition temporary files under the
+  configurable ignored directory defined by
+  [Local Artifact Data Root Contract](local-data-root.md).
 - Use temporary files plus atomic promotion.
 - Run acquisition through a bounded in-process executor.
-- Persist restart-safe state through manifests or a deliberately selected embedded store.
+- Persist restart-safe user state through versioned PostgreSQL migrations and
+  transactions.
 - Import the legacy ignored `manual-overlays.json` without making it tracked data.
 
 By the first persisted project slice, durable state includes project/AOI input

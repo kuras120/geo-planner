@@ -78,8 +78,9 @@ Costs:
 - an external scale-to-zero provider reduces idle compute cost but adds
   cross-provider networking, latency, and another operational dependency;
 - Cloud Run connection pools and maximum instance counts must be bounded;
-- self-hosted/local delivery needs a PostgreSQL container or a separate embedded
-  adapter if a single-process package becomes a requirement.
+- self-hosted/local delivery includes a PostgreSQL container. A future
+  single-process package would require a separately accepted embedded database
+  adapter rather than file-backed user state.
 
 For intermittent private development, Neon is the leading managed candidate
 pending a disposable proof of migrations, PostGIS, Cloud Run connectivity,

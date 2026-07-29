@@ -1,11 +1,12 @@
-# Local Data Root Contract
+# Local Artifact Data Root Contract
 
 ## Status
 
 Accepted migration boundary for the future local-MVP and self-hosted backend.
-The data root is one storage-adapter implementation, not the product's
-commercial deployment contract. This describes storage ownership and safety;
-it does not claim that the Kotlin persistence adapters exist.
+The data root is the filesystem implementation of large-artifact storage, not
+the user-state database and not the product's commercial deployment contract.
+This describes storage ownership and safety; it does not claim that the Kotlin
+persistence adapters exist.
 
 ## Deployment-neutral Storage Ports
 
@@ -22,8 +23,14 @@ The first adapters are:
 
 | Deployment | Runtime state | Large artifacts |
 | --- | --- | --- |
-| Local development / self-hosted | Files and manifests below the local data root | Files below the local data root |
-| Hosted / commercial | PostgreSQL or another accepted durable state adapter | GCS/S3-compatible object storage adapter |
+| Local development / self-hosted | PostgreSQL in Docker or another managed local container | Files below the local artifact data root |
+| Hosted / commercial | Managed PostgreSQL through the same port | GCS/S3-compatible object storage adapter |
+
+A file-backed `RuntimeStateStore` is not part of the initial architecture.
+Projects, AOI state, overlays, revisions, jobs, manifests, imports, ownership,
+and storage-schema version use PostgreSQL even during local development. A
+future single-binary distribution would need an explicitly accepted embedded
+database adapter; it must not make JSON files an accidental persistence model.
 
 The ports own storage semantics, not vendor-shaped DTOs. In particular:
 
@@ -39,15 +46,18 @@ The ports own storage semantics, not vendor-shaped DTOs. In particular:
 - provider-specific signed URLs are optional delivery results behind the
   adapter and never become durable domain identity.
 
-Adapter selection is deployment configuration. Switching from filesystem to
-object storage must not change project, acquisition, provenance, overlay, or
-frontend API contracts. A migration command copies through the two ports,
-verifies byte count and checksum, writes the destination manifest, and leaves
-the source untouched until the operator separately accepts cleanup.
+Adapter selection is deployment configuration. Switching `ArtifactStore` from
+filesystem to object storage must not change project, acquisition, provenance,
+overlay, or frontend API contracts. An artifact migration command copies
+through the source and destination ports, verifies byte count and checksum,
+updates the PostgreSQL manifest transactionally, and leaves the source
+untouched until the operator separately accepts cleanup. PostgreSQL provider
+migration uses versioned schema migrations and standard dump/restore tooling,
+not artifact-file copying.
 
 ## Configuration
 
-The backend owns one configurable local data root:
+The backend owns one configurable local artifact data root:
 
 - logical setting: `geo-planner.storage.root`;
 - environment binding: `GEO_PLANNER_DATA_ROOT`;
@@ -58,48 +68,43 @@ Production deployment must set an explicit persistent path. Project input,
 provider responses, filenames, and HTTP parameters never select or alter the
 root.
 
-In the local MVP the backend runs on the user's machine, so this root is
-physically client-local and does not consume centralized server storage.
+In the local MVP the backend runs on the user's machine, so artifact bytes are
+physically client-local and do not consume centralized server storage. User
+state is still authoritative in the local PostgreSQL container.
 
 ## Layout
 
 ```text
 .geo-planner-data/
-  storage-version.json
-  projects/
-    <project-id>/
-      project.json
-      overlays.json
-      acquisitions/
-        <job-id>.json
   artifacts/
     <artifact-id>/
-      manifest.json
       content
-  imports/
-    <import-id>.json
+  exports/
+    <export-id>/
+      content
   tmp/
     <job-id>/
 ```
 
-The logical layout may evolve behind the persistence ports, but these ownership
-rules remain:
+The logical layout may evolve behind `ArtifactStore`, but these ownership rules
+remain:
 
-- project metadata, overlay revisions, jobs, manifests, imports, and artifacts
-  are runtime data;
+- artifact and export bytes are runtime data; their authoritative metadata and
+  lifecycle state remain in PostgreSQL;
 - temporary downloads and their final artifact are created on the same
   filesystem so successful validation can use atomic promotion;
-- manifests refer to opaque storage keys, never arbitrary absolute paths;
-- project, job, import, and artifact IDs are validated before path resolution;
+- PostgreSQL manifests refer to opaque storage keys, never arbitrary absolute
+  paths;
+- job, export, and artifact IDs are validated before path resolution;
 - every resolved descendant must remain under the canonical data root;
 - incomplete temporary content is never exposed as a ready artifact.
 
 ## Privacy And Repository Boundary
 
-The local data root may contain private sketches, property context, generated
-exports, provider snapshots, and location-identifying pixels. It must never be
-staged, logged as content, embedded into frontend source, or copied into test
-fixtures.
+The local artifact root may contain generated exports, provider snapshots, and
+location-identifying pixels. PostgreSQL contains private sketches and property
+state. Neither store may be staged, logged as content, embedded into frontend
+source, or copied into test fixtures.
 
 Tracked spatial material is limited to explicitly reviewed public samples and
 fully synthetic fixtures under `tests/fixtures/`. The legacy
@@ -109,7 +114,8 @@ normal startup.
 
 Legacy import is an explicit user action. It reads the selected source,
 previews and reports the result, writes new backend-owned state under the data
-root, and never modifies or deletes the source file.
+root and PostgreSQL as appropriate, and never modifies or deletes the source
+file.
 
 ## Startup And Failure Behavior
 
@@ -117,9 +123,10 @@ root, and never modifies or deletes the source file.
   permitted.
 - Startup fails with a contextual configuration error when the root cannot be
   resolved, created, or written.
-- The adapter writes metadata through temporary files plus atomic replacement.
-- Restart recovery inspects manifests and marks interrupted jobs without
-  promoting partial content.
+- Artifact bytes use temporary files plus atomic replacement; authoritative
+  metadata is committed through PostgreSQL transactions.
+- Restart recovery reconciles PostgreSQL manifests with temporary artifact
+  content and marks interrupted jobs without promoting partial content.
 - Quotas are evaluated before and during writes; exceeding one preserves the
   last valid state and reports the limiting budget.
 - Cleanup targets only validated descendants of `tmp/` and never follows an

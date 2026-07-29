@@ -84,9 +84,15 @@ Storage is split by capability, not vendor:
 - `ArtifactStore` owns bounded streaming writes, abort, complete-only
   promotion, metadata/stat, ranged reads, authorized delivery, and deletion by
   opaque key;
-- local/self-hosted adapters use the configured data root;
-- hosted adapters use PostgreSQL for state and GCS/S3-compatible object storage
-  for large bytes.
+- local/self-hosted state uses PostgreSQL in Docker and artifacts use the
+  configured local data root;
+- hosted state uses managed PostgreSQL and artifacts use GCS/S3-compatible
+  object storage.
+
+A file-backed `RuntimeStateStore` is not part of the initial development
+profile. Testcontainers may provide isolated PostgreSQL in integration tests;
+unit tests may use deliberate in-memory fakes that are not production
+persistence adapters.
 
 Application services must not contain `if local`/`if gcs` branches, persist
 absolute paths or provider URLs, or import provider SDK types. Adapter contract

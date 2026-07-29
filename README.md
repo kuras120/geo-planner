@@ -1,10 +1,9 @@
 # Geo Planner
 
-Geo Planner builds a self-contained, layered HTML map for parcel analysis and
-local sketching. Configuration holds the area, coordinate system, parcels,
-planning data, established raster services, and output name. Compatible areas
-can be prepared without changing the core geometry or build logic; adding new
-layer types may still require code.
+Geo Planner currently builds a self-contained, layered HTML map for parcel
+analysis and local sketching. A migration-ready Angular workspace and
+loopback-only backend contract simulator now provide the foundation for its
+incremental replacement, but the legacy map remains the functional interface.
 
 The checked-in example covers parcels in Ciężkowice. Government layers are informative and may be incomplete or out of date. Manual overlays are sketches, not surveying or legal evidence.
 
@@ -30,4 +29,9 @@ To configure another area, copy `mapa/project-config.json`, change its project i
 - [Project lifecycle and work protocols](docs/guidelines/project-lifecycle.md)
 - [Map interface details](mapa/README.md)
 
-Run `./scripts/verify.sh` for the complete local quality gate. It uses checked-in data and does not access the network.
+Run `./scripts/verify.sh` for the legacy/Python offline quality gate. It uses
+checked-in data and does not access the network.
+
+For replacement-application development, install the pinned toolchain and
+locked dependencies with `mise install` and `mise run install`. Run the complete
+frontend, simulator, and legacy gates with `mise run verify`.

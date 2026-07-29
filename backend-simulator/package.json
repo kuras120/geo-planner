@@ -1,0 +1,25 @@
+{
+  "name": "@geo-planner/backend-simulator",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "start": "node dist/main.js",
+    "test": "node --test --enable-source-maps dist/**/*.spec.js",
+    "typecheck": "tsc --project tsconfig.json --noEmit",
+    "verify": "npm run format:check && npm run typecheck && npm run build && npm test"
+  },
+  "engines": {
+    "node": ">=24.18.1 <25",
+    "npm": ">=11.16.0 <12"
+  },
+  "packageManager": "npm@11.16.0",
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "prettier": "^3.8.1",
+    "typescript": "~6.0.2"
+  }
+}

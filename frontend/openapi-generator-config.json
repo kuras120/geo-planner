@@ -1,0 +1,11 @@
+{
+  "additionalProperties": {
+    "disallowAdditionalPropertiesIfNotPresent": false,
+    "legacyDiscriminatorBehavior": false,
+    "ngVersion": "22.0.0",
+    "providedInRoot": true,
+    "stringEnums": true,
+    "taggedUnions": true,
+    "useSingleRequestParameter": true
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "name": "geo-planner",
+  "version": "0.0.0",
+  "scripts": {
+    "api:generate": "node scripts/generate-api.mjs",
+    "build": "npm run build:libraries && ng build geo-planner",
+    "build:libraries": "ng build ui && ng build geo-planner-api",
+    "e2e": "playwright test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "ng lint geo-planner && ng lint ui && ng lint geo-planner-api",
+    "ng": "ng",
+    "start": "ng serve",
+    "storybook": "ng run geo-planner:storybook",
+    "storybook:build": "ng run geo-planner:build-storybook",
+    "test": "npm run test:unit",
+    "test:unit": "ng test geo-planner --watch=false && ng test ui --watch=false",
+    "typecheck": "ng build ui --configuration development && ng build geo-planner-api --configuration development && ng build geo-planner --configuration development",
+    "verify": "npm run format:check && npm run lint && npm run typecheck && npm run test:unit && npm run build && npm run storybook:build && npm run e2e",
+    "watch": "ng build --watch --configuration development",
+    "watch:ui": "ng build ui --watch --configuration development"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=24.18.1 <25",
+    "npm": ">=11.16.0 <12"
+  },
+  "packageManager": "npm@11.16.0",
+  "dependencies": {
+    "@angular/common": "^22.0.0",
+    "@angular/compiler": "^22.0.0",
+    "@angular/core": "^22.0.0",
+    "@angular/forms": "^22.0.0",
+    "@angular/platform-browser": "^22.0.0",
+    "@angular/router": "^22.0.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular-devkit/architect": "^0.2200.0",
+    "@angular-devkit/build-angular": "^22.0.0",
+    "@angular-devkit/core": "^22.0.0",
+    "@angular/build": "^22.0.9",
+    "@angular/cli": "^22.0.9",
+    "@angular/compiler-cli": "^22.0.0",
+    "@angular/platform-browser-dynamic": "^22.0.0",
+    "@compodoc/compodoc": "^2.0.0",
+    "@eslint/js": "^10.0.1",
+    "@openapitools/openapi-generator-cli": "^2.40.1",
+    "@playwright/test": "^1.62.0",
+    "@storybook/addon-a11y": "^10.5.5",
+    "@storybook/addon-docs": "^10.5.5",
+    "@storybook/angular": "^10.5.5",
+    "@types/node": "^20",
+    "angular-eslint": "22.1.0",
+    "eslint": "^10.6.0",
+    "jsdom": "^28.0.0",
+    "ng-packagr": "^22.0.0",
+    "prettier": "^3.8.1",
+    "storybook": "^10.5.5",
+    "typescript": "~6.0.2",
+    "typescript-eslint": "8.62.1",
+    "vitest": "^4.0.8"
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true,
+    "@parcel/watcher@2.6.0": true,
+    "fsevents@2.3.3": true,
+    "lmdb@3.5.4": true,
+    "msgpackr-extract@3.0.4": true
+  }
+}

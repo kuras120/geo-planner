@@ -2,15 +2,29 @@
 
 ## Environment
 
-The repository requires Python 3, Bash, and `curl`. It has no third-party Python or Node.js dependencies. The generated browser interface imports `d3-geo` from a CDN, so displaying geometry currently requires internet access even when the HTML data itself is embedded.
+The legacy map workflow requires Python 3, Bash, and `curl`. The replacement
+frontend and contract simulator use the exact Node.js and JDK versions pinned
+in root-level `mise.toml`; the JDK is used by OpenAPI Generator. Their npm
+dependencies are locked independently under `frontend/` and
+`backend-simulator/`.
+
+The generated legacy browser interface imports `d3-geo` from a CDN, so
+displaying its geometry currently requires internet access even when the HTML
+data itself is embedded.
 
 ## Commands
 
 From the repository root:
 
 ```bash
+mise install                       # install the pinned Node.js and JDK
+mise run install                   # locked npm installs plus Playwright Chromium
+mise run frontend                  # Angular development server
+mise run storybook                 # shared UI workshop
+mise run simulator                 # Node contract simulator on loopback
+mise run verify                    # frontend + simulator + legacy gates
 ./scripts/update_requirements_index.py  # refresh requirement dashboard statistics
-./scripts/verify.sh                     # run the offline quality gate
+./scripts/verify.sh                     # run the legacy/Python offline quality gate
 ```
 
 The requirement-index updater reads all application-area requirement files and
@@ -19,6 +33,34 @@ in `docs/requirements/index.md`. The quality gate rejects a stale requirement
 index, runs unit tests, compiles Python modules, rebuilds generated HTML from
 checked-in inputs, and rejects unresolved template markers. Neither command
 accesses the network.
+
+`mise run install` accesses package and Playwright download services. The
+quality commands do not refresh government map sources.
+
+From `frontend/`:
+
+```bash
+npm start                 # Angular development server
+npm run storybook         # Storybook 10 shared UI workshop
+npm run lint
+npm run test:unit
+npm run build
+npm run storybook:build
+npm run e2e               # Chromium smoke test
+npm run verify            # complete frontend gate
+npm run api:generate -- /path/to/openapi.yaml
+```
+
+From `backend-simulator/`:
+
+```bash
+npm run build
+npm start                 # 127.0.0.1:4300
+npm run verify
+```
+
+The simulator foundation exposes only `GET /_simulator/health`. Product routes,
+fixtures, and named scenarios enter with their accepted contract slices.
 
 From `mapa/`:
 

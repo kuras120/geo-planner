@@ -2,6 +2,16 @@
 __pycache__/
 *.py[cod]
 
+# Node and Angular build artifacts.
+**/node_modules/
+/frontend/.angular/
+/frontend/coverage/
+/frontend/dist/
+/frontend/playwright-report/
+/frontend/test-results/
+/backend-simulator/coverage/
+/backend-simulator/dist/
+
 # Local user data and generated exports. The build creates the overlay file
 # from manual-overlays.example.json when it is missing.
 /mapa/manual-overlays.json

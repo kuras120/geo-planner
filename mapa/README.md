@@ -32,7 +32,7 @@ The selected object receives a stronger outline and its metadata appears in the 
 
 ## Configuration
 
-`project-config.json` contains location and data concerns: identity, output name, CRS, bbox, WMS axis order, raster dimensions, precinct, parcel list and metadata, plan source/schema, services, raster paths, and source note.
+`project-config.json` contains location and data concerns: identity, output name, CRS, bbox, WMS axis order, raster dimensions, precinct, parcel list and metadata, plan source/schema, services, raster paths (including the KIEG land-use/classification snapshot), and source note.
 
 `map-config.json` contains presentation only:
 
@@ -51,8 +51,17 @@ Changing the bbox, CRS, or project location requires refreshing every bound sour
 ./scripts/build-map.sh
 ```
 
-Refresh uses ULDK, the configured planning GML URL, and configured WMS services. It is intentionally separate from build and tests because it accesses the network and replaces snapshots. The address layer is optional; other failures stop the refresh.
+Refresh uses ULDK, the configured planning GML URL, and configured WMS services.
+The KIEG `uzytki,kontury` request supplies the optional map switch labelled
+`Użytki i klasy gruntów`; symbols such as `RIIIa`, `ŁIV`, or `PsV` appear only
+where the county service publishes them. Refresh is intentionally separate from
+build and tests because it accesses the network and replaces snapshots. The
+address layer is optional; other failures stop the refresh.
 
-Government data and utility rasters are informative previews. The planning file may be a draft. Manual roads, pipes, areas, and property notes are indicative sketches. Use authoritative current documents and professional surveys for legal, planning, design, and construction decisions.
+Government data and utility rasters are informative previews. The land-class
+layer does not replace an official EGiB extract. The planning file may be a
+draft. Manual roads, pipes, areas, and property notes are indicative sketches.
+Use authoritative current documents and professional surveys for legal,
+planning, design, and construction decisions.
 
 See the root [repository guide](../docs/guidelines/repository-guide.md) for moving the engine to another area and [map domain](../docs/domain/map-domain.md) for spatial invariants.

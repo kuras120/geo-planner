@@ -76,6 +76,7 @@ def main() -> None:
     curl(services["addresses"], MAP_DIR / rasters["addresses"], wms_parameters(config, "prg-adresy,prg-ulice,prg-place", version="1.1.1"), optional=True)
     curl(services["ortho"], MAP_DIR / rasters["ortho"], wms_parameters(config, "Raster", transparent=False))
     curl(services["egib"], MAP_DIR / rasters["egib"], wms_parameters(config, "budynki,numery_dzialek"))
+    curl(services["egib"], MAP_DIR / rasters["landClasses"], wms_parameters(config, "uzytki,kontury"))
     for key, layer in (("power", "przewod_elektroenergetyczny"), ("water", "przewod_wodociagowy"), ("sewer", "przewod_kanalizacyjny")):
         curl(services["utilities"], MAP_DIR / rasters[key], wms_parameters(config, layer))
     print(f"Zaktualizowano źródła projektu {config['projectId']}.")

@@ -56,8 +56,15 @@ The planning parser currently targets the configured APP schema namespace and ex
 - zones and OUZ: planning proposal geometry from the configured GML snapshot;
 - ortho: aerial imagery preview;
 - EGiB: building and parcel-number raster preview;
+- land classes: KIEG raster preview of land-use contours and soil
+  classification contours, including markings such as `RIIIa`, `ŁIV`, `PsV`,
+  or non-agricultural land-use symbols where published by the county;
 - addresses: optional street/address raster preview;
 - power, water, sewer: indicative utility raster previews;
 - manual: user-authored points, lines, and areas with optional status and description.
 
 Candidate layers and their evidence/sourcing risks are evaluated in `docs/research/additional-map-layers.md`.
+
+The land-class raster supports visual screening only. County KIEG coverage may
+be missing, incomplete, or differently current, and the displayed marking does
+not replace an official EGiB extract or competent cadastral interpretation.

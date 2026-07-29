@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Adjacent multi-parcel reference build with YX source coordinates.",
+  "provenance": "Fully synthetic; no external snapshot or private data.",
+  "source": "Synthetic ULDK-like WKT and APP-like GML.",
+  "containsPrivateData": false,
+  "location": "synthetic-east",
+  "subject": "multi-parcel",
+  "spatial": {
+    "bbox": [7498000, 5515000, 7498200, 5515200],
+    "crs": "EPSG:2178",
+    "gmlCoordinateOrder": "yx",
+    "wms130AxisOrder": "yx"
+  }
+}

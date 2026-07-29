@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Single-parcel reference build with XY source coordinates.",
+  "provenance": "Fully synthetic; no external snapshot or private data.",
+  "source": "Synthetic ULDK-like WKT and APP-like GML.",
+  "containsPrivateData": false,
+  "location": "synthetic-west",
+  "subject": "single-parcel",
+  "spatial": {
+    "bbox": [100000, 200000, 100200, 200200],
+    "crs": "EPSG:2180",
+    "gmlCoordinateOrder": "xy",
+    "wms130AxisOrder": "xy"
+  }
+}

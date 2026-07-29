@@ -4,13 +4,23 @@
 
 These rules govern the owner-written Kotlin/Spring Boot backend. They complement the repository-wide design, spatial-data, safety, and testing rules in `engineering-guide.md`.
 
-Codex reviews backend work through `$review-kotlin-backend` and does not modify backend production code unless the owner explicitly requests implementation for a named scope.
+The backend review agent reviews backend work through
+`$review-kotlin-backend` and does not modify backend production code unless the
+owner explicitly requests implementation for a named scope.
 
 ## Requirements-driven Delivery
 
 - Start backend work from one coherent set of accepted IDs in `docs/requirements/**`, not from a permanent backend roadmap.
-- Create a new bounded project plan for that slice. State the user outcome, domain invariants, API input/output/errors, external integration, tests, and definition of done.
-- The owner implements the Kotlin slice and requests review. Codex remains read-only unless explicitly asked to implement a named fix.
+- Before backend implementation, review the frontend-led data-needs matrix,
+  domain/view examples, UI states, and proposed task-oriented transport
+  examples for the accepted slice. Use them as contract input, not as a backend
+  persistence model.
+- Reuse the accepted contract examples as backend HTTP/integration fixtures.
+  The frontend Node simulator may exercise those examples before Kotlin exists,
+  but the published OpenAPI and backend acceptance tests remain authoritative.
+- Create a new bounded project plan for that slice. State the user outcome, domain invariants, accepted API input/output/errors, external integration, tests, and definition of done.
+- The owner implements the Kotlin slice and requests review. The backend review
+  agent remains read-only unless explicitly asked to implement a named fix.
 - Publish OpenAPI only for implemented or currently accepted behavior. After backend review, it can unlock a separately planned frontend slice.
 - Finish backend, contract, fixture, and operational acceptance for the selected requirements before starting another substantial slice.
 - Update requirement status only from evidence: `ACCEPTED` to `IMPLEMENTED`, then `VERIFIED` after all acceptance checks pass.
@@ -19,7 +29,8 @@ Suggested learning progression is deliberately incremental:
 
 1. reproducible Gradle Kotlin DSL/Kotest/configuration foundation;
 2. one framework-free domain model and typed error set;
-3. one task-oriented HTTP endpoint and OpenAPI contract;
+3. one task-oriented HTTP endpoint and OpenAPI contract derived from the
+   reviewed frontend data need;
 4. one bounded provider adapter using recorded fixtures;
 5. one restart-safe job/persistence flow;
 6. repeated vertical slices driven by accepted product requirements.
@@ -63,11 +74,34 @@ backend/
   application/     project and acquisition use cases
   domain/          AOI, source, layer, job, artifact, provenance
   adapters/http/   ULDK, WMS/WMTS, planning/vector clients
-  adapters/store/  local manifests and artifact storage
+  adapters/store/  RuntimeStateStore and ArtifactStore implementations
   config/          validated catalog and HTTP/job policies
 ```
 
 Package names may evolve with implemented capabilities. Preserve dependency direction and cohesive domain ownership rather than creating every empty package up front.
+
+Storage is split by capability, not vendor:
+
+- `RuntimeStateStore` owns project/job/manifest/overlay/import state and
+  revision semantics;
+- `ArtifactStore` owns bounded streaming writes, abort, complete-only
+  promotion, metadata/stat, ranged reads, authorized delivery, and deletion by
+  opaque key;
+- local/self-hosted state uses PostgreSQL in Docker and artifacts use the
+  configured local data root;
+- hosted state uses managed PostgreSQL and artifacts use GCS/S3-compatible
+  object storage.
+
+A file-backed `RuntimeStateStore` is not part of the initial development
+profile. Testcontainers may provide isolated PostgreSQL in integration tests;
+unit tests may use deliberate in-memory fakes that are not production
+persistence adapters.
+
+Application services must not contain `if local`/`if gcs` branches, persist
+absolute paths or provider URLs, or import provider SDK types. Adapter contract
+tests run against every implementation and prove the same visibility,
+checksum, failure-preservation, range-read, quota, and idempotent-cleanup
+semantics.
 
 ## Thin-client Contract
 

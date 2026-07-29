@@ -19,12 +19,27 @@ thin Angular/OpenLayers client
             -> planning/vector HTTP adapter
        -> snapshot validator and provenance writer
        -> persistence ports
-            -> MVP local data directory
-            -> later database and object storage
+            -> RuntimeStateStore
+                 -> local PostgreSQL container
+                 -> hosted managed PostgreSQL
+            -> ArtifactStore
+                 -> local filesystem
+                 -> hosted GCS/S3-compatible object storage
   <- project/layer descriptors, job progress, validated artifacts
 ```
 
 The frontend owns presentation, OpenLayers rendering, forms, and transient interaction state. The backend owns authoritative projects and overlays, trusted provider configuration, acquisition, validation, caching, provenance, and export assembly.
+
+PostgreSQL state and filesystem/object artifact storage are adapters behind
+deployment-neutral
+`RuntimeStateStore` and `ArtifactStore` ports. Domain and application services
+never branch on the provider or expose paths or bucket keys as product
+identity. Local and self-hosted profiles use PostgreSQL plus filesystem
+artifacts. A commercial deployment keeps PostgreSQL semantics and replaces only
+the artifact adapter with object storage, without changing project,
+acquisition, provenance, overlay, or frontend API contracts. Exact port
+semantics and migration safety are defined in
+[Local Artifact Data Root Contract](local-data-root.md).
 
 Normal rendering may use validated backend artifacts or controlled live-layer URLs when a source's CORS, performance, licensing, and CRS behavior are known. Acquisition and reproducible export default to backend-owned snapshots. There is no generic remote-URL proxy.
 
@@ -33,6 +48,15 @@ Normal rendering may use validated backend artifacts or controlled live-layer UR
 The HTTP boundary is versioned through OpenAPI. Transport DTOs remain separate from both Kotlin domain models and Angular view/domain models.
 
 The specification evolves with implemented vertical slices. It is published and regenerated repeatedly during development; it is not a one-time complete design prerequisite. A frontend feature depends only on the accepted contract for its current backend capability.
+
+Contract discovery for a slice is frontend-led but jointly accepted. The
+frontend implementation agent first describes user actions/states, exact data
+needs, frontend domain/view models, and representative commands, responses, and
+problems. The owner reviews that proposal and implements the accepted
+Kotlin/OpenAPI contract. The frontend implementation agent then generates the
+client and implements the Angular feature. UI needs inform the transport use
+case but never become backend persistence models or authorize speculative
+endpoints.
 
 ### Project
 
@@ -46,6 +70,17 @@ A project contains:
 
 It does not contain executable provider URLs, credentials, filesystem paths, or UI-specific branching.
 
+An invalid or unresolved AOI blocks project creation. Once its AOI is valid, the
+project remains usable when an individual source layer is unavailable. Layer
+readiness is independent and distinguishes loading, ready, no coverage, failed,
+and stale results; failures remain visible rather than appearing as blank
+successful layers.
+
+The initial MVP presentation shows ortho, subject parcels, EGiB, and planning
+zones. Land classes, OUZ, addresses, and utility layers start hidden. Later
+visibility choices are project/user preferences rather than a global template
+constant.
+
 ### Area Of Interest
 
 Supported target inputs are:
@@ -56,6 +91,25 @@ Supported target inputs are:
 - an explicit bbox for expert use.
 
 Resolution returns canonical geometry plus a buffered acquisition bbox. CRS and coordinate order are explicit at every boundary.
+
+The visible default context buffer is 100 metres. A project may deliberately
+set it from 0 to 500 metres and persists the selected value. Resolution shows
+the resulting extent before acquisition. The selectable range is not an
+override: hard subject and acquisition budgets may reject a buffered extent or
+require a smaller value.
+
+Before buffering or acquisition, the backend rejects a normalized AOI whose
+envelope exceeds server-owned limits for width, height, area, parcel separation,
+estimated pixels, bytes, or requests. These hard limits cannot be overridden by
+user confirmation or expert bbox input. Distant parcel groups must become
+separate projects rather than one nationwide-scale acquisition.
+
+The initial local-MVP profile permits at most 2 kilometres of envelope width,
+2 kilometres of envelope height, 4 square kilometres of envelope area, and 100
+selected parcels. It is evaluated against both the normalized subject and the
+buffered acquisition extent. A different deployment may raise the profile only
+after explicit provider, load, and storage validation; it is never a
+user-overridable project field.
 
 ### Source And Layer Descriptor
 
@@ -71,6 +125,52 @@ Each server-owned catalog entry declares:
 
 Projects select catalog IDs. User input never becomes an unrestricted fetch URL.
 
+### Layer Presentation And Inspection
+
+Every MVP layer exposes a compact provenance card containing:
+
+- readiness state;
+- provider and dataset/layer identity;
+- acquisition time or source-document date;
+- CRS and covered extent;
+- attribution and the applicable uncertainty or preview warning.
+
+Only queryable or normalized vector sources expose feature-level details such
+as parcel number or planning-zone symbol. A rendered WMS pixel does not imply
+identification of a building, land class, address, or utility feature. Exact
+request parameters, artifact dimensions, resolution, checksum, and other
+diagnostic metadata remain available through expandable technical details
+rather than dominating the normal map interface.
+
+### Sketch Geometry Interaction
+
+Sketch creation begins with explicit point, line, or area intent. A line has at
+least two vertices and may have more without becoming an area. An area has at
+least three user vertices and closes only when drawing finishes. Open-line and
+filled-area previews remain visually distinct throughout the interaction.
+
+The frontend supports an explicit finish action plus Enter or double-click,
+Escape to cancel the current draft, and point undo. Attempting to close a line
+at its first vertex may offer an intentional conversion to an area, but vertex
+count or visual closure never changes the geometry type silently.
+
+### Overlay Identity And Concurrency
+
+The backend assigns every overlay feature an immutable ID. A feature name,
+label, or serialized geometry is content, not identity. Geometrically identical
+features are legal because they may represent different user intent; the
+application may warn about similarity but never silently merges them.
+
+Overlay collection replacement carries an optimistic revision precondition.
+When the authoritative revision has changed, the API rejects the stale write
+and returns enough current-version context for an explicit reload or conflict
+workflow instead of overwriting newer state.
+
+Legacy overlay import is explicit and produces a preview and result report. It
+preserves valid existing IDs, assigns stable import IDs when absent, and is
+idempotent when the same source file is imported again. It never treats a
+matching name or geometry as permission to replace another feature.
+
 ### Acquisition Job And Record
 
 The target job state machine is:
@@ -78,6 +178,12 @@ The target job state machine is:
 `QUEUED -> RESOLVING -> DOWNLOADING -> VALIDATING -> READY`
 
 Terminal states are `FAILED` and `CANCELLED`. Per-layer results distinguish required failures from optional warnings. Repeated normalized commands use backend-supported idempotency.
+
+Acquisition failure for one source layer does not make an otherwise valid
+project unusable. A completed job may expose usable artifacts together with
+explicit per-layer warnings. Project creation is blocked by AOI/parcel
+resolution failure, not by failure of an independently readable evidence
+layer.
 
 Every promoted artifact records:
 
@@ -87,6 +193,21 @@ Every promoted artifact records:
 - bbox, CRS, dimensions, and resolution;
 - acquisition time, checksum, byte size, and storage key;
 - attribution/licence, warnings, job identity, and stale/superseded state.
+
+The initial local-MVP raster profile defaults to 0.5 m/px. A descriptor may
+offer 0.25 m/px only when the selected coverage supports it and the smaller AOI
+fits the budget; 1 m/px is an explicit lower-cost choice. The planner uses
+2048 × 2048 product tiles and permits at most 16 million pixels per layer, 64
+planned tile requests, 64 MiB per upstream response, and 512 MiB of promoted
+artifacts per acquisition. It never silently coarsens the accepted resolution.
+
+Upstream response bodies are streamed to bounded temporary storage rather than
+buffered in process memory. The job reports per-layer resolving, downloading,
+validating, and ready/failure progress. Only validated complete artifacts are
+atomically promoted. The frontend observes progress and consumes controlled
+artifact or tile endpoints; it never downloads the whole acquisition into
+memory or embeds it in the application document. The exact progress transport
+and delivery endpoint shape are selected with the acquisition vertical slice.
 
 ## Proposed HTTP Surface
 
@@ -127,21 +248,51 @@ WMS version and axis order are protocol decisions, not one global flag. Large ex
 
 ## Persistence Evolution
 
+Delivery stage and deployment profile are separate. `MVP` identifies the basic
+Geo Planner capabilities; the same slice can run locally and in a private cloud
+development environment. A cloud deployment becomes SaaS only after accepted
+identity, ownership, quotas, retention, cost, and operational boundaries.
+
 ### Local MVP
 
 - Bind the backend to loopback during local development.
-- Store projects, jobs, manifests, overlays, and artifacts under one configurable ignored data directory.
+- Run PostgreSQL in Docker for projects, AOI state, jobs, manifests, overlays,
+  revisions, imports, and storage-schema version.
+- Store only artifact/export bytes and acquisition temporary files under the
+  configurable ignored directory defined by
+  [Local Artifact Data Root Contract](local-data-root.md).
 - Use temporary files plus atomic promotion.
 - Run acquisition through a bounded in-process executor.
-- Persist restart-safe state through manifests or a deliberately selected embedded store.
+- Persist restart-safe user state through versioned PostgreSQL migrations and
+  transactions.
 - Import the legacy ignored `manual-overlays.json` without making it tracked data.
+
+By the first persisted project slice, durable state includes project/AOI input
+and resolution, selected layers/preferences, acquisition/job/provenance
+records, artifact references, overlay IDs/revisions, imports, and storage
+schema version. Large raster/export bytes remain artifact files/objects rather
+than database values.
+
+The artifact port supports bounded streaming, abort, complete-only promotion,
+metadata/stat, ranged reads, authorized delivery, and deletion by opaque key.
+The state port preserves transactions or equivalent atomic revision semantics.
+An adapter may implement promotion differently—atomic filesystem rename
+locally versus temporary object plus manifest transition in object storage—but
+callers observe the same complete-or-not-visible contract.
 
 ### Hosted Single-user Or Test Environment
 
 - Serve frontend and backend through one origin.
-- Store large artifacts on a persistent volume or S3-compatible storage.
+- Store large artifacts in quota-controlled S3-compatible/object storage or an
+  equivalent artifact service; do not accumulate multi-gigabyte user archives
+  on the application server filesystem.
 - Introduce a relational database when durable queryable state requires it.
 - Deployment-level authentication may precede product accounts.
+
+Browser OPFS/IndexedDB/Cache storage may later provide a bounded,
+reconstructible offline or hot-tile cache. It is not authoritative project,
+overlay, manifest, or acquisition-record storage because browser quota,
+eviction, origin, and site-data-clearing behavior is outside backend control.
 
 ### Accounts And Multi-user Cloud
 

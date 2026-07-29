@@ -1,0 +1,47 @@
+{
+  "projectId": "fixture-single-xy",
+  "title": "Synthetic single parcel",
+  "description": "Sanitized reference project for deterministic offline verification.",
+  "outputFile": "fixture-single-xy.html",
+  "locale": "en",
+  "crs": "EPSG:2180",
+  "bbox": [100000, 200000, 100200, 200200],
+  "wms130AxisOrder": "xy",
+  "rasterSize": {
+    "width": 200,
+    "height": 200
+  },
+  "precinctId": "fixture.0001",
+  "plan": {
+    "url": "https://example.invalid/single-plan.gml",
+    "file": "plan.gml",
+    "date": "2026-01-01",
+    "schemaNamespace": "https://example.invalid/app",
+    "coordinateOrder": "xy"
+  },
+  "parcels": [
+    {
+      "number": "1",
+      "file": "1.txt",
+      "kind": "focus",
+      "status": "synthetic subject"
+    }
+  ],
+  "services": {
+    "uldk": "https://example.invalid/uldk",
+    "ortho": "https://example.invalid/ortho",
+    "egib": "https://example.invalid/egib",
+    "utilities": "https://example.invalid/utilities",
+    "addresses": "https://example.invalid/addresses"
+  },
+  "rasters": {
+    "ortho": "assets/ortho.jpg",
+    "egib": "assets/egib.png",
+    "landClasses": "assets/land-classes.png",
+    "addresses": "assets/addresses.png",
+    "power": "assets/power.png",
+    "water": "assets/water.png",
+    "sewer": "assets/sewer.png"
+  },
+  "sourceNote": "Synthetic fixture only."
+}

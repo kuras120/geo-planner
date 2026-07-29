@@ -7,3 +7,7 @@ __pycache__/
 /mapa/manual-overlays.json
 /mapa/map-fragment.html
 /mapa/mapa-*.html
+
+# Target local-MVP runtime state. Intentional sanitized fixtures remain under
+# tests/fixtures/ and are not stored below this root.
+/.geo-planner-data/

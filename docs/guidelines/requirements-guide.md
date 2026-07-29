@@ -6,6 +6,57 @@ Product requirements capture concrete functional value that must be preserved or
 
 Requirements are not a substitute for engineering guidelines, architecture, research, or a project plan.
 
+## Organization And Indexing
+
+`docs/requirements/index.md` is the portfolio index. Requirements are grouped
+by application area: a cohesive product module or user-facing responsibility,
+not a business-domain model and not one file per requirement. Each area has one
+`docs/requirements/<application-area>.md` file with:
+
+- a short area purpose and boundary;
+- an area index listing every requirement ID, delivery stage, status,
+  priority, and title;
+- the full requirement records below the index.
+
+The portfolio index links the application-area files and aggregates:
+
+- total requirements and `VERIFIED` requirements per application area;
+- totals by delivery stage;
+- totals by status;
+- one grand total across all areas.
+
+Update the area index in the same change as any requirement addition,
+removal, status change, stage change, split, or merge, then run:
+
+```bash
+./scripts/update_requirements_index.py
+```
+
+The script validates required metadata and unique IDs, then atomically
+regenerates the portfolio tables. `./scripts/verify.sh` runs its read-only
+`--check` mode and rejects stale statistics. Stable requirement IDs are never
+reused.
+
+Only `VERIFIED` counts as completed. `IMPLEMENTED` means the behavior exists but
+has not yet passed end-to-end acceptance. `REJECTED` and `DEFERRED` remain
+visible in status statistics but do not count as completed.
+
+## Delivery Stages
+
+Every requirement has one owner-approved delivery stage:
+
+| Stage | Migration intent |
+| --- | --- |
+| `MVP` | Read, display, identify, and safely interpret the basic source layers already available in the prototype, including provenance and degraded availability. |
+| `STAGE-2` | Create, import, edit, persist, select, and export manual sketches after layer reading is stable. |
+| `STAGE-3` | Calculate spatial intersections, measurements, comparisons, and other derived analysis using accepted source and sketch contracts. |
+| `LATER` | A valuable capability intentionally outside the first three stages. |
+
+Stages describe product delivery order, not requirement status or technical
+implementation sequence. A requirement moves between stages only through an
+owner decision. Dependencies that are necessary to deliver an earlier stage
+must be visible in that requirement rather than hidden in a later-stage story.
+
 ## Authorization And Timing
 
 - Only the repository owner can approve a project for implementation or requirements discovery.
@@ -17,7 +68,7 @@ Requirements are not a substitute for engineering guidelines, architecture, rese
 
 ## What Belongs In Requirements
 
-A functional requirement belongs in `docs/requirements/<business-domain>.md` when it identifies:
+A functional requirement belongs in its application-area file when it identifies:
 
 - a real actor and concrete goal;
 - observable business or analytical value;
@@ -55,43 +106,50 @@ Non-functional behavior may appear as an acceptance constraint of a functional s
 3. Identify every external source and exact operation, layer, document, request input, and response form.
 4. Capture success, no-data, optional failure, hard failure, stale data, and privacy behavior.
 5. Decide with the owner which behavior is intentional, accidental, obsolete, or missing.
-6. Group retained behavior by business domain.
+6. Group retained behavior by cohesive application area.
 7. Write concrete functional stories only from accepted evidence.
-8. Review the stories interactively with the owner; the agent must not change their status to accepted on its own.
+8. Review stories one application area at a time, following the interactive
+   decision gates in `project-lifecycle.md`. Present a compact area index, then
+   each requirement's outcome, contract, acceptance, and unresolved decisions.
+   Never infer acceptance, deferral, rejection, split/merge, priority, or
+   delivery-stage decisions.
 
 ## Requirement Template
 
 ```markdown
-## <DOMAIN-ID> — <Concrete capability>
+## <AREA-ID> — <Short verb-object capability>
 
 - Status: DRAFT | ACCEPTED | IMPLEMENTED | VERIFIED | DEFERRED | REJECTED
 - Priority: MUST | SHOULD | COULD
+- Delivery stage: MVP | STAGE-2 | STAGE-3 | LATER
 - Source evidence: <legacy files, behavior, provider documentation, owner decision>
 
-### User Story
+### Outcome
 
-As a <real actor>, I want <concrete action>, so that <business/analytical value>.
+<Actor, concrete result, and value in one short paragraph.>
 
-### Current Or Intended Flow
+### Contract
 
-1. <user/system step>
-
-### Integration
-
-- System/dataset: <exact provider or none>
-- Operation/layer/document: <exact operation>
-- Inputs: <realistic inputs and example>
-- Outputs: <observable output and example>
+- Input: <realistic input>
+- Sources: <exact system, dataset, operation, layer, or none>
+- Output: <observable result>
+- Degraded/failure behavior: <what the user sees and what is preserved>
 
 ### Acceptance Criteria
 
 - Given <specific state>, when <specific action>, then <observable result>.
 - <empty/degraded/failure behavior>
 
-### Open Questions
+### Open Decisions
 
 - <decision required from owner or research>
 ```
+
+Keep each record short and unambiguous. Use a verb-object title, state each fact
+once, prefer compact bullets over narrative flow, and link to research instead
+of copying its full evidence. A requirement is still incomplete if brevity
+removes its user value, concrete contract, degraded/failure behavior, acceptance
+criteria, or provenance.
 
 ## Quality Gate
 

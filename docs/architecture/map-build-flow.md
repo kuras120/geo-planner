@@ -34,6 +34,9 @@ flowchart LR
 
 - Refresh is the only normal workflow that calls external data services.
 - Build is deterministic for the checked-in configuration, snapshots, template, and the current local overlays. A missing local overlay file is initialized from the tracked empty example.
+- The builder can target another complete project-map directory through
+  `--map-dir`; sanitized verification fixtures reuse the production template in
+  a temporary directory rather than carrying a divergent copy.
 - Generated HTML is ignored because it embeds current data, rasters, and potentially private local overlays. It loads `d3-geo` from a CDN.
 - The editor serves only the map directory on loopback, validates writes, persists overlays atomically, rebuilds, and signals the browser to reload.
 - Direct `file://` use cannot write the repository; it uses project-namespaced browser storage and supports export.

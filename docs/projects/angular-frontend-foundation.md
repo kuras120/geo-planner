@@ -5,7 +5,7 @@
 - Phase: PROPOSED
 - Created: 2026-07-23
 - Updated: 2026-07-24
-- Implementation owner: Codex.
+- Implementation owner: frontend implementation agent.
 - Reviewer and acceptance owner: repository owner.
 - Authorization: planning only. Implementation starts after approval of this foundation scope.
 

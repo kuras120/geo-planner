@@ -21,6 +21,7 @@
     "ortho": true,
     "parcels": true,
     "egib": true,
+    "landClasses": false,
     "zones": true,
     "ouz": false,
     "addresses": false,

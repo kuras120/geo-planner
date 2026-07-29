@@ -9,10 +9,16 @@ The repository requires Python 3, Bash, and `curl`. It has no third-party Python
 From the repository root:
 
 ```bash
-./scripts/verify.sh
+./scripts/update_requirements_index.py  # refresh requirement dashboard statistics
+./scripts/verify.sh                     # run the offline quality gate
 ```
 
-The quality gate runs unit tests, compiles Python modules, rebuilds generated HTML from checked-in inputs, and rejects unresolved template markers. It does not access the network.
+The requirement-index updater reads all application-area requirement files and
+atomically regenerates the area, delivery-stage, status, and grand-total tables
+in `docs/requirements/index.md`. The quality gate rejects a stale requirement
+index, runs unit tests, compiles Python modules, rebuilds generated HTML from
+checked-in inputs, and rejects unresolved template markers. Neither command
+accesses the network.
 
 From `mapa/`:
 
@@ -24,6 +30,17 @@ From `mapa/`:
 ```
 
 The editor URL uses `outputFile` from `project-config.json`.
+
+The reference builder also accepts an explicit project-map directory:
+
+```bash
+python3 mapa/scripts/build_map.py --map-dir /path/to/complete-map-directory
+python3 -m unittest tests.test_project_fixtures
+```
+
+Production-style map directories must include the shared template. Test
+fixtures copy that template into a temporary directory so generated outputs and
+runtime overlays never modify the tracked fixture.
 
 ## Configure Another Area
 
@@ -39,7 +56,8 @@ Changing only the bbox is insufficient: raster snapshots, parcel sources, the pl
 
 ## Configuration Ownership
 
-- `project-config.json`: location, data, sources, identity, and output;
+- `project-config.json`: location, data, sources, identity, output, and raster
+  paths including the KIEG land-use/classification snapshot;
 - `map-config.json`: sizes, label visibility, styling values, and initial layer switches;
 - `manual-overlays.example.json`: tracked neutral initializer for local sketches;
 - `manual-overlays.json`: ignored local user sketches and their descriptive properties;
@@ -49,9 +67,16 @@ Changing only the bbox is insufficient: raster snapshots, parcel sources, the pl
 
 `map-fragment.html` and the configured standalone output are generated, local, and ignored by Git. Do not edit them manually. Their size is expected because raster bytes, current data, and private local overlays are embedded. Share an output only after reviewing its embedded content.
 
+The future local-MVP backend stores runtime state below the ignored
+`.geo-planner-data/` default or an explicitly configured external root. It must
+not use tracked fixtures, `mapa/sources/`, or `mapa/assets/` as writable
+runtime storage.
+
 ## Troubleshooting
 
 - Missing parcel source: refresh sources or correct the parcel filename in project config.
+- Missing land-class markings: confirm the county publishes `uzytki` and
+  `kontury` through KIEG, then explicitly refresh sources.
 - Shifted raster: verify CRS, bbox, WMS version, and `wms130AxisOrder`, then refresh all rasters.
 - Shifted planning geometry: verify `plan.coordinateOrder` and the GML `srsName`.
 - Sketches from another area: assign a unique `projectId`; browser storage is derived from it.

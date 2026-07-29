@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import base64
 import json
 import re
@@ -28,19 +29,24 @@ def load_json(path: Path) -> dict[str, Any]:
     return value
 
 
-def load_or_create_manual_overlays() -> dict[str, Any]:
+def load_or_create_manual_overlays(
+    overlays_path: Path | None = None,
+    example_path: Path | None = None,
+) -> dict[str, Any]:
     """Load local user overlays, creating an empty private file on first run."""
-    if MANUAL_OVERLAYS.exists():
-        return load_json(MANUAL_OVERLAYS)
+    overlays_path = overlays_path or MANUAL_OVERLAYS
+    example_path = example_path or MANUAL_OVERLAYS_EXAMPLE
+    if overlays_path.exists():
+        return load_json(overlays_path)
 
-    initial = load_json(MANUAL_OVERLAYS_EXAMPLE)
+    initial = load_json(example_path)
     encoded = json.dumps(initial, ensure_ascii=False, indent=2) + "\n"
     try:
-        with MANUAL_OVERLAYS.open("x", encoding="utf-8") as overlays_file:
+        with overlays_path.open("x", encoding="utf-8") as overlays_file:
             overlays_file.write(encoded)
     except FileExistsError:
         pass
-    return load_json(MANUAL_OVERLAYS)
+    return load_json(overlays_path)
 
 
 def validate_project_config(config: dict[str, Any]) -> dict[str, Any]:
@@ -84,7 +90,7 @@ def validate_project_config(config: dict[str, Any]) -> dict[str, Any]:
     rasters = config.get("rasters")
     if not isinstance(rasters, dict):
         raise ValueError("project-config.json: rasters musi być obiektem.")
-    required_rasters = {"ortho", "egib", "addresses", "power", "water", "sewer"}
+    required_rasters = {"ortho", "egib", "landClasses", "addresses", "power", "water", "sewer"}
     if not required_rasters.issubset(rasters):
         raise ValueError("project-config.json: brakuje jednej ze standardowych warstw rastra.")
     for key, relative_path in rasters.items():
@@ -155,10 +161,14 @@ def uldk_parcel_number(text: str) -> str:
     return fields[-1].strip()
 
 
-def load_parcels(config: dict[str, Any]) -> dict[str, Any]:
+def load_parcels(
+    config: dict[str, Any],
+    parcel_dir: Path | None = None,
+) -> dict[str, Any]:
+    parcel_dir = parcel_dir or PARCEL_DIR
     features = []
     for parcel in config["parcels"]:
-        path = PARCEL_DIR / parcel["file"]
+        path = parcel_dir / parcel["file"]
         if not path.exists():
             raise FileNotFoundError(f"Brak źródła działki {parcel['number']}: {path}")
         source_text = path.read_text(encoding="utf-8")
@@ -191,9 +201,14 @@ def intersects_bbox(rings: list[list[list[float]]], bbox: list[float]) -> bool:
     return not (max_x < bbox[0] or min_x > bbox[2] or max_y < bbox[1] or min_y > bbox[3])
 
 
-def load_plan_features(config: dict[str, Any], tag_name: str) -> dict[str, Any]:
+def load_plan_features(
+    config: dict[str, Any],
+    tag_name: str,
+    source_dir: Path | None = None,
+) -> dict[str, Any]:
+    source_dir = source_dir or SOURCE_DIR
     plan = config["plan"]
-    plan_path = SOURCE_DIR / plan["file"]
+    plan_path = source_dir / plan["file"]
     if not plan_path.exists():
         raise FileNotFoundError(f"Brak źródła planu: {plan_path}")
     namespace = {"app": plan["schemaNamespace"], "gml": GML_NS}
@@ -272,29 +287,48 @@ def standalone_document(fragment: str, project: dict[str, Any]) -> str:
 '''
 
 
-def build() -> tuple[Path, Path]:
-    project = validate_project_config(load_json(PROJECT_CONFIG))
-    output = MAP_DIR / project["outputFile"]
+def build(map_dir: Path = MAP_DIR) -> tuple[Path, Path]:
+    map_dir = map_dir.resolve()
+    source_dir = map_dir / "sources"
+    project = validate_project_config(load_json(map_dir / "project-config.json"))
+    output = map_dir / project["outputFile"]
     map_data = {
         "bbox": project["bbox"], "crs": project["crs"], "plan_date": project["plan"]["date"],
-        "parcels": load_parcels(project),
-        "zones": load_plan_features(project, "StrefaPlanistyczna"),
-        "ouz": load_plan_features(project, "ObszarUzupelnieniaZabudowy"),
+        "parcels": load_parcels(project, source_dir / "parcels"),
+        "zones": load_plan_features(project, "StrefaPlanistyczna", source_dir),
+        "ouz": load_plan_features(project, "ObszarUzupelnieniaZabudowy", source_dir),
     }
-    rasters = {key: data_uri(MAP_DIR / relative_path) for key, relative_path in project["rasters"].items()}
-    fragment = TEMPLATE.read_text(encoding="utf-8")
+    rasters = {key: data_uri(map_dir / relative_path) for key, relative_path in project["rasters"].items()}
+    fragment = (map_dir / "map-fragment.template.html").read_text(encoding="utf-8")
     for marker, value in (
         ("__PROJECT_CONFIG__", project), ("__MAP_DATA__", map_data), ("__RASTER_DATA__", rasters),
-        ("__MANUAL_DATA__", load_or_create_manual_overlays()), ("__MAP_CONFIG__", load_json(MAP_CONFIG)),
+        (
+            "__MANUAL_DATA__",
+            load_or_create_manual_overlays(
+                map_dir / "manual-overlays.json",
+                map_dir / "manual-overlays.example.json",
+            ),
+        ),
+        ("__MAP_CONFIG__", load_json(map_dir / "map-config.json")),
     ):
         fragment = replace_required(fragment, marker, value)
-    FRAGMENT_OUTPUT.write_text(fragment, encoding="utf-8")
+    fragment_output = map_dir / "map-fragment.html"
+    fragment_output.write_text(fragment, encoding="utf-8")
     output.write_text(standalone_document(fragment, project), encoding="utf-8")
-    return FRAGMENT_OUTPUT, output
+    return fragment_output, output
 
 
 def main() -> None:
-    fragment, standalone = build()
+    parser = argparse.ArgumentParser(description="Buduje samodzielną mapę z katalogu projektu.")
+    parser.add_argument(
+        "--map-dir",
+        type=Path,
+        default=MAP_DIR,
+        help="Katalog projektu mapy (domyślnie mapa/).",
+    )
+    args = parser.parse_args()
+
+    fragment, standalone = build(args.map_dir)
     print(f"Zapisano {fragment} ({fragment.stat().st_size / 1024:.0f} KiB)")
     print(f"Zapisano {standalone} ({standalone.stat().st_size / 1024:.0f} KiB)")
 

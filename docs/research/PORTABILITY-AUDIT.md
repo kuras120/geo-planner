@@ -1,6 +1,6 @@
 # Portability Audit
 
-Updated: 20 July 2026.
+Updated: 28 July 2026.
 
 ## Result
 
@@ -8,11 +8,22 @@ The main location-specific values now live in `project-config.json`: project ide
 
 The builder, downloader, browser storage, standalone title, source note, local editor, and generated output name all consume that configuration. WKT parcel parsing supports both Polygon and MultiPolygon. Offline tests cover configuration safety, duplicate parcels, WMS axis order, polygon rings, multipolygons, and GML coordinate order.
 
-For another Polish area using compatible ULDK, WMS, and APP planning inputs, portability is now approximately **8/10**: moving the engine should require project-data configuration and source refresh rather than source-code edits.
+The builder also accepts an explicit project-map directory. Two fully synthetic
+test projects exercise the same build path with no source-code changes: a
+single-parcel EPSG:2180/XY project and an adjacent multi-parcel
+EPSG:2178/YX project. Each fixture records its bbox, CRS, axis rules, source,
+provenance, and absence of private data.
+
+For another Polish area using compatible ULDK, WMS, and APP planning inputs,
+the reference builder now needs project-directory data rather than source-code
+edits. Acquisition remains less portable than assembly because provider
+adapters and the renderer layer catalog are still fixed.
 
 ## Remaining Constraints
 
-- The template still has a fixed catalog of standard raster layer IDs (`ortho`, `egib`, `addresses`, `power`, `water`, `sewer`). Adding a new layer still requires interface/config work.
+- The template still has a fixed catalog of standard raster layer IDs (`ortho`,
+  `egib`, `landClasses`, `addresses`, `power`, `water`, `sewer`). Adding a new
+  layer still requires interface/config work.
 - Planning parsing targets the configured APP namespace but does not fully model every GML surface/holes variant or validate each feature's `srsName`.
 - Raster files are unreferenced images stretched over the bbox; alignment requires a visual control-point check after refresh.
 - `manual-overlays.json` uses the project CRS although GeoJSON interoperability normally assumes WGS84 unless a separate CRS contract is supplied.

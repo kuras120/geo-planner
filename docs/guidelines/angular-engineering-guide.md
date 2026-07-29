@@ -69,6 +69,51 @@ component -> feature facade/store -> application API facade
           -> generated OpenAPI client -> same-origin backend
 ```
 
+### Frontend-led Contract Discovery
+
+For each accepted functional slice, Codex defines the frontend's real data
+needs before the owner implements the Kotlin endpoint:
+
+1. map the user actions and loading, empty, partial, stale, success, validation,
+   authorization, and failure states;
+2. list the exact read/write fields each state needs, including identifiers,
+   CRS, provenance, warnings, pagination/tiling, and freshness;
+3. define frontend domain/view models and representative contract fixtures;
+4. propose task-oriented commands, responses, problems, and OpenAPI examples;
+5. review the proposal interactively with the owner;
+6. the owner implements and publishes the accepted Kotlin/OpenAPI slice;
+7. Codex regenerates the client and implements the Angular feature against the
+   published contract.
+
+This is contract discovery, not speculative frontend implementation. Components
+do not dictate backend persistence models, and production Angular code does not
+run ahead of an accepted/published contract. The data-needs matrix gives the
+backend implementer a precise use case without coupling the API to a screen
+tree.
+
+### Contract Simulator
+
+The frontend foundation provides a small Node-based API simulator for accepted
+contract slices. It is a development/test adapter, not a second backend:
+
+- serve the same representative JSON/binary fixtures used by contract and
+  frontend tests;
+- match accepted endpoint, status, header, problem-details, correlation-ID,
+  cancellation, and content-type behavior;
+- select deterministic named scenarios for ready, empty, partial, stale,
+  delayed, failed, unauthorized, revision-conflict, and cancelled states;
+- support chunked/progress and tile/range behavior when the accepted slice
+  requires it;
+- make scenario selection explicit in test configuration and impossible in a
+  production build;
+- perform no external network calls and store no private data.
+
+Angular E2E tests run against this simulator before the Kotlin slice is
+available. After the owner publishes the backend contract, the same high-value
+journeys also run against a real backend test profile. Simulator behavior must
+follow accepted examples and is removed or corrected when it diverges; it never
+defines the contract by itself.
+
 - Generate transport clients and DTOs; never hand-edit generated files or import them directly into reusable components.
 - Treat OpenAPI generation as a repeatable development loop. Regenerate after every accepted backend contract change and review the generated diff before adapting application code.
 - Generate only from the backend's current published contract. Do not invent placeholder future endpoints to produce a complete client early.

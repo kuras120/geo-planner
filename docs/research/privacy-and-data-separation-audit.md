@@ -27,7 +27,7 @@ public application repository
   code + schemas + generic catalog + approved public/synthetic fixtures
 
 local user workspace
-  manual overlays + generated exports + private notes + future account data
+  manual overlays + generated exports + private notes + .geo-planner-data/
 ```
 
 | Class | Examples | Storage rule |
@@ -45,3 +45,6 @@ local user workspace
 - Source licence, attribution, and snapshot-publication decisions are documented.
 - History reachable from the branch intended for push contains none of the selected private paths or strings.
 - Local overlays are never normalized, staged, replaced, logged, or exported without explicit user action.
+- Future local-MVP runtime projects, jobs, imports, manifests, and artifacts
+  remain under the ignored `.geo-planner-data/` root; synthetic fixtures remain
+  separate under `tests/fixtures/`.

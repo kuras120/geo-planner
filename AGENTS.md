@@ -10,6 +10,7 @@ Use this file to select repository context. Read every routed document for the t
 - Treat `AGENTS.md` as owner-controlled permanent policy. Do not add, remove, or change its content unless the owner explicitly asks for that exact AGENTS change or approves proposed wording. The default is to keep this file unchanged and put task-specific material in the appropriate documentation or temporary plan.
 - When the owner changes a reusable way of working, persist the accepted rule in the appropriate durable documentation, reusable skill, or—only with explicit owner approval—`AGENTS.md`. Do not rely on conversational memory. Keep one-off scope and sequencing in temporary project plans.
 - Keep active plans under `docs/projects/**`; remove completed plans only after accepted decisions are reflected in durable docs.
+- Do not start another project plan while an existing plan is in progress. Finish and close the active plan first, or obtain an explicit owner decision to suspend or abandon it before creating a replacement. Record necessary supporting research inside the active plan without allowing it to displace the plan's next unresolved gate.
 - Preserve existing user changes and do not refresh external map sources unless explicitly requested.
 - Keep code and technical documentation in English. Preserve Polish user-facing map text and source terminology where it is part of the product or data.
 

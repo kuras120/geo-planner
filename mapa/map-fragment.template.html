@@ -185,6 +185,7 @@
           <g data-layer-group="zones"></g>
           <g data-layer-group="ouz"></g>
           <g data-layer-group="egib"></g>
+          <g data-layer-group="landClasses"></g>
           <g data-layer-group="addresses"></g>
           <g data-layer-group="power"></g>
           <g data-layer-group="water"></g>
@@ -209,6 +210,7 @@
           <label class="form-check form-switch"><input class="form-check-input" type="checkbox" data-layer="ortho" checked><span class="form-check-label">Ortofotomapa</span></label>
           <label class="form-check form-switch"><input class="form-check-input" type="checkbox" data-layer="parcels" checked><span class="form-check-label">Działki analizowane</span></label>
           <label class="form-check form-switch"><input class="form-check-input" type="checkbox" data-layer="egib" checked><span class="form-check-label">Budynki i numery EGiB</span></label>
+          <label class="form-check form-switch" data-raster-option="landClasses"><input class="form-check-input" type="checkbox" data-layer="landClasses"><span class="form-check-label">Użytki i klasy gruntów</span></label>
           <label class="form-check form-switch"><input class="form-check-input" type="checkbox" data-layer="zones" checked><span class="form-check-label">Strefy planu ogólnego</span></label>
           <label class="form-check form-switch"><input class="form-check-input" type="checkbox" data-layer="ouz"><span class="form-check-label">OUZ</span></label>
           <label class="form-check form-switch" data-raster-option="addresses"><input class="form-check-input" type="checkbox" data-layer="addresses"><span class="form-check-label">Nazwy ulic i adresy GUGiK</span></label>
@@ -700,7 +702,7 @@
       clipRect.setAttribute("height", height);
       projection = geoIdentity().reflectY(true).fitExtent([[0, 0], [width, height]], frameFeature());
       path = geoPath(projection);
-      ["ortho", "egib", "addresses", "power", "water", "sewer"].forEach(key => { groups[key].replaceChildren(); rasterImage(key); });
+      ["ortho", "egib", "landClasses", "addresses", "power", "water", "sewer"].forEach(key => { groups[key].replaceChildren(); rasterImage(key); });
       renderPlan();
       renderParcels();
       renderManual();

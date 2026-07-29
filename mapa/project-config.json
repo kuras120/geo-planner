@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "projectId": "ciezkowice-centrum",
   "title": "Warstwowa mapa działek w Ciężkowicach",
-  "description": "Mapa pokazuje ortofotomapę, działki, strefy projektu planu, OUZ, budynki, sieci oraz ręczne szkice.",
+  "description": "Mapa pokazuje ortofotomapę, działki, strefy projektu planu, OUZ, budynki, użytki i klasy gruntów, sieci oraz ręczne szkice.",
   "outputFile": "mapa-ciezkowice.html",
   "locale": "pl-PL",
   "crs": "EPSG:2178",
@@ -45,10 +45,11 @@
   "rasters": {
     "ortho": "assets/ortho.jpg",
     "egib": "assets/egib-buildings.png",
+    "landClasses": "assets/egib-land-use-classes.png",
     "addresses": "assets/addresses-streets.png",
     "power": "assets/przewod_elektroenergetyczny.png",
     "water": "assets/przewod_wodociagowy.png",
     "sewer": "assets/przewod_kanalizacyjny.png"
   },
-  "sourceNote": "Źródła: ULDK, GML POG 17.06.2026, ORTO, KIEG, KINA i GESUT GUGiK. Dane i warstwy mają charakter poglądowy."
+  "sourceNote": "Źródła: ULDK, GML POG 17.06.2026, ORTO, KIEG (użytki i kontury klasyfikacyjne pobrane 24.07.2026), KINA i GESUT GUGiK. Dane i warstwy mają charakter poglądowy; dostępność użytków i klas zależy od danych publikowanych przez powiat."
 }

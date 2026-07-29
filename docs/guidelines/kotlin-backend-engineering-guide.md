@@ -9,7 +9,14 @@ Codex reviews backend work through `$review-kotlin-backend` and does not modify 
 ## Requirements-driven Delivery
 
 - Start backend work from one coherent set of accepted IDs in `docs/requirements/**`, not from a permanent backend roadmap.
-- Create a new bounded project plan for that slice. State the user outcome, domain invariants, API input/output/errors, external integration, tests, and definition of done.
+- Before backend implementation, review the frontend-led data-needs matrix,
+  domain/view examples, UI states, and proposed task-oriented transport
+  examples for the accepted slice. Use them as contract input, not as a backend
+  persistence model.
+- Reuse the accepted contract examples as backend HTTP/integration fixtures.
+  The frontend Node simulator may exercise those examples before Kotlin exists,
+  but the published OpenAPI and backend acceptance tests remain authoritative.
+- Create a new bounded project plan for that slice. State the user outcome, domain invariants, accepted API input/output/errors, external integration, tests, and definition of done.
 - The owner implements the Kotlin slice and requests review. Codex remains read-only unless explicitly asked to implement a named fix.
 - Publish OpenAPI only for implemented or currently accepted behavior. After backend review, it can unlock a separately planned frontend slice.
 - Finish backend, contract, fixture, and operational acceptance for the selected requirements before starting another substantial slice.
@@ -19,7 +26,8 @@ Suggested learning progression is deliberately incremental:
 
 1. reproducible Gradle Kotlin DSL/Kotest/configuration foundation;
 2. one framework-free domain model and typed error set;
-3. one task-oriented HTTP endpoint and OpenAPI contract;
+3. one task-oriented HTTP endpoint and OpenAPI contract derived from the
+   reviewed frontend data need;
 4. one bounded provider adapter using recorded fixtures;
 5. one restart-safe job/persistence flow;
 6. repeated vertical slices driven by accepted product requirements.

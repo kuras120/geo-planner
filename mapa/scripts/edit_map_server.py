@@ -81,6 +81,30 @@ def validate_collection(value: object) -> dict:
     return value
 
 
+def write_collection_atomic(collection: dict, output: Path = OVERLAYS) -> None:
+    temporary_path: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            "w", encoding="utf-8", dir=output.parent, prefix=f".{output.name}-", delete=False
+        ) as temporary:
+            json.dump(collection, temporary, ensure_ascii=False, indent=2)
+            temporary.write("\n")
+            temporary_path = Path(temporary.name)
+        os.replace(temporary_path, output)
+    except OSError:
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
+        raise
+
+
+def persist_collection(value: object) -> tuple[dict, int]:
+    """Validate, atomically persist, and rebuild one manual-overlay snapshot."""
+    collection = validate_collection(value)
+    write_collection_atomic(collection)
+    version = rebuild_if_needed(force=True)
+    return collection, version
+
+
 class MapHandler(SimpleHTTPRequestHandler):
     server_version = "GeoPlannerMapEditor/1.0"
 
@@ -129,15 +153,7 @@ class MapHandler(SimpleHTTPRequestHandler):
             length = int(self.headers.get("Content-Length", "0"))
             if length <= 0 or length > MAX_BODY:
                 raise ValueError("Nieprawidłowy rozmiar danych.")
-            collection = validate_collection(json.loads(self.rfile.read(length)))
-            with tempfile.NamedTemporaryFile(
-                "w", encoding="utf-8", dir=MAP_DIR, prefix=".manual-overlays-", delete=False
-            ) as temporary:
-                json.dump(collection, temporary, ensure_ascii=False, indent=2)
-                temporary.write("\n")
-                temporary_path = Path(temporary.name)
-            os.replace(temporary_path, OVERLAYS)
-            version = rebuild_if_needed(force=True)
+            collection, version = persist_collection(json.loads(self.rfile.read(length)))
         except (ValueError, json.JSONDecodeError, UnicodeDecodeError) as error:
             self.send_error(400, str(error))
             return

@@ -51,6 +51,19 @@ Resolve these in the feature-specific plan:
 - whether the first slice has durable state;
 - the smallest security boundary required by exposed operations.
 
+The saved-project requirement now triggers a real persistence decision.
+`gcp-development-topology.md` recommends the PostgreSQL data model locally and
+through a managed provider, with raster artifacts in filesystem/Cloud Storage
+adapters. The database does not need to be hosted by GCP: an external
+scale-to-zero PostgreSQL is the leading intermittent-development candidate,
+subject to a Cloud Run/PostGIS/migration/backup/latency proof. Cloud SQL remains
+the conservative same-provider production option. Firestore remains a
+fast-prototype alternative whose document, query, and future migration
+constraints require explicit owner acceptance. Cost remains an equal decision
+input: `gcp-cost-options.md` recommends fully local daily development plus an
+Infrastructure-as-Code GCP environment started only for integration and
+review.
+
 ## Primary References
 
 - [Kotlin documentation](https://kotlinlang.org/docs/home.html)

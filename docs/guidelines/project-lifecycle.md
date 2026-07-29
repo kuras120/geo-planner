@@ -2,6 +2,35 @@
 
 Use this workflow for changes that affect behavior, data meaning, architecture, portability, external sources, or multiple repository areas. The reusable procedures are project skills under `.agents/skills/`.
 
+## Single Active Plan
+
+Only one project plan may be in progress. Complete and close it before creating
+another plan, unless the owner explicitly suspends or abandons the active plan.
+A question discovered during delivery may produce bounded research or a durable
+decision referenced by the active plan; it does not by itself authorize a new
+plan or replace the next unresolved gate. After recording that supporting
+material, return to the active plan.
+
+## Interactive Decision Gates
+
+Whenever work reaches a choice reserved for the owner, review it interactively
+before proceeding:
+
+1. present one coherent decision cluster, not a bulk list of unrelated choices;
+2. state the evidence, exact decision, viable options, material tradeoffs, and
+   the recommended option when one is justified;
+3. ask the smallest question that resolves the gate and wait for the owner's
+   answer;
+4. record the accepted decision in the active plan and its durable owner before
+   implementing dependent work;
+5. continue with the next decision cluster only after the current one is
+   resolved.
+
+This applies to requirements, architecture, data contracts, source selection,
+scope, risk acceptance, migration/cutover behavior, and other owner-controlled
+choices across all projects. It does not turn ordinary reversible
+implementation details inside an already authorized scope into approval gates.
+
 ## Protocol A: Planning (`$plan-work`)
 
 Create one proposal in `docs/projects/` with status `PROPOSED`. Include:
@@ -35,7 +64,7 @@ After implementation is accepted, update durable domain, guideline, architecture
 
 | Class | Destination and expected shape |
 | --- | --- |
-| Requirement | After authorized discovery, a `docs/requirements/` domain file following `docs/guidelines/requirements-guide.md`. |
+| Requirement | After authorized discovery, a `docs/requirements/` application-area file following `docs/guidelines/requirements-guide.md`. |
 | Backlog | Project proposal candidate with value, rough scope, dependencies, and priority rationale. |
 | Research | `docs/research/` question with provenance, evidence needed, and decision it informs. |
 | Decision | Durable domain/guideline statement with rationale and date when time-sensitive. |

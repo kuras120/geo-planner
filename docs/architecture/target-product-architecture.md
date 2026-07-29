@@ -49,13 +49,14 @@ The HTTP boundary is versioned through OpenAPI. Transport DTOs remain separate f
 
 The specification evolves with implemented vertical slices. It is published and regenerated repeatedly during development; it is not a one-time complete design prerequisite. A frontend feature depends only on the accepted contract for its current backend capability.
 
-Contract discovery for a slice is frontend-led but jointly accepted. Codex
-first describes user actions/states, exact data needs, frontend domain/view
-models, and representative commands/responses/problems. The owner reviews that
-proposal and implements the accepted Kotlin/OpenAPI contract. Codex then
-generates the client and implements the Angular feature. UI needs inform the
-transport use case but never become backend persistence models or authorize
-speculative endpoints.
+Contract discovery for a slice is frontend-led but jointly accepted. The
+frontend implementation agent first describes user actions/states, exact data
+needs, frontend domain/view models, and representative commands, responses, and
+problems. The owner reviews that proposal and implements the accepted
+Kotlin/OpenAPI contract. The frontend implementation agent then generates the
+client and implements the Angular feature. UI needs inform the transport use
+case but never become backend persistence models or authorize speculative
+endpoints.
 
 ### Project
 

@@ -75,7 +75,11 @@ An inbox note is not verified fact or implementation authorization. Preserve ori
 
 ## Backend Principal Review (`$review-kotlin-backend`)
 
-The owner implements the Kotlin backend. Codex reviews designs and changes without editing production code by default. Reviews lead with severity-ranked evidence and cover correctness, thin-client contracts, Kotlin semantics, Spring, Gradle Kotlin DSL, Kotest, security, persistence, and failure behavior.
+The owner implements the Kotlin backend. The backend review agent reviews
+designs and changes without editing production code by default. Reviews lead
+with severity-ranked evidence and cover correctness, thin-client contracts,
+Kotlin semantics, Spring, Gradle Kotlin DSL, Kotest, security, persistence, and
+failure behavior.
 
 Changing from review to implementation requires an explicit owner request naming the scope and then follows Protocol B.
 

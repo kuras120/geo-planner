@@ -2,7 +2,12 @@
 
 ## Purpose And Ownership
 
-This guide governs the replacement Geo Planner frontend. Codex implements the frontend; the owner reviews and accepts it. The frontend is a thin client: it owns presentation, browser interaction, transient UI state, and OpenLayers rendering, while the backend owns trusted provider integration, authoritative project state, acquisition, validation, and persistence.
+This guide governs the replacement Geo Planner frontend. The frontend
+implementation agent implements the frontend; the owner reviews and accepts
+it. The frontend is a thin client: it owns presentation, browser interaction,
+transient UI state, and OpenLayers rendering, while the backend owns trusted
+provider integration, authoritative project state, acquisition, validation,
+and persistence.
 
 Backend code is outside the frontend implementation mandate. Contract questions are resolved in OpenAPI and project decisions rather than by silently changing either side.
 
@@ -71,8 +76,8 @@ component -> feature facade/store -> application API facade
 
 ### Frontend-led Contract Discovery
 
-For each accepted functional slice, Codex defines the frontend's real data
-needs before the owner implements the Kotlin endpoint:
+For each accepted functional slice, the frontend implementation agent defines
+the frontend's real data needs before the owner implements the Kotlin endpoint:
 
 1. map the user actions and loading, empty, partial, stale, success, validation,
    authorization, and failure states;
@@ -82,8 +87,8 @@ needs before the owner implements the Kotlin endpoint:
 4. propose task-oriented commands, responses, problems, and OpenAPI examples;
 5. review the proposal interactively with the owner;
 6. the owner implements and publishes the accepted Kotlin/OpenAPI slice;
-7. Codex regenerates the client and implements the Angular feature against the
-   published contract.
+7. The frontend implementation agent regenerates the client and implements the
+   Angular feature against the published contract.
 
 This is contract discovery, not speculative frontend implementation. Components
 do not dictate backend persistence models, and production Angular code does not

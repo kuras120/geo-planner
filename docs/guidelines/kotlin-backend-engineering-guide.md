@@ -4,7 +4,9 @@
 
 These rules govern the owner-written Kotlin/Spring Boot backend. They complement the repository-wide design, spatial-data, safety, and testing rules in `engineering-guide.md`.
 
-Codex reviews backend work through `$review-kotlin-backend` and does not modify backend production code unless the owner explicitly requests implementation for a named scope.
+The backend review agent reviews backend work through
+`$review-kotlin-backend` and does not modify backend production code unless the
+owner explicitly requests implementation for a named scope.
 
 ## Requirements-driven Delivery
 
@@ -17,7 +19,8 @@ Codex reviews backend work through `$review-kotlin-backend` and does not modify 
   The frontend Node simulator may exercise those examples before Kotlin exists,
   but the published OpenAPI and backend acceptance tests remain authoritative.
 - Create a new bounded project plan for that slice. State the user outcome, domain invariants, accepted API input/output/errors, external integration, tests, and definition of done.
-- The owner implements the Kotlin slice and requests review. Codex remains read-only unless explicitly asked to implement a named fix.
+- The owner implements the Kotlin slice and requests review. The backend review
+  agent remains read-only unless explicitly asked to implement a named fix.
 - Publish OpenAPI only for implemented or currently accepted behavior. After backend review, it can unlock a separately planned frontend slice.
 - Finish backend, contract, fixture, and operational acceptance for the selected requirements before starting another substantial slice.
 - Update requirement status only from evidence: `ACCEPTED` to `IMPLEMENTED`, then `VERIFIED` after all acceptance checks pass.

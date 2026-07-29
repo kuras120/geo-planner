@@ -25,20 +25,39 @@ As of 2026-07-23, Angular 22 is the current stable major. New CLI applications u
 
 ## Application Shape
 
-Use a single Angular application organized by product feature, with small platform boundaries:
+Use one Angular CLI workspace under `frontend/`. Keep the root application in
+the CLI-standard `src/` location and independently reusable or enforceable
+Angular library boundaries in the CLI-standard `projects/` location:
 
 ```text
-frontend/src/app/
-  core/                 bootstrap, error reporting, runtime config
-  api/
-    generated/          generated transport code; never hand-edit
-    geo-planner-api.ts  application-owned API facade
-    mappers/            transport DTO <-> domain mappings
-  map/                  OpenLayers adapter, projection and interaction ports
-  features/             projects, layers, inspect, sketch, acquisition, export
-  shared/ui/            genuinely reusable presentation primitives
+frontend/
+  .storybook/           shared UI workshop configuration
+  e2e/                  application-level real-browser journeys
+  projects/
+    ui/                  genuinely reusable presentation primitives
+    geo-planner-api/
+      src/lib/
+        generated/      generated transport code; never hand-edit
+        mappers/        transport DTO <-> frontend domain mappings
+        facade/         application-owned API facade
+  src/
+    app/
+      core/              bootstrap, error reporting, runtime config
+      features/          product features owned by the application
+      layout/            application shell composition
+    locale/              translation source files when localization is added
 ```
 
+- Use the Angular CLI generator for applications and libraries so `angular.json`,
+  TypeScript paths, build targets, and package boundaries stay conventional.
+- A feature starts in `src/app/features/`. Move it to `projects/` only when
+  independent reuse, ownership, packaging, or dependency enforcement justifies
+  the additional library build and public API.
+- `ui` contains presentation primitives that must not depend on application
+  features, routing, HTTP, or OpenLayers.
+- `geo-planner-api` owns generated transport code, DTO mapping, and the
+  application-facing API facade. No component imports from its `generated/`
+  directory.
 - Use standalone components and functional providers. Do not introduce NgModules for application features.
 - Lazy-load route-level features. Keep route configuration close to the feature and use stable URLs as user-visible state.
 - A feature may depend on `core`, `api`, `map`, and `shared`; reusable platform areas must not depend on features.
@@ -164,12 +183,34 @@ defines the contract by itself.
 ## Testing And Quality Gates
 
 - Use Angular CLI's default Vitest integration for unit and component tests.
+- Use the latest stable Storybook compatible with the selected Angular version
+  for isolated shared-UI states, interaction examples, accessibility checks,
+  and component documentation. Keep one workspace configuration under
+  `frontend/.storybook/`; do not duplicate Storybook configuration per library
+  without a demonstrated isolation need.
+- Keep application E2E journeys under `frontend/e2e/` and run them in Chromium
+  through Playwright. Storybook stories complement but do not replace
+  application-level browser journeys.
 - Test through public inputs, outputs, DOM, and feature facades rather than private details.
 - Use `provideHttpClientTesting` and contract fixtures derived from OpenAPI examples.
 - Add real-browser tests for map rendering, projections, pointer/keyboard interaction, sketching, resize, cleanup, and downloads.
 - Prefer `whenStable()` and visible assertions in zoneless tests; avoid indiscriminate `detectChanges()`.
 - Gate on formatting, lint/static analysis, type checking, unit tests, production build, bundle budgets, and selected browser tests.
 - Include accessibility plus reduced-motion, narrow viewport, slow request, cancellation, partial failure, and stale-artifact cases.
+
+## Toolchain And Contract Simulator
+
+- Pin the exact Node.js LTS used by the repository in root-level `mise.toml`.
+  Package manifests and committed lockfiles remain the dependency source of
+  truth; mise supplies the runtime and repeatable task entry points.
+- Keep the frontend and simulator as separate npm workspaces with separate
+  lockfiles. Their dependency graphs and release concerns are independent.
+- The Node contract simulator lives at root-level `backend-simulator/`, outside
+  the Angular CLI workspace. It must not import Angular application code or
+  become a production dependency.
+- The foundation may expose a simulator-only readiness endpoint. Product
+  endpoints, payloads, fixtures, and scenarios enter only with an accepted
+  contract slice.
 
 ## Review Checklist
 

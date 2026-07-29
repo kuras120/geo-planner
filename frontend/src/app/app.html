@@ -1,0 +1,9 @@
+<gp-page-frame applicationName="Geo Planner" contextLabel="Fundament aplikacji">
+  @if (errorHandler.hasUnhandledError()) {
+    <p class="error" role="alert">
+      Wystąpił nieoczekiwany błąd aplikacji. Szczegóły zostały zapisane w konsoli deweloperskiej.
+    </p>
+  }
+
+  <router-outlet />
+</gp-page-frame>

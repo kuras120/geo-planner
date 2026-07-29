@@ -1,0 +1,61 @@
+:host {
+  --gp-background: #f4f1e8;
+  --gp-ink: #17251f;
+  --gp-muted: #5d6b64;
+  --gp-accent: #176b4d;
+
+  display: block;
+  min-height: 100dvh;
+  color: var(--gp-ink);
+  background:
+    radial-gradient(circle at top right, rgb(23 107 77 / 12%), transparent 28rem),
+    var(--gp-background);
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 10;
+  top: 0.75rem;
+  left: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: white;
+  background: var(--gp-accent);
+  border-radius: 0.25rem;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.header {
+  padding: 1.25rem clamp(1rem, 4vw, 3rem);
+  border-bottom: 1px solid rgb(23 37 31 / 12%);
+  background: rgb(255 253 247 / 82%);
+  backdrop-filter: blur(0.75rem);
+}
+
+.application-name {
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.context-label {
+  margin-inline-start: 0.75rem;
+  color: var(--gp-muted);
+  font-size: 0.875rem;
+}
+
+.content {
+  width: min(72rem, calc(100% - 2rem));
+  margin-inline: auto;
+  padding-block: clamp(3rem, 9vw, 7rem);
+  outline: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .skip-link {
+    transition: transform 120ms ease-out;
+  }
+}

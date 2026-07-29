@@ -19,12 +19,25 @@ thin Angular/OpenLayers client
             -> planning/vector HTTP adapter
        -> snapshot validator and provenance writer
        -> persistence ports
-            -> MVP local data directory
-            -> later database and object storage
+            -> RuntimeStateStore
+                 -> local manifests
+                 -> hosted PostgreSQL
+            -> ArtifactStore
+                 -> local filesystem
+                 -> hosted GCS/S3-compatible object storage
   <- project/layer descriptors, job progress, validated artifacts
 ```
 
 The frontend owns presentation, OpenLayers rendering, forms, and transient interaction state. The backend owns authoritative projects and overlays, trusted provider configuration, acquisition, validation, caching, provenance, and export assembly.
+
+Filesystem and hosted storage are adapters behind deployment-neutral
+`RuntimeStateStore` and `ArtifactStore` ports. Domain and application services
+never branch on the provider or expose paths or bucket keys as product
+identity. The local/self-hosted filesystem profile remains supported, while a
+commercial deployment replaces runtime state with PostgreSQL and large bytes
+with object storage without changing project, acquisition, provenance,
+overlay, or frontend API contracts. Exact port semantics and migration safety
+are defined in [Local Data Root Contract](local-data-root.md).
 
 Normal rendering may use validated backend artifacts or controlled live-layer URLs when a source's CORS, performance, licensing, and CRS behavior are known. Acquisition and reproducible export default to backend-owned snapshots. There is no generic remote-URL proxy.
 
@@ -253,6 +266,13 @@ and resolution, selected layers/preferences, acquisition/job/provenance
 records, artifact references, overlay IDs/revisions, imports, and storage
 schema version. Large raster/export bytes remain artifact files/objects rather
 than database values.
+
+The artifact port supports bounded streaming, abort, complete-only promotion,
+metadata/stat, ranged reads, authorized delivery, and deletion by opaque key.
+The state port preserves transactions or equivalent atomic revision semantics.
+An adapter may implement promotion differently—atomic filesystem rename
+locally versus temporary object plus manifest transition in object storage—but
+callers observe the same complete-or-not-visible contract.
 
 ### Hosted Single-user Or Test Environment
 

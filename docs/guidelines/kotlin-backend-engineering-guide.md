@@ -71,11 +71,28 @@ backend/
   application/     project and acquisition use cases
   domain/          AOI, source, layer, job, artifact, provenance
   adapters/http/   ULDK, WMS/WMTS, planning/vector clients
-  adapters/store/  local manifests and artifact storage
+  adapters/store/  RuntimeStateStore and ArtifactStore implementations
   config/          validated catalog and HTTP/job policies
 ```
 
 Package names may evolve with implemented capabilities. Preserve dependency direction and cohesive domain ownership rather than creating every empty package up front.
+
+Storage is split by capability, not vendor:
+
+- `RuntimeStateStore` owns project/job/manifest/overlay/import state and
+  revision semantics;
+- `ArtifactStore` owns bounded streaming writes, abort, complete-only
+  promotion, metadata/stat, ranged reads, authorized delivery, and deletion by
+  opaque key;
+- local/self-hosted adapters use the configured data root;
+- hosted adapters use PostgreSQL for state and GCS/S3-compatible object storage
+  for large bytes.
+
+Application services must not contain `if local`/`if gcs` branches, persist
+absolute paths or provider URLs, or import provider SDK types. Adapter contract
+tests run against every implementation and prove the same visibility,
+checksum, failure-preservation, range-read, quota, and idempotent-cleanup
+semantics.
 
 ## Thin-client Contract
 

@@ -2,9 +2,48 @@
 
 ## Status
 
-Accepted migration boundary for the future local-MVP backend. This describes
-storage ownership and safety; it does not claim that the Kotlin persistence
-adapter exists.
+Accepted migration boundary for the future local-MVP and self-hosted backend.
+The data root is one storage-adapter implementation, not the product's
+commercial deployment contract. This describes storage ownership and safety;
+it does not claim that the Kotlin persistence adapters exist.
+
+## Deployment-neutral Storage Ports
+
+Application and domain services must not depend on filesystem paths, Cloud
+Storage, S3, or another provider SDK. They depend on two capability-oriented
+ports:
+
+- `RuntimeStateStore`: projects, AOI state, jobs, manifests, overlays,
+  optimistic revisions, imports, and storage-schema version;
+- `ArtifactStore`: bounded streaming write, abort, validated promotion,
+  metadata/stat, ranged read, authorized delivery, and deletion by opaque key.
+
+The first adapters are:
+
+| Deployment | Runtime state | Large artifacts |
+| --- | --- | --- |
+| Local development / self-hosted | Files and manifests below the local data root | Files below the local data root |
+| Hosted / commercial | PostgreSQL or another accepted durable state adapter | GCS/S3-compatible object storage adapter |
+
+The ports own storage semantics, not vendor-shaped DTOs. In particular:
+
+- services pass opaque IDs, streams, checksums, sizes, media types, and spatial
+  metadata, never absolute paths, bucket URLs, or provider request objects;
+- a successful promotion means a complete validated artifact becomes visible
+  exactly once, even when an object store implements it through temporary keys
+  and manifest state rather than filesystem rename;
+- incomplete writes remain undiscoverable and can be cleaned up idempotently;
+- ranged reads are supported when required by COG or tile delivery;
+- quotas, authorization, retention, and encryption policy are applied at or
+  above the port boundary and cannot be bypassed by selecting an adapter;
+- provider-specific signed URLs are optional delivery results behind the
+  adapter and never become durable domain identity.
+
+Adapter selection is deployment configuration. Switching from filesystem to
+object storage must not change project, acquisition, provenance, overlay, or
+frontend API contracts. A migration command copies through the two ports,
+verifies byte count and checksum, writes the destination manifest, and leaves
+the source untouched until the operator separately accepts cleanup.
 
 ## Configuration
 
@@ -86,5 +125,7 @@ root, and never modifies or deletes the source file.
 - Cleanup targets only validated descendants of `tmp/` and never follows an
   unresolved user-controlled path.
 
-Backup, retention, encryption-at-rest, and migration between local filesystem
-and object/database storage are deployment decisions for later plans.
+Backup duration, retention values, encryption keys, and the selected hosted
+providers remain deployment decisions for later plans. The storage ports and
+filesystem/object-store interchangeability are required architecture from the
+first persisted slice.

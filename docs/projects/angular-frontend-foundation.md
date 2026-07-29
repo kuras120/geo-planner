@@ -143,8 +143,11 @@ The owner reviews:
 - Disabled the Angular persistent disk cache because the transitive
   LMDB/message-pack native acceleration crashes under the pinned Node 24 build
   on macOS ARM. Builds remain correct; only cache performance is unavailable.
+- Follow-up review made TypeScript and Angular template strictness explicit and
+  validates the configured API path with the platform URL parser so
+  backslash-based inputs cannot escape the same-origin boundary.
 - `mise run verify` passes: simulator formatting/typecheck/build and 2 tests;
-  frontend formatting/lint/typecheck, 10 Vitest tests, production build,
+  frontend formatting/lint/typecheck, 11 Vitest tests, production build,
   Storybook build, and 1 Chromium E2E test; and the existing 31-test offline
   repository gate.
 - The production Angular initial bundle is 196.94 kB raw and approximately

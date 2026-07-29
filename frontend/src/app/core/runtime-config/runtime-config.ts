@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 
+const CONFIG_VALIDATION_ORIGIN = 'https://runtime-config.invalid';
+
 export interface RuntimeConfig {
   readonly apiBaseUrl: string;
 }
@@ -11,17 +13,24 @@ export class RuntimeConfigError extends Error {
   }
 }
 
+function isSameOriginAbsolutePath(value: string): boolean {
+  try {
+    return (
+      value.startsWith('/') &&
+      new URL(value, CONFIG_VALIDATION_ORIGIN).origin === CONFIG_VALIDATION_ORIGIN
+    );
+  } catch {
+    return false;
+  }
+}
+
 export function parseRuntimeConfig(value: unknown): RuntimeConfig {
   if (typeof value !== 'object' || value === null || !('apiBaseUrl' in value)) {
     throw new RuntimeConfigError('Runtime configuration must define apiBaseUrl.');
   }
 
   const { apiBaseUrl } = value;
-  if (
-    typeof apiBaseUrl !== 'string' ||
-    !apiBaseUrl.startsWith('/') ||
-    apiBaseUrl.startsWith('//')
-  ) {
+  if (typeof apiBaseUrl !== 'string' || !isSameOriginAbsolutePath(apiBaseUrl)) {
     throw new RuntimeConfigError('apiBaseUrl must be a same-origin absolute path.');
   }
 

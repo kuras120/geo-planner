@@ -11,4 +11,8 @@ describe('parseRuntimeConfig', () => {
       expect(() => parseRuntimeConfig(value)).toThrow(RuntimeConfigError);
     },
   );
+
+  it('rejects a backslash-based cross-origin URL', () => {
+    expect(() => parseRuntimeConfig({ apiBaseUrl: '/\\evil.example' })).toThrow(RuntimeConfigError);
+  });
 });

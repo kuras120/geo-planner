@@ -1,0 +1,32 @@
+plugins {
+    // apply false -> don't apply to the project's root
+    kotlin("jvm") version "2.3.21" apply false
+    kotlin("plugin.spring") version "2.3.21" apply false
+    kotlin("plugin.jpa") version "2.3.21" apply false
+    kotlin("kapt") version "2.3.21" apply false
+
+    id("org.springframework.boot") version "4.1.0" apply false
+    id("io.spring.dependency-management") version "1.1.7" apply false
+}
+
+allprojects {
+    group = "com.simplydevit"
+    version = "0.0.1-SNAPSHOT"
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+tasks.register("buildAll") {
+    group = "build"
+    description = "Builds backend and frontend"
+
+    dependsOn(":backend:build", ":frontend:build")
+}
+
+tasks.register("cleanAll") {
+    group = "build"
+
+    dependsOn(":backend:build", ":frontend:clean")
+}

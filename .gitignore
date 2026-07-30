@@ -12,6 +12,41 @@ __pycache__/
 /backend-simulator/coverage/
 /backend-simulator/dist/
 
+# Gradle & Spring Boot
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### VS Code ###
+.vscode/
+
+### Kotlin ###
+.kotlin
+
+
 # Local user data and generated exports. The build creates the overlay file
 # from manual-overlays.example.json when it is missing.
 /mapa/manual-overlays.json
@@ -21,3 +56,6 @@ __pycache__/
 # Target local-MVP runtime state. Intentional sanitized fixtures remain under
 # tests/fixtures/ and are not stored below this root.
 /.geo-planner-data/
+
+# MacOs
+.DS_Store

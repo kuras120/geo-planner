@@ -12,22 +12,22 @@ run = [
   "npm --prefix frontend exec playwright install chromium",
 ]
 
-[tasks.frontend]
+[tasks.start-frontend]
 description = "Run the Angular development server"
 dir = "frontend"
 run = "npm start"
 
-[tasks.backend]
+[tasks.start-backend]
 description = "Run the Spring Boot development server"
 dir = "backend"
-run = "../gradlew :backend:bootRun"
+run = "../gradlew :backend:bootRun --console=plain"
 
-[tasks.storybook]
+[tasks.start-storybook]
 description = "Run the shared UI workshop"
 dir = "frontend"
 run = "npm run storybook"
 
-[tasks.simulator]
+[tasks.start-simulator]
 description = "Run the backend contract simulator"
 dir = "backend-simulator"
 run = "npm start"

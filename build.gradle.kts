@@ -20,13 +20,12 @@ allprojects {
 
 tasks.register("buildAll") {
     group = "build"
-    description = "Builds backend and frontend"
 
-    dependsOn(":backend:build", ":frontend:build")
+    dependsOn(":backend:build")
 }
 
 tasks.register("cleanAll") {
     group = "build"
 
-    dependsOn(":backend:build", ":frontend:clean")
+    dependsOn(":backend:clean")
 }

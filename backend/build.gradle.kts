@@ -18,13 +18,14 @@ java {
 
 dependencies {
     // Spring Boot
+    implementation(platform(libs.logbookBom))
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-opentelemetry")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-liquibase")
     implementation("org.springframework.boot:spring-boot-starter-restclient")
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
-    implementation(libs.springBootLogbook)
+    implementation("org.zalando:logbook-spring-boot-starter")
 
     // Other deps
     implementation("org.jetbrains.kotlin:kotlin-reflect")

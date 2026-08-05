@@ -4,7 +4,7 @@ spring-boot = "4.1.0"
 spring-dependency-management = "1.1.7"
 kotest = "6.2.3"
 kotlin-logging = "7.0.3"
-spring-boot-logbook = "4.0.4"
+logbook = "4.0.4"
 
 [plugins]
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -18,4 +18,4 @@ springDependencyManagement = { id = "io.spring.dependency-management", version.r
 [libraries]
 kotestBom = { module = "io.kotest:kotest-bom", version.ref = "kotest" }
 kotlinLogging = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
-springBootLogbook = { module = "org.zalando:logbook-spring-boot-starter", version.ref = "spring-boot-logbook" }
+logbookBom = { module = "org.zalando:logbook-bom", version.ref = "logbook" }

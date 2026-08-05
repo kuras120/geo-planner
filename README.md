@@ -33,5 +33,5 @@ Run `./scripts/verify.sh` for the legacy/Python offline quality gate. It uses
 checked-in data and does not access the network.
 
 For replacement-application development, install the pinned toolchain and
-locked dependencies with `mise install` and `mise run install`. Run the complete
-frontend, simulator, and legacy gates with `mise run verify`.
+dependencies with `mise install` and `mise run build-local`. Run the complete
+frontend, simulator, backend and legacy gates with `mise run verify`.

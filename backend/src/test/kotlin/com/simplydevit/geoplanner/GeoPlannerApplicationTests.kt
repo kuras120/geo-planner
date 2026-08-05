@@ -1,13 +1,17 @@
 package com.simplydevit.geoplanner
 
-import org.junit.jupiter.api.Test
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.shouldBe
+import org.springframework.boot.health.actuate.endpoint.HealthEndpoint
+import org.springframework.boot.health.contributor.Status
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class GeoPlannerApplicationTests {
+class GeoPlannerApplicationTests(
+    private val healthEndpoint: HealthEndpoint,
+) : FunSpec({
 
-    @Test
-    fun contextLoads() {
+    test("Application context loads") {
+        healthEndpoint.health().status shouldBe Status.UP
     }
-
-}
+})

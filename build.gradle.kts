@@ -1,12 +1,12 @@
 plugins {
     // apply false -> don't apply to the project's root
-    kotlin("jvm") version "2.3.21" apply false
-    kotlin("plugin.spring") version "2.3.21" apply false
-    kotlin("plugin.jpa") version "2.3.21" apply false
-    kotlin("kapt") version "2.3.21" apply false
+    alias(libs.plugins.kotlinJvm) apply false
+    alias(libs.plugins.kotlinSpring) apply false
+    alias(libs.plugins.kotlinJpa) apply false
+    alias(libs.plugins.kotlinKapt) apply false
 
-    id("org.springframework.boot") version "4.1.0" apply false
-    id("io.spring.dependency-management") version "1.1.7" apply false
+    alias(libs.plugins.springBoot) apply false
+    alias(libs.plugins.springDependencyManagement) apply false
 }
 
 allprojects {

@@ -30,7 +30,10 @@ run = "npm run storybook"
 [tasks.start-simulator]
 description = "Run the backend contract simulator"
 dir = "backend-simulator"
-run = "npm start"
+run = [
+  "npm run build",
+  "npm start"
+]
 
 [tasks.verify]
 description = "Run frontend, simulator, and legacy offline quality gates"
@@ -46,6 +49,6 @@ description = "Release frontend and backend"
 run = [
   "./gradlew :backend:clean",
   "./gradlew :backend:bootJar",
-  "npm --prefix frontend run ci",
+  "npm --prefix frontend ci",
   "npm --prefix frontend run build"
 ]

@@ -1,3 +1,5 @@
 package com.simplydevit.geoplanner
 
-data class TestDto(val helloName: String)
+import jakarta.validation.constraints.NotBlank
+
+data class TestDto(@field:NotBlank val helloName: String)

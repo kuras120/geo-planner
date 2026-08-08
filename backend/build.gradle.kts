@@ -6,6 +6,7 @@ plugins {
 
     id("org.springframework.boot")
     id("io.spring.dependency-management")
+    id("org.jlleitschuh.gradle.ktlint")
 }
 
 description = "geo-planner-api"
@@ -37,7 +38,6 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
     runtimeOnly("org.postgresql:postgresql")
 
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     kapt("org.springframework.boot:spring-boot-configuration-processor")
 
     // Spring Boot test
@@ -69,6 +69,6 @@ tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }
 
-repositories {
-    mavenCentral()
+tasks.named("check") {
+    dependsOn("ktlintCheck")
 }

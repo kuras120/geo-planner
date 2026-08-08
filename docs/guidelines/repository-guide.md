@@ -18,7 +18,7 @@ From the repository root:
 
 ```bash
 mise install                       # install the pinned Node.js and JDK
-mise run install                   # locked npm installs plus Playwright Chromium
+mise run build-local               # npm installs plus Playwright Chromium
 mise run frontend                  # Angular development server
 mise run storybook                 # shared UI workshop
 mise run simulator                 # Node contract simulator on loopback

@@ -1,0 +1,9 @@
+[versions]
+kotest = "6.2.3"
+kotlin-logging = "7.0.3"
+logbook = "4.0.4"
+
+[libraries]
+kotestBom = { module = "io.kotest:kotest-bom", version.ref = "kotest" }
+kotlinLogging = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
+logbookBom = { module = "org.zalando:logbook-bom", version.ref = "logbook" }

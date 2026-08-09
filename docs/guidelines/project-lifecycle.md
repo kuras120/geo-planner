@@ -58,6 +58,24 @@ Set the project to `IMPLEMENTED` and report changed behavior, test results, manu
 
 After implementation is accepted, update durable domain, guideline, architecture, and research documents to match behavior. Update visitor-facing README content when purpose, setup, or maturity changed. Remove the temporary proposal only after lasting decisions have a durable home.
 
+## Pull Request Closeout
+
+Use `.github/pull_request_template.md` when creating or updating a pull request,
+unless the owner requests another structure. GitHub can surface the file during
+normal PR creation; API- or agent-driven creation must apply it explicitly.
+Keep the four headings even when a section is brief:
+
+- `What Changed`: implemented behavior and the main repository areas changed;
+- `Why`: the problem, rationale, and material accepted decisions;
+- `Impact`: migration, compatibility, operations, data safety, and user impact;
+- `Verification`: commands and checks with their actual outcomes, separating
+  passed, failed, and not-run work.
+
+Derive the description from the final diff and observed verification results,
+not from intended work alone. Never imply that a failing or skipped gate passed.
+Summarize durable decisions directly instead of linking to a temporary project
+file that will be removed during closeout.
+
 ## Protocol D: Inbox Triage (`$triage-inbox`)
 
 `INBOX.md` accepts intentionally loose material. Triage it interactively into one primary destination:

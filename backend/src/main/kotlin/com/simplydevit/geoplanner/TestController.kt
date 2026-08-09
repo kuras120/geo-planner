@@ -12,11 +12,16 @@ import org.springframework.web.bind.annotation.RestController
 @Validated
 @RestController
 @RequestMapping("/test")
-class TestController(private val testService: TestService) {
-
+class TestController(
+    private val testService: TestService,
+) {
     @GetMapping("/hello/{name}")
-    fun hello(@PathVariable name: String): TestDto = testService.hello(name)
+    fun hello(
+        @PathVariable name: String,
+    ): TestDto = testService.hello(name)
 
     @PostMapping("/hello")
-    fun hello(@Valid @RequestBody dto: TestDto): TestDto = testService.hello(dto.helloName)
+    fun hello(
+        @Valid @RequestBody dto: TestDto,
+    ): TestDto = testService.hello(dto.helloName)
 }

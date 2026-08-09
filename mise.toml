@@ -2,14 +2,20 @@
 java = "temurin-25.0.3+9.0.LTS"
 node = "24.18.1"
 
-[tasks.build-local]
-description = "Install backend, frontend and simulator dependencies plus Chromium"
+[tasks.setup]
+description = "Install mutable local npm dependencies and Playwright Chromium"
 run = [
-  "./gradlew :backend:clean",
-  "./gradlew :backend:build",
   "npm --prefix frontend install",
   "npm --prefix backend-simulator install",
-  "npm --prefix frontend exec playwright install chromium",
+  "npm --prefix frontend exec -- playwright install chromium",
+]
+
+[tasks.setup-ci]
+description = "Install frozen CI npm dependencies and Playwright Chromium with system dependencies"
+run = [
+  "npm --prefix frontend ci",
+  "npm --prefix backend-simulator ci",
+  "npm --prefix frontend exec -- playwright install --with-deps chromium",
 ]
 
 [tasks.frontend]
@@ -35,20 +41,51 @@ run = [
   "npm start"
 ]
 
+[tasks.validate-tasks]
+description = "Validate mise task definitions"
+run = "mise tasks validate"
+
+[tasks.verify-backend]
+description = "Run the complete Kotlin/Spring backend quality gate"
+run = "./gradlew :backend:check"
+
+[tasks.verify-frontend]
+description = "Run the complete Angular and UI quality gate"
+run = "npm --prefix frontend run verify"
+
+[tasks.verify-simulator]
+description = "Run the complete backend simulator quality gate"
+run = "npm --prefix backend-simulator run verify"
+
+[tasks.verify-legacy]
+description = "Run the legacy Python and map offline quality gate"
+run = "./scripts/verify.sh"
+
 [tasks.verify]
-description = "Run frontend, simulator, and legacy offline quality gates"
-run = [
-  "./gradlew :backend:test",
-  "npm --prefix backend-simulator run verify",
-  "npm --prefix frontend run verify",
-  "./scripts/verify.sh",
+description = "Run all repository quality gates"
+depends = [
+  "validate-tasks",
+  "verify-backend",
+  "verify-frontend",
+  "verify-simulator",
+  "verify-legacy",
 ]
 
-[tasks.build-release]
-description = "Release frontend and backend"
+[tasks.assemble]
+description = "Assemble deployable backend and frontend artifacts"
+run = [
+  "./gradlew :backend:bootJar",
+  "npm --prefix frontend run build",
+]
+
+[tasks.ci]
+description = "Install frozen dependencies and run the pull-request quality gate"
+depends = ["setup-ci"]
+run = [{ task = "verify" }]
+
+[tasks.clean]
+description = "Remove generated backend, frontend, simulator, and browser-test outputs"
 run = [
   "./gradlew :backend:clean",
-  "./gradlew :backend:bootJar",
-  "npm --prefix frontend ci",
-  "npm --prefix frontend run build"
+  "node -e \"for (const path of ['frontend/dist', 'frontend/storybook-static', 'frontend/playwright-report', 'frontend/test-results', 'backend-simulator/dist']) require('node:fs').rmSync(path, { recursive: true, force: true })\"",
 ]

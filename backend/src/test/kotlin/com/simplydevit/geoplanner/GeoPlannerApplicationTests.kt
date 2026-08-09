@@ -11,7 +11,7 @@ class GeoPlannerApplicationTests(
     private val healthEndpoint: HealthEndpoint,
 ) : FunSpec({
 
-    test("Application context loads") {
-        healthEndpoint.health().status shouldBe Status.UP
-    }
-})
+        test("Application context loads") {
+            healthEndpoint.health().status shouldBe Status.UP
+        }
+    })

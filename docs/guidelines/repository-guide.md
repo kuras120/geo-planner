@@ -3,10 +3,11 @@
 ## Environment
 
 The legacy map workflow requires Python 3, Bash, and `curl`. The replacement
-frontend and contract simulator use the exact Node.js and JDK versions pinned
-in root-level `mise.toml`; the JDK is used by OpenAPI Generator. Their npm
-dependencies are locked independently under `frontend/` and
-`backend-simulator/`.
+frontend, Kotlin backend, and contract simulator use the exact Node.js and JDK
+versions pinned in root-level `mise.toml`; the JDK runs the backend and OpenAPI
+Generator. The npm dependencies are locked independently under `frontend/` and
+`backend-simulator/`. Gradle resolves backend plugins and dependencies on demand
+for the requested backend task.
 
 The generated legacy browser interface imports `d3-geo` from a CDN, so
 displaying its geometry currently requires internet access even when the HTML
@@ -18,11 +19,17 @@ From the repository root:
 
 ```bash
 mise install                       # install the pinned Node.js and JDK
-mise run build-local               # npm installs plus Playwright Chromium
+mise run setup                     # mutable local npm installs plus Chromium
+mise run setup-ci                  # frozen CI npm installs plus Linux browser dependencies
 mise run frontend                  # Angular development server
+mise run backend                   # Spring Boot development server
 mise run storybook                 # shared UI workshop
 mise run simulator                 # Node contract simulator on loopback
-mise run verify                    # frontend + simulator + legacy gates
+mise run validate-tasks            # validate the mise task graph and definitions
+mise run verify                    # task definitions plus all application quality gates
+mise run assemble                  # backend Boot JAR plus production frontend
+mise run ci                        # setup-ci followed by verify
+mise run clean                     # remove generated application/test outputs
 ./scripts/update_requirements_index.py  # refresh requirement dashboard statistics
 ./scripts/verify.sh                     # run the legacy/Python offline quality gate
 ```
@@ -34,8 +41,18 @@ index, runs unit tests, compiles Python modules, rebuilds generated HTML from
 checked-in inputs, and rejects unresolved template markers. Neither command
 accesses the network.
 
-`mise run install` accesses package and Playwright download services. The
-quality commands do not refresh government map sources.
+`mise install`, `mise run setup`, and `mise run setup-ci` access tool, package,
+or Playwright download services. On a fresh machine, backend verification may
+also download the Gradle Wrapper, plugins, and dependencies. Quality commands
+never refresh government map sources.
+
+`setup` and `setup-ci` do not compile, test, or assemble applications. Gradle
+does not require a separate backend installation task: `verify-backend`,
+`backend`, and `assemble` resolve the configurations they need. `verify` first
+includes static validation of the mise task definitions and aggregates the four
+application component gates; it does not run npm installation.
+`assemble` assumes setup has already completed and produces artifacts without
+publishing or deploying them.
 
 From `frontend/`:
 

@@ -14,10 +14,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-#      - name: Run verification
-#        uses: jdx/mise-action@v4
-#        with:
-#          version: 2026.5.5
-#          install: true
-#          cache: true
-#      - run: mise run verify
+      - name: Install pinned tools
+        uses: jdx/mise-action@v4
+        with:
+          version: 2026.5.5
+          install: true
+          cache: true
+
+      - name: Run verification
+        run: mise run ci

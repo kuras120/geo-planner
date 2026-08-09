@@ -1,12 +1,11 @@
 plugins {
-    kotlin("jvm")
-    kotlin("plugin.spring")
-    kotlin("plugin.jpa")
-    kotlin("kapt")
-
-    id("org.springframework.boot")
-    id("io.spring.dependency-management")
-    id("org.jlleitschuh.gradle.ktlint")
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.spring)
+    alias(libs.plugins.kotlin.jpa)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+    alias(libs.plugins.ktlint)
 }
 
 description = "geo-planner-api"

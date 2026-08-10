@@ -2,142 +2,141 @@
 
 ## Environment
 
-The legacy map workflow requires Python 3, Bash, and `curl`. The replacement
-frontend, Kotlin backend, and contract simulator use the exact Node.js and JDK
-versions pinned in root-level `mise.toml`; the JDK runs the backend and OpenAPI
-Generator. The npm dependencies are locked independently under `frontend/` and
-`backend-simulator/`. Gradle resolves backend plugins and dependencies on demand
-for the requested backend task.
+Root-level `mise.toml` pins the JDK and Node.js versions used by the Kotlin
+backend, Angular frontend, OpenAPI Generator, and Node contract simulator.
+Gradle uses the committed wrapper. The frontend and simulator have independent
+npm lockfiles. Python 3, Bash, and `curl` support the retained legacy
+application and requirements-index helper; they are not runtimes of the new
+application.
 
-The generated legacy browser interface imports `d3-geo` from a CDN, so
-displaying its geometry currently requires internet access even when the HTML
-data itself is embedded.
-
-## Commands
-
-From the repository root:
+Install tools and local dependencies from the repository root:
 
 ```bash
-mise install                       # install the pinned Node.js and JDK
-mise run setup                     # mutable local npm installs plus Chromium
-mise run setup-ci                  # frozen CI npm installs plus Linux browser dependencies
-mise run frontend                  # Angular development server
-mise run backend                   # Spring Boot development server
-mise run storybook                 # shared UI workshop
-mise run simulator                 # Node contract simulator on loopback
-mise run validate-tasks            # validate the mise task graph and definitions
-mise run verify                    # task definitions plus all application quality gates
-mise run assemble                  # backend Boot JAR plus production frontend
-mise run ci                        # setup-ci followed by verify
-mise run clean                     # remove generated application/test outputs
-./scripts/update_requirements_index.py  # refresh requirement dashboard statistics
-./scripts/verify.sh                     # run the legacy/Python offline quality gate
+mise install
+mise run setup
 ```
 
-The requirement-index updater reads all application-area requirement files and
-atomically regenerates the area, delivery-stage, status, and grand-total tables
-in `docs/requirements/index.md`. The quality gate rejects a stale requirement
-index, runs unit tests, compiles Python modules, rebuilds generated HTML from
-checked-in inputs, and rejects unresolved template markers. Neither command
-accesses the network.
+`setup` performs mutable local npm installation and installs Playwright
+Chromium. `setup-ci` uses frozen npm installation plus Linux browser
+dependencies. Both access external download services.
 
-`mise install`, `mise run setup`, and `mise run setup-ci` access tool, package,
-or Playwright download services. On a fresh machine, backend verification may
-also download the Gradle Wrapper, plugins, and dependencies. Quality commands
-never refresh government map sources.
-
-`setup` and `setup-ci` do not compile, test, or assemble applications. Gradle
-does not require a separate backend installation task: `verify-backend`,
-`backend`, and `assemble` resolve the configurations they need. `verify` first
-includes static validation of the mise task definitions and aggregates the four
-application component gates; it does not run npm installation.
-`assemble` assumes setup has already completed and produces artifacts without
-publishing or deploying them.
-
-From `frontend/`:
+## Root Tasks
 
 ```bash
-npm start                 # Angular development server
-npm run storybook         # Storybook 10 shared UI workshop
-npm run lint
-npm run test:unit
-npm run build
-npm run storybook:build
-npm run e2e               # Chromium smoke test
-npm run verify            # complete frontend gate
-npm run api:generate -- /path/to/openapi.yaml
+mise run frontend          # Angular development server
+mise run backend           # Spring Boot development server
+mise run storybook         # shared UI workshop
+mise run simulator         # loopback contract simulator
+mise run validate-tasks    # validate mise task definitions
+mise run verify            # aggregate repository quality gate
+mise run assemble          # backend Boot JAR plus production frontend
+mise run ci                # setup-ci followed by verify
+mise run clean             # generated application and test outputs
 ```
 
-From `backend-simulator/`:
+`mise run verify`, backed by `[tasks.verify]`, is the only aggregate
+verification entry point. It validates the mise graph, checks the requirements
+index, and runs the backend, frontend, simulator, and legacy gates. The legacy
+gate builds from checked-in snapshots but does not refresh external sources.
+
+`verify-legacy` is available for a focused legacy check. Its implementation,
+`scripts/verify.sh`, is an internal task detail and should not be used as a
+second aggregate entry point.
+
+`mise run assemble` assumes setup has completed and creates artifacts without
+publishing or deploying them. On a fresh machine Gradle and npm verification
+may resolve dependencies from the network; application tests must not call live
+product integrations.
+
+## Components
+
+### Backend
+
+`backend/` is the Kotlin/Spring Boot application. Use the root `backend` and
+`verify-backend` tasks or, for a focused local check, the Gradle wrapper:
 
 ```bash
-npm run build
-npm start                 # 127.0.0.1:4300
-npm run verify
+./gradlew :backend:check
+./gradlew :backend:bootRun --console=plain
 ```
 
-The simulator foundation exposes only `GET /_simulator/health`. Product routes,
-fixtures, and named scenarios enter with their accepted contract slices.
+### Frontend
 
-From `mapa/`:
+`frontend/` is the Angular CLI workspace. The root application uses `src/`;
+reusable presentation code lives in `projects/ui/`; generated transport,
+mapping, and application API boundaries live in `projects/geo-planner-api/`.
 
 ```bash
-./scripts/build-map.sh             # build from checked-in snapshots
-./scripts/edit-map.sh              # build, serve, persist sketches, hot reload
-./scripts/edit-map.sh --port 8877  # select another loopback port
-./scripts/update-sources.sh        # explicitly replace downloaded snapshots
+npm --prefix frontend start
+npm --prefix frontend run storybook
+npm --prefix frontend run test:unit
+npm --prefix frontend run e2e
+npm --prefix frontend run verify
+npm --prefix frontend run api:generate -- /path/to/openapi.yaml
 ```
 
-The editor URL uses `outputFile` from `project-config.json`.
+OpenAPI generation owns
+`frontend/projects/geo-planner-api/src/lib/generated/`; never hand-edit its
+output. Transport DTOs are mapped under `mappers/` and wrapped by the
+application-facing `facade/` only when an accepted capability requires them.
+Runtime deployment configuration is read from
+`frontend/public/runtime-config.json`; `apiBaseUrl` must remain a same-origin
+absolute path.
 
-The reference builder also accepts an explicit project-map directory:
+The Angular persistent disk cache is disabled because the current transitive
+native cache acceleration is unstable with the pinned Node.js build on macOS
+ARM. This affects build speed only and can be revisited after the dependency is
+corrected.
+
+### Contract Simulator
+
+`backend-simulator/` is a loopback-only Node adapter for frontend development.
+It currently exposes `GET /_simulator/health`. Product routes, payloads,
+fixtures, and named scenarios enter only with accepted contract slices; the
+simulator never defines the contract.
 
 ```bash
-python3 mapa/scripts/build_map.py --map-dir /path/to/complete-map-directory
-python3 -m unittest tests.test_project_fixtures
+npm --prefix backend-simulator run verify
+mise run simulator
 ```
 
-Production-style map directories must include the shared template. Test
-fixtures copy that template into a temporary directory so generated outputs and
-runtime overlays never modify the tracked fixture.
+### HTTP Examples
 
-## Configure Another Area
+`http-client/` contains developer HTTP requests for exercising implemented
+backend endpoints. Keep examples free of secrets and aligned with published
+contracts.
 
-1. Copy the map directory or start from a clean branch.
-2. Set a new `projectId`, title, output filename, CRS, bbox, axis order, raster size, precinct, plan, and parcel list in `project-config.json`.
-3. Remove location-specific parcel metadata that does not belong to the new project and use a distinct `projectId`.
-4. Confirm the correct PL-2000 zone/CRS and both GML/WMS coordinate orders from the source metadata.
-5. Run `./scripts/update-sources.sh`; this requires network access and replaces snapshots.
-6. Run `./scripts/verify.sh` from the root.
-7. Compare parcel boundaries, planning vectors, and each raster at recognizable control points before relying on the result.
+## Requirements Index
 
-Changing only the bbox is insufficient: raster snapshots, parcel sources, the plan snapshot, and project identity must remain coherent.
+After changing a requirement, its status, priority, or delivery stage, update
+the area index and regenerate the portfolio tables:
 
-## Configuration Ownership
+```bash
+./scripts/update_requirements_index.py
+```
 
-- `project-config.json`: location, data, sources, identity, output, and raster
-  paths including the KIEG land-use/classification snapshot;
-- `map-config.json`: sizes, label visibility, styling values, and initial layer switches;
-- `manual-overlays.example.json`: tracked neutral initializer for local sketches;
-- `manual-overlays.json`: ignored local user sketches and their descriptive properties;
-- `map-fragment.template.html`: shared interface behavior, supported standard layer controls, and styles.
+The `verify-requirements` mise task runs the read-only check and rejects stale
+statistics.
 
-## Generated Files
+## Generated And Local Files
 
-`map-fragment.html` and the configured standalone output are generated, local, and ignored by Git. Do not edit them manually. Their size is expected because raster bytes, current data, and private local overlays are embedded. Share an output only after reviewing its embedded content.
+Build output, test reports, browser artifacts, local runtime state, and generated
+clients follow their owning tool's ignore rules. Do not edit generated output
+as source or commit private runtime data.
 
-The future local-MVP backend stores runtime state below the ignored
-`.geo-planner-data/` default or an explicitly configured external root. It must
-not use tracked fixtures, `mapa/sources/`, or `mapa/assets/` as writable
-runtime storage.
+The `mapa/**` tree remains a runnable legacy application and migration reference.
+Use `mapa/README.md` for its build, editor, interaction, configuration, source
+refresh, and safety instructions. New application work must not change legacy
+code, configuration, templates, or tracked data incidentally. Source refresh
+always requires an explicit request because it replaces checked-in evidence.
 
 ## Troubleshooting
 
-- Missing parcel source: refresh sources or correct the parcel filename in project config.
-- Missing land-class markings: confirm the county publishes `uzytki` and
-  `kontury` through KIEG, then explicitly refresh sources.
-- Shifted raster: verify CRS, bbox, WMS version, and `wms130AxisOrder`, then refresh all rasters.
-- Shifted planning geometry: verify `plan.coordinateOrder` and the GML `srsName`.
-- Sketches from another area: assign a unique `projectId`; browser storage is derived from it.
-- Optional addresses unavailable: the updater warns and continues, preserving the last existing file when possible.
-- Blank geometry offline: the current generated map loads `d3-geo` from a CDN; bundle it locally before field/offline use.
+- Missing tools: run `mise install`, then confirm `mise current`.
+- Missing npm dependencies or browser: run `mise run setup`.
+- Backend dependency resolution failure: retry the focused Gradle task after
+  confirming network and repository availability.
+- Stale requirement totals: run the requirement-index updater, then
+  `mise run verify-requirements`.
+- Frontend API generation failure: confirm the supplied OpenAPI file exists and
+  represents the backend's accepted published contract.

@@ -40,7 +40,7 @@ Create one proposal in `docs/projects/` with status `PROPOSED`. Include:
 - affected components and data/runtime flow;
 - failure behavior, data-safety concerns, and migration impact;
 - staged implementation plan;
-- automated tests, manual spatial checks, and acceptance criteria.
+- automated tests, required manual checks, and acceptance criteria.
 
 A project file represents one bounded change, not a permanent roadmap or reusable execution loop. Close it after that outcome is accepted. A later substantial feature receives a new plan written from scratch, even when it follows the same delivery cadence or builds on the same foundation.
 
@@ -91,15 +91,12 @@ file that will be removed during closeout.
 
 An inbox note is not verified fact or implementation authorization. Preserve original wording and provenance until classification is accepted. Process one coherent cluster at a time, ask the smallest useful question, write the destination, link it, and only then remove the inbox entry.
 
-## Backend Principal Review (`$review-kotlin-backend`)
+## Specialized Review
 
-The owner implements the Kotlin backend. The backend review agent reviews
-designs and changes without editing production code by default. Reviews lead
-with severity-ranked evidence and cover correctness, thin-client contracts,
-Kotlin semantics, Spring, Gradle Kotlin DSL, Kotest, security, persistence, and
-failure behavior.
-
-Changing from review to implementation requires an explicit owner request naming the scope and then follows Protocol B.
+Use a repository-routed review skill when a change needs technology-specific
+or domain-specific scrutiny. A review skill remains read-only unless the user
+explicitly requests implementation of a named scope; implementation then
+follows Protocol B.
 
 ## Project Template
 
@@ -122,7 +119,7 @@ Changing from review to implementation requires an explicit owner request naming
 
 ## Verification And Acceptance
 - `<command>`
-- <manual spatial check>
+- <required manual check>
 
 ## Result
 - <temporary implementation summary>

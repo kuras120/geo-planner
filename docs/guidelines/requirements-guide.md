@@ -25,17 +25,11 @@ The portfolio index links the application-area files and aggregates:
 - totals by status;
 - one grand total across all areas.
 
-Update the area index in the same change as any requirement addition,
-removal, status change, stage change, split, or merge, then run:
-
-```bash
-./scripts/update_requirements_index.py
-```
-
-The script validates required metadata and unique IDs, then atomically
-regenerates the portfolio tables. `./scripts/verify.sh` runs its read-only
-`--check` mode and rejects stale statistics. Stable requirement IDs are never
-reused.
+Update the area index and any portfolio summary in the same change as a
+requirement addition, removal, status change, stage change, split, or merge.
+Use the repository-owned indexing command documented in `AGENTS.md` or its
+routed repository guide. The aggregate verification task must reject stale
+generated summaries. Stable requirement IDs are never reused.
 
 Only `VERIFIED` counts as completed. `IMPLEMENTED` means the behavior exists but
 has not yet passed end-to-end acceptance. `REJECTED` and `DEFERRED` remain
@@ -43,26 +37,19 @@ visible in status statistics but do not count as completed.
 
 ## Delivery Stages
 
-Every requirement has one owner-approved delivery stage:
-
-| Stage | Migration intent |
-| --- | --- |
-| `MVP` | Read, display, identify, and safely interpret the basic source layers already available in the prototype, including provenance and degraded availability. |
-| `STAGE-2` | Create, import, edit, persist, select, and export manual sketches after layer reading is stable. |
-| `STAGE-3` | Calculate spatial intersections, measurements, comparisons, and other derived analysis using accepted source and sketch contracts. |
-| `LATER` | A valuable capability intentionally outside the first three stages. |
-
-Stages describe product delivery order, not requirement status or technical
-implementation sequence. A requirement moves between stages only through an
-owner decision. Dependencies that are necessary to deliver an earlier stage
-must be visible in that requirement rather than hidden in a later-stage story.
+The requirements index defines the repository's delivery-stage vocabulary and
+meaning. Stages describe product delivery order, not requirement status or
+technical implementation sequence. A requirement moves between stages only
+through an authorized product decision. Dependencies needed for an earlier
+stage must be visible in that requirement rather than hidden in a later-stage
+story.
 
 ## Authorization And Timing
 
-- Only the repository owner can approve a project for implementation or requirements discovery.
+- Only the authority named by repository policy can approve a project for implementation or requirements discovery.
 - Do not infer approval from a request to edit, review, expand, or discuss a plan.
-- Do not create migration requirements before the approved discovery work has inspected the implemented behavior, external integrations, data, errors, and user workflows.
-- For prototype migration, requirements are produced near the end of discovery, after the inventory, characterization evidence, and integration analysis are available.
+- Do not create migration requirements before approved discovery has inspected the implemented behavior, external integrations, data, errors, and user workflows.
+- For migration work, produce requirements after inventory, characterization evidence, and integration analysis are available.
 - Requirements created without that evidence must be discarded rather than promoted as a speculative backlog.
 - Creating or accepting a requirement does not authorize implementation. A selected coherent feature still receives its own temporary project plan.
 
@@ -72,8 +59,8 @@ A functional requirement belongs in its application-area file when it identifies
 
 - a real actor and concrete goal;
 - observable business or analytical value;
-- the existing prototype behavior to preserve or an explicitly requested new behavior;
-- a named external system, dataset, document, or user workflow when integration is involved;
+- observed current or legacy behavior to preserve, or an explicitly requested new behavior;
+- a named external system, dataset, document, or workflow when integration is involved;
 - realistic inputs and outputs, including representative examples;
 - success, empty, degraded, and failure behavior visible to the user;
 - acceptance criteria that can be demonstrated end to end;
@@ -81,10 +68,10 @@ A functional requirement belongs in its application-area file when it identifies
 
 Examples of appropriate requirement subjects:
 
-- resolve a Polish parcel through a specific ULDK operation and return geometry usable for a project;
-- acquire the ORTO `Raster` layer for the selected AOI and display its source date and attribution;
-- preserve optional KINA failure as a visible warning while retaining other usable layers;
-- import a concrete legacy overlay file without duplicating features.
+- retrieve a record through a named external operation and return a usable result;
+- acquire a selected dataset and display its provenance and freshness;
+- preserve an optional integration failure as a visible warning while retaining other usable results;
+- import a concrete legacy artifact without duplicating records.
 
 ## What Does Not Belong
 
@@ -101,7 +88,7 @@ Non-functional behavior may appear as an acceptance constraint of a functional s
 
 ## Discovery Workflow
 
-1. Inspect the actual legacy workflow and record what the user does, sees, saves, and exports.
+1. Inspect the actual current or legacy workflow and record what the user does, sees, saves, and exports.
 2. Trace the code and configuration that implement it.
 3. Identify every external source and exact operation, layer, document, request input, and response form.
 4. Capture success, no-data, optional failure, hard failure, stale data, and privacy behavior.
@@ -121,8 +108,8 @@ Non-functional behavior may appear as an acceptance constraint of a functional s
 
 - Status: DRAFT | ACCEPTED | IMPLEMENTED | VERIFIED | DEFERRED | REJECTED
 - Priority: MUST | SHOULD | COULD
-- Delivery stage: MVP | STAGE-2 | STAGE-3 | LATER
-- Source evidence: <legacy files, behavior, provider documentation, owner decision>
+- Delivery stage: <repository-defined stage>
+- Source evidence: <files, observed behavior, provider documentation, authorized decision>
 
 ### Outcome
 
@@ -142,7 +129,7 @@ Non-functional behavior may appear as an acceptance constraint of a functional s
 
 ### Open Decisions
 
-- <decision required from owner or research>
+- <decision required from the authorized decision-maker or research>
 ```
 
 Keep each record short and unambiguous. Use a verb-object title, state each fact

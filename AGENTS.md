@@ -1,65 +1,102 @@
 # Agent Briefing
 
-Use this file to select repository context. Read every routed document for the touched area before planning, reviewing, or changing it. Keep detailed rules in `docs/**` and reusable work procedures in `.agents/skills/**`.
+Use this file to select repository context. Read every routed document for the
+touched area before planning, reviewing, or changing it. Keep detailed rules in
+`docs/**` and reusable work procedures in `.agents/skills/**`.
 
 ## Required Workflow
 
-- For non-trivial work, use Protocol A (`$plan-work`) and follow `docs/guidelines/project-lifecycle.md`. An explicit request to plan and execute in one task counts as implementation authorization for that stated scope.
-- Use Protocol B (`$implement-change`) for implementation, Protocol C (`$maintain-docs`) for durable documentation, Protocol D (`$triage-inbox`) for loose notes or `INBOX.md`, and `$review-kotlin-backend` for read-only principal-level backend review.
-- Respect stream ownership: Codex implements the Angular frontend under owner review; the owner implements the Kotlin backend under Codex review. Do not modify backend production code unless explicitly requested for a named scope.
-- Treat `AGENTS.md` as owner-controlled permanent policy. Do not add, remove, or change its content unless the owner explicitly asks for that exact AGENTS change or approves proposed wording. The default is to keep this file unchanged and put task-specific material in the appropriate documentation or temporary plan.
-- When the owner changes a reusable way of working, persist the accepted rule in the appropriate durable documentation, reusable skill, or—only with explicit owner approval—`AGENTS.md`. Do not rely on conversational memory. Keep one-off scope and sequencing in temporary project plans.
-- Keep active plans under `docs/projects/**`; remove completed plans only after accepted decisions are reflected in durable docs.
-- Do not start another project plan while an existing plan is in progress. Finish and close the active plan first, or obtain an explicit owner decision to suspend or abandon it before creating a replacement. Record necessary supporting research inside the active plan without allowing it to displace the plan's next unresolved gate.
-- Preserve existing user changes and do not refresh external map sources unless explicitly requested.
-- Keep code and technical documentation in English. Preserve Polish user-facing map text and source terminology where it is part of the product or data.
+- For non-trivial work, use Protocol A (`$plan-work`) and follow
+  `docs/guidelines/project-lifecycle.md`. An explicit request to plan and
+  execute in one task counts as implementation authorization for that scope.
+- Use Protocol B (`$implement-change`) for implementation, Protocol C
+  (`$maintain-docs`) for durable documentation, Protocol D (`$triage-inbox`)
+  for loose notes or `INBOX.md`, and `$review-kotlin-backend` for read-only
+  principal-level backend review.
+- Respect stream ownership: Codex implements the Angular frontend under owner
+  review; the owner implements the Kotlin backend under Codex review. Do not
+  modify backend production code unless explicitly requested for a named scope.
+- Treat `AGENTS.md` as owner-controlled permanent policy. Do not change it
+  unless the owner explicitly requests that exact change or approves wording.
+- Persist accepted reusable ways of working in an agnostic guideline or skill.
+  Persist repository topology, routing, product constraints, and architecture
+  in project-specific documents. Do not rely on conversational memory.
+- Keep active plans under `docs/projects/**`; remove completed plans only after
+  accepted decisions are reflected in durable docs.
+- Do not start another project plan while one is active. Finish it or obtain an
+  explicit decision to suspend or abandon it first.
+- Keep code and technical documentation in English. Preserve Polish user-facing
+  text and source terminology where they are part of the product or evidence.
+
+## Documentation Boundary
+
+- Reusable and copyable unchanged: `.agents/skills/**`,
+  `docs/guidelines/engineering-guide.md`, technology engineering guides,
+  `docs/guidelines/project-lifecycle.md`, and
+  `docs/guidelines/requirements-guide.md`.
+- Repository-specific and recreated for another repository: root `README.md`,
+  `AGENTS.md`, `docs/guidelines/repository-guide.md`, and all content under
+  `docs/architecture/`, `docs/domain/`, `docs/requirements/`,
+  `docs/research/`, and `docs/projects/`.
+- Keep the primary repository README at the root. The retained legacy
+  application may keep `mapa/README.md` as the single exception while it remains
+  runnable. Put other operational detail in the repository guide and durable
+  technical detail in its owning docs category.
 
 ## Repository Map
 
 | Path | Responsibility |
 | --- | --- |
-| `README.md` | Project purpose, safety boundary, documentation links, and quick start. |
+| `README.md` | Project purpose, safety boundary, quick start, and essential documentation links. |
 | `INBOX.md` | Unstructured owner input awaiting interactive classification. |
-| `mapa/project-config.json` | Project identity, spatial extent, CRS, parcels, plan, services, raster files, and output name. |
-| `mapa/map-config.json` | Presentation and initial layer visibility only. |
-| `mapa/manual-overlays.example.json` | Tracked empty initializer for local sketches. |
-| `mapa/manual-overlays.json` | Ignored local user sketches; treat as private user data. |
-| `mapa/map-fragment.template.html` | Reusable browser interface and local sketch editor. |
-| `mapa/map-fragment.html`, `mapa/*.html` | Generated outputs; do not edit manually. |
-| `mapa/scripts/build_map.py` | Configuration validation, source parsing, data embedding, and HTML generation. |
-| `mapa/scripts/update_sources.py` | Explicit network refresh of parcels, plan, and rasters. |
-| `mapa/scripts/edit_map_server.py` | Loopback-only editor persistence, rebuilding, and hot reload. |
-| `mapa/sources/**`, `mapa/assets/**` | Downloaded source data bound to the configured bbox and CRS. |
-| `tests/**` | Configuration, geometry, and workflow regression tests. |
-| `scripts/verify.sh` | Offline repository verification. |
-| `docs/domain/**` | Spatial concepts, data contracts, invariants, and safety meaning. |
-| `docs/guidelines/**` | Setup, engineering standards, lifecycle, and verification. |
-| `docs/architecture/**` | Runtime and data-flow descriptions. |
-| `docs/projects/**` | Temporary proposals and active implementation plans. |
-| `docs/research/**` | Durable investigations, source evaluations, and candidate layers. |
-| `.agents/skills/**` | Reusable planning, implementation, documentation, triage, and backend-review protocols. |
+| `mise.toml` | Pinned toolchain and authoritative repository task graph; `[tasks.verify]` is the aggregate quality gate. |
+| `frontend/` | Angular application, reusable UI library, generated API boundary, and browser tests. |
+| `backend/` | Owner-implemented Kotlin/Spring Boot application and backend tests. |
+| `backend-simulator/` | Loopback-only Node contract simulator for accepted frontend scenarios. |
+| `http-client/` | Secret-free developer HTTP examples for implemented backend contracts. |
+| `mapa/**` | Retained runnable legacy application and migration evidence; operational instructions live in `mapa/README.md`. |
+| `tests/**` | Legacy characterization tests invoked by the aggregate verification gate. |
+| `scripts/update_requirements_index.py` | Requirements portfolio index generator and checker. |
+| `scripts/verify.sh` | Internal implementation of the legacy mise verification component; not the aggregate entry point. |
+| `docs/domain/**` | Product terminology, data contracts, invariants, and safety meaning. |
+| `docs/guidelines/**` | Reusable practices plus the project-specific repository guide. |
+| `docs/architecture/**` | Current and target runtime, storage, and data-flow descriptions. |
+| `docs/requirements/**` | Evidence-backed product requirements and project-specific delivery stages. |
+| `docs/projects/**` | Temporary bounded proposals and active implementation plans. |
+| `docs/research/**` | Durable investigations, evidence, comparisons, and conclusions. |
+| `.agents/skills/**` | Reusable repository-agnostic planning, implementation, documentation, triage, and review procedures. |
 
 ## Task Routing
 
 | Task or touched area | Read before work |
 | --- | --- |
 | Any repository change | `docs/guidelines/repository-guide.md` and `docs/guidelines/engineering-guide.md` |
-| Project config, parcels, CRS, bbox, plan, overlays, or spatial parsers | `docs/domain/map-domain.md` |
-| Build, generated HTML, map template, browser editor, or local server | `docs/domain/map-domain.md` and `docs/architecture/map-build-flow.md` |
-| Source URLs, downloads, WMS/ULDK/GML, or new layers | `docs/domain/map-domain.md` and relevant `docs/research/**` notes |
-| Target runtime, shared API contracts, acquisition jobs, or persistence evolution | `docs/architecture/target-product-architecture.md` |
+| Product concepts, spatial data, provenance, uncertainty, or safety | relevant `docs/domain/**` and `docs/requirements/**` |
+| Runtime boundaries, persistence, storage, API contracts, or integrations | relevant `docs/architecture/**` and `docs/research/**` |
 | Requirements discovery or writing | `docs/guidelines/requirements-guide.md`; create requirement files only after owner-authorized discovery |
-| Angular feature, API call, component, state, OpenLayers adapter, or frontend test | `docs/guidelines/angular-engineering-guide.md`, `docs/architecture/target-product-architecture.md`, and a new feature-specific `docs/projects/**` plan |
-| Planned Kotlin/Spring backend, provider adapters, or persistence | accepted functional requirements when available, `docs/guidelines/engineering-guide.md`, `docs/guidelines/kotlin-backend-engineering-guide.md`, `docs/architecture/target-product-architecture.md`, `docs/research/backend-technology-options.md`, and `docs/research/current-public-integrations.md` |
-| Kotlin/Spring backend review | `$review-kotlin-backend` and its routed backend documents |
-| Non-trivial planning and delivery | `docs/guidelines/project-lifecycle.md` and matching `docs/projects/**` file |
+| Angular feature, API client, component, state, rendering adapter, or frontend test | `docs/guidelines/angular-engineering-guide.md`, `docs/architecture/target-product-architecture.md`, accepted requirements, and a feature-specific plan |
+| Planned Kotlin/Spring backend, provider adapter, or persistence | accepted requirements, `docs/guidelines/kotlin-backend-engineering-guide.md`, relevant architecture and research, and a backend plan |
+| Kotlin/Spring backend review | `$review-kotlin-backend` and all backend documents routed above |
+| Non-trivial planning and delivery | `docs/guidelines/project-lifecycle.md` and the active `docs/projects/**` file |
 | Loose notes, links, ideas, or requirements | `INBOX.md`, `$triage-inbox`, and relevant requirement/domain/research docs |
 | Documentation or repository routing | `$maintain-docs` plus implemented behavior and affected durable docs |
+| Legacy application use or migration evidence | `mapa/README.md`, the minimum necessary implementation files, relevant domain docs, and migration research |
 
 ## Repository-Specific Instructions
 
-- Treat ignored `manual-overlays.json` as private local user data. Never stage, clear, normalize, or replace it unless explicitly requested.
-- A raster is valid only for the bbox and CRS used when it was downloaded; rebuild alone does not reproject it.
-- Generated HTML is ignored because it embeds current source and local overlay data. Regenerate it after changing configuration, sources, templates, or overlays.
-- Do not claim legal, cadastral, utility, or planning certainty from preview layers. Preserve source dates and uncertainty.
-- Keep network refresh separate from offline verification so tests cannot silently replace checked-in evidence.
+- The legacy application under `mapa/**` may be built, run, and used according
+  to `mapa/README.md`. Do not modify its code, configuration, templates, or
+  tracked data unless the owner explicitly requests a named legacy scope.
+- Do not refresh legacy external sources unless explicitly requested. A build
+  or verification using checked-in snapshots is not a source refresh.
+- Treat ignored legacy `manual-overlays.json` as private local user data. Never
+  stage, clear, normalize, copy, or replace it.
+- Use `mise run verify` as the aggregate repository gate; it includes the
+  retained legacy application. Use `mise run verify-legacy` only for a focused
+  legacy check and do not invoke `scripts/verify.sh` directly.
+- Keep network refresh and live product integrations separate from normal build,
+  tests, hot reload, and verification.
+- Do not claim legal, cadastral, utility, planning, or analytical certainty from
+  preview data. Preserve source dates, provenance, and uncertainty.
+- Generated clients and build artifacts are tool-owned; regenerate them through
+  their documented task rather than editing them manually.

@@ -57,8 +57,12 @@ run = "npm --prefix frontend run verify"
 description = "Run the complete backend simulator quality gate"
 run = "npm --prefix backend-simulator run verify"
 
+[tasks.verify-requirements]
+description = "Check the generated requirements portfolio index"
+run = "python3 scripts/update_requirements_index.py --check"
+
 [tasks.verify-legacy]
-description = "Run the legacy Python and map offline quality gate"
+description = "Run the retained legacy Python/map offline quality gate"
 run = "./scripts/verify.sh"
 
 [tasks.verify]
@@ -68,6 +72,7 @@ depends = [
   "verify-backend",
   "verify-frontend",
   "verify-simulator",
+  "verify-requirements",
   "verify-legacy",
 ]
 

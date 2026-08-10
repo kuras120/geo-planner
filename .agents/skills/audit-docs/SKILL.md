@@ -1,6 +1,6 @@
 ---
 name: audit-docs
-description: Audit and compact Geo Planner documentation while preserving durable decisions and evidence. Use when the owner requests a documentation review or cleanup, after several documentation-heavy changes, before a milestone, or when README/AGENTS/docs/skills appear duplicated, stale, overgrown, misrouted, or hard to maintain.
+description: Audit and compact repository documentation while preserving durable decisions and evidence. Use for documentation review or cleanup, after documentation-heavy changes, before a milestone, or when README, AGENTS, docs, and skills appear duplicated, stale, overgrown, misrouted, or hard to maintain.
 ---
 
 # Documentation Audit
@@ -9,7 +9,7 @@ Reduce documentation entropy. Prefer one authoritative home for each fact or rul
 
 ## Guardrails
 
-- Read `AGENTS.md`, `docs/guidelines/project-lifecycle.md`, and `.agents/skills/maintain-docs/SKILL.md`.
+- Read `AGENTS.md`, the documentation and lifecycle guidance it routes, and the documentation-maintenance skill.
 - Do not modify `AGENTS.md` without explicit owner authorization for the exact change.
 - Preserve user edits and sourced evidence. Do not delete an active project merely to reduce file count.
 - Never add a durable inbound link to a specific `docs/projects/**` file.
@@ -17,7 +17,7 @@ Reduce documentation entropy. Prefer one authoritative home for each fact or rul
 
 ## Audit
 
-1. Inventory README, AGENTS, every `docs/**` file, and every repository skill. Record line counts, headings, links, status/date, and likely owner category.
+1. Inventory the root README, AGENTS, durable documentation, and repository skills. Record line counts, headings, links, status/date, and likely owner category.
 2. Assign one responsibility:
    - README: purpose, safety, quick start, essential entry points;
    - AGENTS: owner-approved permanent agent policy and routing;
@@ -52,5 +52,5 @@ Reduce documentation entropy. Prefer one authoritative home for each fact or rul
 
 - Search for removed filenames, duplicate key phrases, specific `docs/projects/*.md` inbound links, unresolved TODOs, and broken relative Markdown targets.
 - Compare pre/post line counts and explain material deletions.
-- Run `git diff --check`, validate changed skills, and run `./scripts/verify.sh`.
+- Run `git diff --check`, validate changed skills, check documentation links, and run the repository verification entry point routed by `AGENTS.md`.
 - Report each document as retained, compressed, merged, deleted, or temporary, plus any remaining ambiguity requiring owner judgment.

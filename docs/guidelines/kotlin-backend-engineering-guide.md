@@ -2,124 +2,122 @@
 
 ## Purpose
 
-These rules govern the owner-written Kotlin/Spring Boot backend. They complement the repository-wide design, spatial-data, safety, and testing rules in `engineering-guide.md`.
-
-The backend review agent reviews backend work through
-`$review-kotlin-backend` and does not modify backend production code unless the
-owner explicitly requests implementation for a named scope.
+Use these rules for Kotlin and Spring Boot backend work. Repository architecture
+decides product boundaries, module names, persistence, external integrations,
+API ownership, and deployment topology.
 
 ## Requirements-driven Delivery
 
-- Start backend work from one coherent set of accepted IDs in `docs/requirements/**`, not from a permanent backend roadmap.
-- Before backend implementation, review the frontend-led data-needs matrix,
-  domain/view examples, UI states, and proposed task-oriented transport
-  examples for the accepted slice. Use them as contract input, not as a backend
-  persistence model.
-- Reuse the accepted contract examples as backend HTTP/integration fixtures.
-  The frontend Node simulator may exercise those examples before Kotlin exists,
-  but the published OpenAPI and backend acceptance tests remain authoritative.
-- Create a new bounded project plan for that slice. State the user outcome, domain invariants, accepted API input/output/errors, external integration, tests, and definition of done.
-- The owner implements the Kotlin slice and requests review. The backend review
-  agent remains read-only unless explicitly asked to implement a named fix.
-- Publish OpenAPI only for implemented or currently accepted behavior. After backend review, it can unlock a separately planned frontend slice.
-- Finish backend, contract, fixture, and operational acceptance for the selected requirements before starting another substantial slice.
-- Update requirement status only from evidence: `ACCEPTED` to `IMPLEMENTED`, then `VERIFIED` after all acceptance checks pass.
-
-Suggested learning progression is deliberately incremental:
-
-1. reproducible Gradle Kotlin DSL/Kotest/configuration foundation;
-2. one framework-free domain model and typed error set;
-3. one task-oriented HTTP endpoint and OpenAPI contract derived from the
-   reviewed frontend data need;
-4. one bounded provider adapter using recorded fixtures;
-5. one restart-safe job/persistence flow;
-6. repeated vertical slices driven by accepted product requirements.
+- Start a substantial increment from accepted behavior or requirements, not a
+  permanent technology roadmap.
+- Define the intended contract, domain invariants, failures, operational needs,
+  and acceptance evidence before selecting infrastructure.
+- Publish API descriptions only for implemented or explicitly accepted behavior.
+- Reuse accepted contract examples as HTTP and integration fixtures.
+- Deliver bounded vertical slices through domain, application, adapter, API,
+  tests, and operations rather than completing horizontal infrastructure layers.
+- Update requirement status only from implementation and acceptance evidence.
 
 ## Language And Domain Modeling
 
-- Write Kotlin-first code. Do not reproduce Java bean, builder, `Optional`, static utility, or exception-heavy patterns when Kotlin has a clearer language construct.
-- Follow the official Kotlin coding conventions and enforce them in the Gradle `check` lifecycle.
-- Prefer immutable state: use `val`, read-only collection interfaces, constructor parameters, and transformations that return new values. Confine necessary mutation to explicit aggregate, job, and storage boundaries.
-- Use nullability to model genuine absence. Avoid platform types at application boundaries, never use `!!`, and validate external nullability before values enter the domain.
-- Use data classes for immutable values, commands, events, and transport records. Do not use them automatically for mutable entities whose equality or identity has different semantics.
-- Use sealed interfaces/classes for closed state machines and result variants, with exhaustive `when` expressions.
-- Consider value classes for identifiers and validated scalar concepts when Jackson, Spring binding, and persistence interoperability are covered by tests.
-- Prefer named/default parameters and small factory functions over builders. Use extension functions only when the receiver is the natural semantic owner; keep visibility narrow and avoid catch-all extension/utility files.
-- Use scope functions and collection chains only when they make ownership and control flow clearer. Prefer a simple loop or named function over a clever expression with hidden allocation or non-local returns.
-- Keep public/member return types explicit where they form an API. Add KDoc for public contracts whose constraints are not clear from names and types.
+- Write Kotlin-first code. Avoid Java bean, builder, `Optional`, static utility,
+  and exception-heavy patterns when Kotlin has a clearer construct.
+- Follow the official Kotlin coding conventions and enforce them in Gradle's
+  `check` lifecycle.
+- Prefer immutable state with `val`, read-only collection interfaces, constructor
+  parameters, and transformations that return new values.
+- Use nullability for genuine absence, avoid platform types at application
+  boundaries, and do not use `!!` in production code.
+- Use data classes for immutable values, commands, events, and transport records,
+  not automatically for mutable identity-based entities.
+- Use sealed types for closed state machines and result variants with exhaustive
+  `when` expressions.
+- Consider value classes for validated identifiers and scalar concepts when
+  serialization, binding, and persistence interoperability are tested.
+- Prefer named and default parameters and small factory functions over builders.
+- Keep extension functions narrowly visible and owned by a natural receiver.
+- Prefer clear loops or named functions over clever chains with hidden
+  allocation, non-local returns, or unclear error flow.
+- Keep public return types explicit where they form an API; document constraints
+  that names and types cannot express.
 
 ## Spring And Concurrency
 
-- Use constructor injection only. Keep configuration in validated, immutable `@ConfigurationProperties` data classes.
-- Keep framework annotations and transport DTOs at the API/adapter boundary; domain types must be testable without starting Spring.
-- Start with Spring MVC controllers and `WebClient` for outbound streaming HTTP. Do not expose Reactor `Mono`/`Flux` from domain or application services.
-- Use coroutines only for real asynchronous/concurrent work and preserve structured concurrency. Never use `GlobalScope`; make cancellation and dispatcher choice explicit at blocking boundaries.
-- Represent expected domain failures as typed results or sealed errors. Reserve exceptions for unexpected faults and translate them once at the HTTP boundary.
-- Keep the application a modular monolith until a measured scaling, deployment, or ownership boundary justifies a service split.
+- Use constructor injection and validated immutable `@ConfigurationProperties`.
+- Keep framework annotations and transport DTOs at adapter boundaries; domain
+  types must be testable without starting Spring.
+- Choose MVC, WebFlux, or coroutine APIs from measured concurrency and streaming
+  needs; do not mix models accidentally across layers.
+- Preserve structured concurrency. Never use `GlobalScope`; make cancellation,
+  deadlines, and dispatcher choice explicit at blocking boundaries.
+- Represent expected domain failures as typed results or sealed errors. Reserve
+  exceptions for unexpected faults and translate them once at the delivery edge.
+- Bound transactions around consistency rules rather than controllers or whole
+  workflows, and keep remote calls outside database transactions where possible.
+- Start with the simplest deployable topology that satisfies current reliability,
+  scale, and ownership constraints.
 
 ## Build And Dependencies
 
-- Use the Gradle Wrapper and Kotlin DSL exclusively. Keep `settings.gradle.kts` and `build.gradle.kts` readable; move repeated non-trivial build logic into convention plugins rather than ad-hoc scripts.
-- Centralize plugin/dependency versions and use the Spring/Kotlin BOMs where applicable. Commit dependency locking or verification metadata when the backend supply-chain policy is established.
-- The first backend increment includes Kotest on the JUnit Platform. Use Kotest assertions/specs for domain behavior and property testing for parsers, bbox/CRS invariants, and idempotency.
-- Use focused Spring integration tests only for HTTP serialization, configuration, security, and wiring. Keep most tests framework-free and fast.
-- Add PostgreSQL/Testcontainers when relational persistence becomes a real feature. Add Spring Security with the first identity/authorization requirement. Add RabbitMQ only when durable cross-process asynchronous delivery is required.
-- Every new dependency must solve a documented problem and include an ownership, testing, and removal/upgrade story.
+- Use the Gradle Wrapper and Kotlin DSL. Keep build files readable and move
+  repeated non-trivial logic into convention plugins.
+- Centralize versions and use compatible platform or BOM alignment where useful.
+- Adopt dependency locking or verification according to repository supply-chain policy.
+- Every dependency must solve a documented problem and have testing, ownership,
+  upgrade, and removal considerations.
+- Add databases, brokers, reactive stacks, and distributed services only when a
+  current requirement and operational model justify them.
+- Make the repository's aggregate verification task depend on Gradle `check` or
+  an equivalent complete backend quality gate.
 
-## Suggested Modular Structure
+## Architecture Boundaries
+
+A typical dependency direction is:
 
 ```text
-backend/
-  api/             controllers, transport DTOs, exception mapping
-  application/     project and acquisition use cases
-  domain/          AOI, source, layer, job, artifact, provenance
-  adapters/http/   ULDK, WMS/WMTS, planning/vector clients
-  adapters/store/  RuntimeStateStore and ArtifactStore implementations
-  config/          validated catalog and HTTP/job policies
+delivery adapters -> application -> domain
+infrastructure adapters -> application ports
+configuration -> adapter wiring
 ```
 
-Package names may evolve with implemented capabilities. Preserve dependency direction and cohesive domain ownership rather than creating every empty package up front.
+- Organize packages by cohesive capabilities; do not create empty layers or
+  generic dumping grounds in advance.
+- Keep persistence and provider SDK types outside domain and application APIs.
+- Define storage and integration ports by required semantics, not by vendor names.
+- Keep environment choices in composition and configuration, not `if local` or
+  `if vendor` branches inside application services.
+- Run contract tests against materially different adapter implementations.
+- Generate or validate client DTOs from the published transport contract; do not
+  expose backend domain classes as the wire model.
+- Do not implement an unrestricted remote URL proxy. Select integrations through
+  server-owned validated identifiers and allowlists.
 
-Storage is split by capability, not vendor:
+## Testing
 
-- `RuntimeStateStore` owns project/job/manifest/overlay/import state and
-  revision semantics;
-- `ArtifactStore` owns bounded streaming writes, abort, complete-only
-  promotion, metadata/stat, ranged reads, authorized delivery, and deletion by
-  opaque key;
-- local/self-hosted state uses PostgreSQL in Docker and artifacts use the
-  configured local data root;
-- hosted state uses managed PostgreSQL and artifacts use GCS/S3-compatible
-  object storage.
-
-A file-backed `RuntimeStateStore` is not part of the initial development
-profile. Testcontainers may provide isolated PostgreSQL in integration tests;
-unit tests may use deliberate in-memory fakes that are not production
-persistence adapters.
-
-Application services must not contain `if local`/`if gcs` branches, persist
-absolute paths or provider URLs, or import provider SDK types. Adapter contract
-tests run against every implementation and prove the same visibility,
-checksum, failure-preservation, range-read, quota, and idempotent-cleanup
-semantics.
-
-## Thin-client Contract
-
-- The backend owns project state, trusted source configuration, ULDK/WMS/GML protocol behavior, acquisition jobs, cache/provenance decisions, overlays, and export assembly.
-- The Angular client owns presentation, OpenLayers rendering, form state, and transient interaction state. It must not contain provider endpoints, credentials, WMS layer names, axis-order rules, or authoritative persistence logic.
-- Generate or validate frontend DTOs from OpenAPI. Do not share backend domain classes directly as the wire contract.
-- Never implement a generic remote-URL proxy. Provider access is selected through server-owned, validated catalog identifiers.
+- Use Kotest on the JUnit Platform when it is the repository standard; use
+  behavior tests for domain rules and property tests for broad invariant spaces.
+- Keep most domain and application tests framework-free and fast.
+- Use focused Spring tests for serialization, configuration, security, database
+  integration, transactions, and wiring.
+- Record deterministic external fixtures and keep normal verification offline.
+- Cover success, invalid input, absence, timeout, cancellation, retry,
+  concurrency, partial failure, and restart or persistence behavior as relevant.
+- Ensure `./gradlew check` covers the repository's formatting, static analysis,
+  unit, architecture, and focused integration gates.
 
 ## Backend Review Checklist
 
-- Does the model use Kotlin nullability, immutability, sealed variants, and value semantics deliberately?
-- Are domain/application types independent of Spring and transport DTOs?
-- Are blocking, Reactor, and coroutine boundaries explicit, cancellable, and tested?
-- Does the API preserve the accepted thin-client, provenance, idempotency, and error contracts?
-- Are external providers bounded, allowlisted, recorded in fixtures, and excluded from normal tests?
-- Does `./gradlew check` cover formatting/static analysis, unit tests, architecture rules, and focused integration tests?
-- Is each dependency and infrastructure choice justified by a current requirement?
-- Is the change traceable to accepted requirement IDs with evidence sufficient to advance their lifecycle?
+- Does the model use Kotlin nullability, immutability, sealed variants, and value
+  semantics deliberately?
+- Are domain and application types independent of Spring and transport DTOs?
+- Are blocking, reactive, and coroutine boundaries explicit and tested?
+- Does the API preserve accepted idempotency, compatibility, error, and
+  authorization contracts?
+- Are external integrations bounded, allowlisted, observable, and excluded from
+  normal offline tests?
+- Are transactions, retries, and state transitions safe under concurrency and
+  partial failure?
+- Is each dependency and infrastructure choice justified by a current need?
 
 ## Primary References
 

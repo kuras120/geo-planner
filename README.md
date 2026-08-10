@@ -1,39 +1,45 @@
 # Geo Planner
 
-Geo Planner currently builds a self-contained, layered HTML map for parcel
-analysis and local sketching. A migration-ready Angular workspace and
-loopback-only backend contract simulator now provide the foundation for its
-incremental replacement, but the legacy map remains the functional interface.
+Geo Planner is being rebuilt as an Angular client backed by a Kotlin/Spring
+Boot application. The current repository contains the application foundation;
+the target product will organize map evidence, projects, acquisition, sketches,
+and spatial analysis while preserving provenance and uncertainty.
 
-The checked-in example covers parcels in Ciężkowice. Government layers are informative and may be incomplete or out of date. Manual overlays are sketches, not surveying or legal evidence.
+Government, cadastral, planning, utility, and derived layers are informative
+unless an authoritative source and validation process explicitly establish
+otherwise. Sketches are not surveying or legal evidence.
 
-Manual overlays and generated HTML are local artifacts ignored by Git. On the first build, an empty `mapa/manual-overlays.json` is created automatically from the tracked neutral example.
+The Python/HTML implementation under `mapa/**` remains available as the legacy
+application and as migration evidence until its capabilities are replaced.
+Its operating instructions live in `mapa/README.md`.
 
 ## Quick Start
 
 ```bash
-cd mapa
-./scripts/build-map.sh
-./scripts/edit-map.sh
+mise install
+mise run setup
+mise run backend
+mise run frontend
 ```
 
-Open the local URL printed by the editor, normally `http://127.0.0.1:8765/mapa-ciezkowice.html`. Use `./scripts/update-sources.sh` only when government sources should be downloaded again.
+Run `mise run simulator` instead of the backend for frontend work against
+accepted deterministic contract scenarios. Run the UI workshop with
+`mise run storybook`.
 
-To configure another area, copy `mapa/project-config.json`, change its project identity, bbox, CRS, precinct, parcels, plan, and output file, then refresh sources and build. Appearance-only settings remain in `mapa/map-config.json`.
+The repository-wide verification entry point is:
+
+```bash
+mise run verify
+```
+
+Use `mise run assemble` to produce backend and frontend application artifacts.
 
 ## Documentation
 
-- [Repository guide](docs/guidelines/repository-guide.md)
-- [Engineering guide](docs/guidelines/engineering-guide.md)
-- [Map domain and data contracts](docs/domain/map-domain.md)
+- [Repository setup and commands](docs/guidelines/repository-guide.md)
+- [Engineering standards](docs/guidelines/engineering-guide.md)
+- [Target product architecture](docs/architecture/target-product-architecture.md)
+- [Map domain and safety contracts](docs/domain/map-domain.md)
+- [Requirements portfolio](docs/requirements/index.md)
 - [Project lifecycle and work protocols](docs/guidelines/project-lifecycle.md)
-- [Map interface details](mapa/README.md)
-
-Run `./scripts/verify.sh` for the legacy/Python offline quality gate. It uses
-checked-in data and does not access the network.
-
-For replacement-application development, install the pinned toolchain and
-dependencies with `mise install` and `mise run setup`. Run the complete backend,
-frontend, simulator, and legacy gates with `mise run verify`. Use
-`mise run assemble` only when deployable backend and frontend artifacts are
-needed.
+- [Legacy map operation](mapa/README.md)

@@ -1,14 +1,14 @@
 ---
 name: implement-change
-description: Implement an approved or explicitly requested Geo Planner change with controlled scope and proportionate verification. Use when modifying map generation, configuration, source downloads, the browser editor, spatial parsers, tests, scripts, or other repository behavior.
+description: Implement an approved or explicitly requested repository change with controlled scope and proportionate verification. Use when changing application behavior, configuration, integrations, tests, scripts, or other repository-owned behavior.
 ---
 
 # Protocol B: Implementation
 
-1. Read `AGENTS.md`, the repository and engineering guides, relevant domain docs, and the approved project file when one exists.
+1. Read `AGENTS.md` and every document it routes for the affected area, including the active approved project file when one exists.
 2. Confirm the requested scope and inspect existing user changes before editing.
-3. Implement in small vertical slices. Keep location-specific values in `mapa/project-config.json`, presentation settings in `mapa/map-config.json`, and reusable behavior in scripts/templates.
-4. Validate external input at boundaries. Never overwrite manual overlays or source data as an incidental fallback.
-5. Add regression coverage for parsing, configuration, persistence, and public-interface changes.
-6. Run `./scripts/verify.sh`. Do not download fresh government data during verification; use checked-in fixtures unless regeneration was explicitly requested.
+3. Implement in small vertical slices. Follow repository-owned boundaries for configuration, code, generated artifacts, and user data instead of inventing new ownership rules in the skill.
+4. Validate external input at boundaries. Preserve user data and external evidence; never overwrite either as an incidental fallback.
+5. Add regression coverage for changed behavior, especially configuration, parsing, persistence, integration, and public-interface defects.
+6. Run the repository verification entry point defined by `AGENTS.md` or its routed repository guide. Keep network refresh, destructive regeneration, and live external calls outside verification unless explicitly authorized.
 7. Update the active project file with deviations and results. Report changed behavior, verification, manual checks, limitations, and follow-ups.

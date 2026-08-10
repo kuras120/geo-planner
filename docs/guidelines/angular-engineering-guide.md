@@ -1,226 +1,181 @@
 # Angular Engineering Guide
 
-## Purpose And Ownership
+## Purpose
 
-This guide governs the replacement Geo Planner frontend. The frontend
-implementation agent implements the frontend; the owner reviews and accepts
-it. The frontend is a thin client: it owns presentation, browser interaction,
-transient UI state, and OpenLayers rendering, while the backend owns trusted
-provider integration, authoritative project state, acquisition, validation,
-and persistence.
-
-Backend code is outside the frontend implementation mandate. Contract questions are resolved in OpenAPI and project decisions rather than by silently changing either side.
-
-Frontend delivery is incremental. First complete and close one bounded frontend-foundation project. Then create a new plan from scratch for each end-to-end feature as the owner-written backend exposes accepted capabilities. Do not turn the foundation into a rolling backlog, batch the rewrite, or run the frontend several speculative features ahead.
+Use these rules for Angular applications and libraries. Repository architecture
+decides the product boundary, directory names, API ownership, rendering
+libraries, and deployment topology.
 
 ## Version And Preview Policy
 
-- Start each implementation increment on the newest Angular stable major and active patch available that day. Record exact Angular, TypeScript, Node.js, package-manager, and OpenLayers versions in the workspace and lockfile.
-- The `next` or release-candidate channel is allowed when the owner accepts the concrete benefit and upgrade risk.
-- A Developer Preview or experimental API requires a short ADR or project decision naming the benefit, stability label, containment boundary, fallback, and removal/upgrade trigger.
-- Keep preview APIs behind a feature-local adapter. Do not let an unstable forms, state, rendering, or build API become a repository-wide convention.
-- Upgrade one concern at a time and run the full quality gate. Do not combine a framework-major upgrade with a large feature migration.
-
-As of 2026-07-23, Angular 22 is the current stable major. New CLI applications use Vitest, zoneless change detection is the default from Angular 21, and `httpResource` is stable in Angular 22. Signal Forms suit new signal-based applications, but Angular still recommends Reactive Forms when production stability guarantees are required. Therefore Reactive Forms are the default until a feature-scoped Signal Forms decision is accepted.
+- Start new work on the newest stable Angular major compatible with the
+  repository's supported Node.js and TypeScript versions; pin exact versions in
+  the workspace and lockfile.
+- Upgrade one concern at a time and run the full repository quality gate.
+- Use preview or experimental APIs only after recording the concrete benefit,
+  stability label, containment boundary, fallback, and removal or upgrade trigger.
+- Keep preview APIs behind a feature-local adapter so they do not become an
+  accidental repository-wide convention.
+- Prefer stable framework APIs when preview functionality does not materially
+  improve the accepted use case.
 
 ## Application Shape
 
-Use one Angular CLI workspace under `frontend/`. Keep the root application in
-the CLI-standard `src/` location and independently reusable or enforceable
-Angular library boundaries in the CLI-standard `projects/` location:
+- Prefer one Angular CLI workspace with the application in the standard `src/`
+  location and independently reusable or enforceable libraries in `projects/`.
+  A typical shape is:
 
 ```text
-frontend/
-  .storybook/           shared UI workshop configuration
-  e2e/                  application-level real-browser journeys
+<workspace>/
+  .storybook/           shared component-workshop configuration, when used
+  e2e/                  application-level browser journeys
   projects/
-    ui/                  genuinely reusable presentation primitives
-    geo-planner-api/
+    ui/                  reusable presentation primitives
+    application-api/
       src/lib/
         generated/      generated transport code; never hand-edit
-        mappers/        transport DTO <-> frontend domain mappings
-        facade/         application-owned API facade
+        mappers/        transport DTO <-> frontend model mappings
+        facade/         application-facing API boundary
   src/
     app/
-      core/              bootstrap, error reporting, runtime config
+      core/              bootstrap, error reporting, runtime configuration
       features/          product features owned by the application
       layout/            application shell composition
-    locale/              translation source files when localization is added
+    locale/              translation sources, when localization is used
 ```
 
-- Use the Angular CLI generator for applications and libraries so `angular.json`,
-  TypeScript paths, build targets, and package boundaries stay conventional.
-- A feature starts in `src/app/features/`. Move it to `projects/` only when
-  independent reuse, ownership, packaging, or dependency enforcement justifies
-  the additional library build and public API.
-- `ui` contains presentation primitives that must not depend on application
-  features, routing, HTTP, or OpenLayers.
-- `geo-planner-api` owns generated transport code, DTO mapping, and the
-  application-facing API facade. No component imports from its `generated/`
-  directory.
-- Use standalone components and functional providers. Do not introduce NgModules for application features.
-- Lazy-load route-level features. Keep route configuration close to the feature and use stable URLs as user-visible state.
-- A feature may depend on `core`, `api`, `map`, and `shared`; reusable platform areas must not depend on features.
-- Do not create generic `utils`, `common`, or `services` dumping grounds. Name modules after domain capabilities.
-- Keep files focused and colocate a component's TypeScript, template, styles, and tests.
+- Use Angular CLI conventions unless a documented constraint requires a
+  different layout.
+- Start features inside the application. Extract a library only when reuse,
+  ownership, packaging, or dependency enforcement justifies the boundary.
+- Keep reusable presentation libraries independent of application features,
+  routing, HTTP, and domain-specific imperative libraries.
+- Use standalone components and functional providers. Do not introduce
+  NgModules for new application features without a compatibility reason.
+- Lazy-load route-level features and keep route configuration close to the
+  owning feature.
+- Enforce dependency direction: application features may use platform and
+  shared libraries, while shared libraries must not depend on features.
+- Avoid generic `utils`, `common`, or `services` dumping grounds. Name modules
+  after capabilities, keep files focused, and colocate a component's TypeScript,
+  template, styles, and tests.
 
 ## Component Composition
 
-- Route/page components orchestrate use cases and convert feature state into explicit child inputs.
-- Presentation components receive data through signal `input()` and report intent through `output()`. Outputs describe domain actions such as `layerVisibilityChanged`, not DOM mechanics such as `buttonClicked`.
-- Use `model()` only for a natural two-way control value. Do not use it to hide a workflow or mutate parent-owned domain state.
-- Prefer composition, content projection, directives, and small typed configuration objects over component inheritance.
-- Reusable UI must not inject feature stores, HTTP clients, the router, or OpenLayers objects.
-- Keep lifecycle hooks small and delegate to behavior-named methods. Use lifecycle interfaces when hooks are needed.
-- Prefer built-in template control flow and direct `class`/`style` bindings. Move non-trivial computation to `computed()` or pure functions.
-- Preserve accessibility: native elements first, visible focus, keyboard access, labelled controls, announced async/error state, and no color-only meaning.
+- Route or page components orchestrate use cases and map feature state to
+  explicit child inputs.
+- Presentation components receive data through typed signal `input()` values
+  and report intent through `output()` values named after domain actions.
+- Use `model()` only for a natural two-way control value, not to hide workflows
+  or mutate parent-owned state.
+- Prefer composition, content projection, directives, and small typed
+  configuration objects over component inheritance.
+- Reusable UI must not inject feature stores, HTTP clients, or the router.
+- Keep lifecycle hooks small and delegate to behavior-named methods.
+- Preserve accessibility: native elements first, visible focus, keyboard
+  access, labelled controls, announced asynchronous state, and no color-only meaning.
 
 ## State And Reactivity
 
-- Use signals for synchronous local and feature state, `computed()` for derived values, and `effect()` only for actual external side effects.
-- Keep writable signals private; expose readonly state and intention-revealing commands.
-- Use RxJS for event streams, cancellation, debouncing, WebSocket/SSE streams, and orchestration where time is part of the model. Convert at deliberate boundaries.
-- Do not introduce NgRx or another global store until multiple features need coordinated history, effects, or debugging that feature-scoped signals cannot provide.
-- Run zoneless. Notify Angular through signals, template listeners, `AsyncPipe`, or explicit framework APIs; do not depend on ZoneJS side effects.
-- Model loading, empty, ready, partial, stale, and failure states explicitly instead of combining unrelated booleans.
+- Use signals for synchronous local and feature state, `computed()` for derived
+  values, and `effect()` only for real external side effects.
+- Keep writable signals private; expose readonly state and intention-revealing
+  commands.
+- Use RxJS where time is part of the model: cancellation, debouncing, event
+  streams, WebSocket/SSE, and multi-source orchestration.
+- Convert between signals and observables at deliberate, narrow boundaries.
+- Do not introduce a global store until several features need coordination,
+  history, effects, or debugging that feature-scoped state cannot provide.
+- Model loading, empty, ready, partial, stale, and failure states explicitly.
+- For zoneless applications, notify Angular through signals, template
+  listeners, `AsyncPipe`, or explicit framework APIs.
 
-## API Input And Output
+## API Boundary
 
-The published OpenAPI document is the transport contract.
+- Treat the repository's published API description as the transport contract.
+- Generate transport clients when the contract format supports it; never
+  hand-edit generated output or import generated DTOs directly into components.
+- Map transport DTOs to frontend domain or view models at the API boundary.
+- Keep queries and commands distinct. Commands express the smallest explicit
+  intent rather than serializing a screen or mutable application state.
+- Define null-versus-absent semantics and use stable identifiers and standard
+  timestamp formats.
+- Treat server output as untrusted. Validate status, content type, invariants,
+  and closed variants where static typing cannot prove runtime validity.
+- Keep HTTP calls out of components. Centralize base URL, correlation headers,
+  timeouts, cancellation, and error translation.
+- Do not retry mutations automatically. Retry safe reads only under a bounded,
+  visible policy.
+- Preserve problem details, field errors, warnings, provenance, and correlation
+  IDs in typed results; localize them only at the presentation boundary.
+- Keep secrets, arbitrary upstream URLs, and authoritative persistence logic
+  out of browser code.
 
-```text
-component -> feature facade/store -> application API facade
-          -> generated OpenAPI client -> same-origin backend
-```
+## Contract Discovery And Test Doubles
 
-### Frontend-led Contract Discovery
+For a feature that depends on an evolving API:
 
-For each accepted functional slice, the frontend implementation agent defines
-the frontend's real data needs before the owner implements the Kotlin endpoint:
+1. map user actions and visible loading, success, empty, partial, stale,
+   authorization, validation, and failure states;
+2. list the exact fields and invariants each state needs;
+3. define frontend models and representative transport examples;
+4. propose task-oriented requests, responses, and problems;
+5. obtain contract acceptance before implementing speculative production calls;
+6. regenerate the client after the authoritative contract changes.
 
-1. map the user actions and loading, empty, partial, stale, success, validation,
-   authorization, and failure states;
-2. list the exact read/write fields each state needs, including identifiers,
-   CRS, provenance, warnings, pagination/tiling, and freshness;
-3. define frontend domain/view models and representative contract fixtures;
-4. propose task-oriented commands, responses, problems, and OpenAPI examples;
-5. review the proposal interactively with the owner;
-6. the owner implements and publishes the accepted Kotlin/OpenAPI slice;
-7. The frontend implementation agent regenerates the client and implements the
-   Angular feature against the published contract.
-
-This is contract discovery, not speculative frontend implementation. Components
-do not dictate backend persistence models, and production Angular code does not
-run ahead of an accepted/published contract. The data-needs matrix gives the
-backend implementer a precise use case without coupling the API to a screen
-tree.
-
-### Contract Simulator
-
-The frontend foundation provides a small Node-based API simulator for accepted
-contract slices. It is a development/test adapter, not a second backend:
-
-- serve the same representative JSON/binary fixtures used by contract and
-  frontend tests;
-- match accepted endpoint, status, header, problem-details, correlation-ID,
-  cancellation, and content-type behavior;
-- select deterministic named scenarios for ready, empty, partial, stale,
-  delayed, failed, unauthorized, revision-conflict, and cancelled states;
-- support chunked/progress and tile/range behavior when the accepted slice
-  requires it;
-- make scenario selection explicit in test configuration and impossible in a
-  production build;
-- perform no external network calls and store no private data.
-
-Angular E2E tests run against this simulator before the Kotlin slice is
-available. After the owner publishes the backend contract, the same high-value
-journeys also run against a real backend test profile. Simulator behavior must
-follow accepted examples and is removed or corrected when it diverges; it never
-defines the contract by itself.
-
-- Generate transport clients and DTOs; never hand-edit generated files or import them directly into reusable components.
-- Treat OpenAPI generation as a repeatable development loop. Regenerate after every accepted backend contract change and review the generated diff before adapting application code.
-- Generate only from the backend's current published contract. Do not invent placeholder future endpoints to produce a complete client early.
-- Keep the generator configuration and command stable from the first real endpoint onward. Decide once whether generated sources are committed or CI-produced, then enforce reproducibility.
-- Map transport DTOs to frontend domain/view models at the API boundary.
-- Keep queries and commands distinct. A command contains the smallest explicit intent, not a serialized screen or giant mutable project.
-- Use stable identifiers, ISO-8601 timestamps, explicit CRS/coordinate order, discriminated unions for closed variants, and defined absent-versus-null semantics.
-- Treat server output as untrusted. Check status, content type, invariants, and spatial metadata; use runtime validation where generated typing cannot prove validity.
-- Use `httpResource` for suitable idempotent reads. Use injectable HttpClient services for mutations, uploads, downloads, cancellation, and deliberately controlled workflows.
-- HTTP calls do not belong in components. Centralize base URL, correlation headers, timeouts, and error translation.
-- Do not retry mutations automatically. Retry safe reads only under a bounded visible policy; use backend idempotency for acquisition commands.
-- Preserve problem details, field errors, warnings, provenance, and correlation IDs in typed results. Translate them to Polish UI at the presentation boundary.
-- The browser never receives arbitrary provider URLs, secrets, WMS axis-order rules, or filesystem paths.
-
-## Incremental Migration Discipline
-
-- Keep at most one substantial frontend migration slice in progress.
-- Give every substantial feature its own `docs/projects/**` plan with feature-specific scope, contract, legacy evidence, risks, verification, and acceptance criteria.
-- Close the foundation plan after scaffolding; never append feature steps or progress to it.
-- Each slice starts with current legacy evidence and one accepted backend contract, and ends with an owner-reviewed working browser capability.
-- Prefer a thin end-to-end slice over completing all API infrastructure, all map infrastructure, or all components in isolation.
-- Keep the legacy path operational for capabilities not yet migrated.
-- Do not combine Angular/framework upgrades, broad visual redesign, OpenAPI-wide refactoring, and feature migration in one slice.
-- A generated-client compilation break is contract feedback and is resolved in the current slice, not hidden behind `any`, duplicate DTOs, or permanent adapters for draft shapes.
-- Mark a legacy capability as migrated only after backend, generated client, Angular behavior, error handling, and relevant spatial/browser checks pass together.
-
-## OpenLayers Boundary
-
-- `MapFacade` is the general imperative boundary. Components express intent and observe typed events; they do not retain OpenLayers map, layer, source, feature, or interaction instances.
-- Use focused adapters for projections, layer materialization, selection, sketch interactions, and export rather than one unbounded facade class.
-- Keep domain-ID to OpenLayers-object mappings inside the adapter.
-- Register projections explicitly and preserve CRS, axis order, extent, resolution, attribution, and provenance.
-- Clean up targets, listeners, interactions, object URLs, and subscriptions deterministically.
-- Test domain-to-map descriptors without a browser, then cover rendering and interaction in real-browser tests.
+A contract simulator or mock server may provide deterministic accepted examples
+before an implementation is available. It is a test adapter, never the contract
+authority or a second production backend. Keep scenario selection explicit and
+impossible in production builds.
 
 ## Forms
 
-- Use strictly typed Reactive Forms by default for project/AOI and overlay editing.
-- Keep form models separate from API commands; normalize and validate before mapping a submission.
-- Surface backend field errors without replacing client validation.
-- Signal Forms may be piloted only after a preview-policy decision. Their removal must not change API or domain models.
+- Use strictly typed Reactive Forms by default for stable production forms.
+- Keep form models separate from API commands; normalize and validate before
+  mapping a submission.
+- Surface server field errors without replacing client validation.
+- Adopt newer form APIs only through the preview policy and keep domain and API
+  models independent of the chosen form implementation.
+
+## Imperative Library Boundaries
+
+- Hide stateful browser, visualization, editor, or rendering libraries behind
+  focused Angular adapters or facades.
+- Components express intent and observe typed events; they do not retain
+  third-party mutable instances.
+- Keep domain-ID to library-object mappings inside the adapter.
+- Clean up DOM targets, listeners, object URLs, workers, and subscriptions
+  deterministically.
+- Test pure domain-to-library descriptors without a browser, then cover actual
+  rendering and interaction with focused real-browser tests.
 
 ## Testing And Quality Gates
 
-- Use Angular CLI's default Vitest integration for unit and component tests.
-- Use the latest stable Storybook compatible with the selected Angular version
-  for isolated shared-UI states, interaction examples, accessibility checks,
-  and component documentation. Keep one workspace configuration under
-  `frontend/.storybook/`; do not duplicate Storybook configuration per library
-  without a demonstrated isolation need.
-- Keep application E2E journeys under `frontend/e2e/` and run them in Chromium
-  through Playwright. Storybook stories complement but do not replace
-  application-level browser journeys.
-- Test through public inputs, outputs, DOM, and feature facades rather than private details.
-- Use `provideHttpClientTesting` and contract fixtures derived from OpenAPI examples.
-- Add real-browser tests for map rendering, projections, pointer/keyboard interaction, sketching, resize, cleanup, and downloads.
-- Prefer `whenStable()` and visible assertions in zoneless tests; avoid indiscriminate `detectChanges()`.
-- Gate on formatting, lint/static analysis, type checking, unit tests, production build, bundle budgets, and selected browser tests.
-- Include accessibility plus reduced-motion, narrow viewport, slow request, cancellation, partial failure, and stale-artifact cases.
-
-## Toolchain And Contract Simulator
-
-- Pin the exact Node.js LTS used by the repository in root-level `mise.toml`.
-  Package manifests and committed lockfiles remain the dependency source of
-  truth; mise supplies the runtime and repeatable task entry points.
-- Keep the frontend and simulator as separate npm workspaces with separate
-  lockfiles. Their dependency graphs and release concerns are independent.
-- The Node contract simulator lives at root-level `backend-simulator/`, outside
-  the Angular CLI workspace. It must not import Angular application code or
-  become a production dependency.
-- The foundation may expose a simulator-only readiness endpoint. Product
-  endpoints, payloads, fixtures, and scenarios enter only with an accepted
-  contract slice.
+- Use the test runner selected by the current Angular CLI workspace.
+- Test through public inputs, outputs, DOM, and feature facades rather than
+  private implementation details.
+- Use Angular HTTP testing utilities and fixtures derived from accepted API examples.
+- Prefer stable asynchronous completion and visible assertions over arbitrary
+  sleeps or indiscriminate change-detection calls.
+- Use component workshops for isolated reusable-UI states when the repository
+  adopts one; they complement rather than replace application journeys.
+- Add real-browser tests for interactions that depend on layout, browser APIs,
+  accessibility, downloads, or third-party rendering.
+- Gate on formatting, lint or static analysis, type checking, unit tests,
+  production build, bundle budgets, and selected browser tests as configured by
+  the repository.
+- Include accessibility, reduced motion, narrow viewport, slow request,
+  cancellation, partial failure, and stale-result cases where relevant.
 
 ## Review Checklist
 
-- Is the thin-client boundary preserved?
-- Are API DTOs isolated and mapped?
+- Are responsibilities aligned with the repository architecture?
+- Are generated DTOs isolated and mapped?
 - Is state valid by construction and narrowly owned?
-- Are components composed through typed inputs/outputs without hidden coupling?
-- Is OpenLayers imperative behavior behind the map boundary?
+- Are components composed through typed inputs and outputs?
+- Are imperative third-party objects behind an adapter boundary?
 - Are preview APIs documented, isolated, and replaceable?
-- Are warnings, provenance, accessibility, cleanup, and proportionate tests covered?
+- Are accessibility, cleanup, failures, and proportionate tests covered?
 
 ## Primary References
 
@@ -228,8 +183,6 @@ defines the contract by itself.
 - [Angular style guide](https://angular.dev/style-guide)
 - [Angular components](https://angular.dev/guide/components)
 - [Angular HTTP](https://angular.dev/guide/http)
-- [Angular `httpResource`](https://angular.dev/api/common/http/httpResource)
-- [Angular resources](https://angular.dev/guide/signals/resource)
+- [Angular signals](https://angular.dev/guide/signals)
 - [Angular zoneless](https://angular.dev/guide/zoneless)
 - [Angular testing](https://angular.dev/guide/testing)
-- [Angular Signal Forms](https://angular.dev/guide/forms/signals/overview)

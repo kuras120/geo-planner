@@ -1,4 +1,15 @@
-# Map Domain
+# Legacy Map Model
+
+## Status And Scope
+
+This document owns the terminology, evidence classes, spatial invariants, and
+safety meaning of the retained map workflow. Its configuration and lifecycle
+details describe the current Python/HTML application, not the complete target
+product model.
+
+The Spatial Evidence domain model is defined in
+[Spatial Evidence Domain](spatial-evidence.md); accepted behavior is indexed in
+the [requirements portfolio](../requirements/index.md).
 
 ## Purpose And Safety Boundary
 

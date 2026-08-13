@@ -66,8 +66,8 @@ silent deduplication or lost concurrent changes.
 
 - Input: mutation against an immutable feature ID and current collection
   revision.
-- Sources: authoritative backend overlay storage under the configured data
-  root.
+- Sources: authoritative backend overlay state in PostgreSQL through the
+  `RuntimeStateStore` boundary.
 - Output: a new collection revision and updated feature set.
 - Degraded/failure behavior: stale revision rejects the write; storage failure
   preserves the last accepted revision; geometrically identical features remain

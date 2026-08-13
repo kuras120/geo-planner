@@ -1,5 +1,12 @@
 # Map Build Flow
 
+## Status
+
+This document describes the current runtime and data flow of the retained
+Python/HTML legacy application. The replacement foundation and accepted target
+boundaries are documented in
+[Target Product Architecture](target-product-architecture.md).
+
 ```mermaid
 flowchart LR
     PC["project-config.json\nidentity + spatial/source config"]

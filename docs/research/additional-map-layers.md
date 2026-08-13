@@ -7,7 +7,7 @@
   extension after the accepted MVP layer set?
 - Completed output: candidate families, likely integration shapes, and primary
   interpretation risks are linked from the
-  [map domain](../domain/map-domain.md). No candidate has been accepted for
+  [Spatial Evidence domain](../domain/spatial-evidence.md). No candidate has been accepted for
   delivery.
 - Open decision: select one layer for source validation, requirements discovery,
   and an implementation proposal.

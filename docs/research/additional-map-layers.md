@@ -2,6 +2,7 @@
 
 ## Status And Decision Trace
 
+- Status: DEFERRED
 - Evidence checked: 2026-07-20 from the official sources below.
 - Question: which source layer should be evaluated as the first catalog
   extension after the accepted MVP layer set?

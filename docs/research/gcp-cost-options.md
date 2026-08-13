@@ -2,6 +2,7 @@
 
 ## Status And Decision Trace
 
+- Status: DEFERRED
 - Evidence checked: 2026-07-28 against GCP, Firebase, Neon, and Supabase
   product and pricing documentation.
 - Question: which development operating model and managed PostgreSQL provider

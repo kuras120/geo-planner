@@ -48,9 +48,8 @@ story.
 
 - Only the authority named by repository policy can approve a project for implementation or requirements discovery.
 - Do not infer approval from a request to edit, review, expand, or discuss a plan.
-- Do not create migration requirements before approved discovery has inspected the implemented behavior, external integrations, data, errors, and user workflows.
-- For migration work, produce requirements after inventory, characterization evidence, and integration analysis are available.
-- Requirements created without that evidence must be discarded rather than promoted as a speculative backlog.
+- Create requirements only from authorized discovery and sufficient evidence;
+  discard unsupported drafts instead of promoting them as a speculative backlog.
 - Creating or accepting a requirement does not authorize implementation. A selected coherent feature still receives its own temporary project plan.
 
 ## What Belongs In Requirements
@@ -88,12 +87,12 @@ Non-functional behavior may appear as an acceptance constraint of a functional s
 
 ## Discovery Workflow
 
-1. Inspect the actual current or legacy workflow and record what the user does, sees, saves, and exports.
-2. Trace the code and configuration that implement it.
+1. Inspect the actual workflow and record what the user does, sees, saves, and exports.
+2. Trace supporting implementation and configuration when existing behavior is evidence.
 3. Identify every external source and exact operation, layer, document, request input, and response form.
 4. Capture success, no-data, optional failure, hard failure, stale data, and privacy behavior.
 5. Decide with the owner which behavior is intentional, accidental, obsolete, or missing.
-6. Group retained behavior by cohesive application area.
+6. Group accepted behavior by cohesive application area.
 7. Write concrete functional stories only from accepted evidence.
 8. Review stories one application area at a time, following the interactive
    decision gates in `project-lifecycle.md`. Present a compact area index, then
@@ -144,7 +143,7 @@ A requirement is not ready for owner acceptance when:
 
 - it could apply unchanged to almost any backend;
 - its value is primarily a framework/tooling concern;
-- it does not name the migrated workflow or integration;
+- it does not name the concrete workflow or integration;
 - inputs, outputs, and failure behavior are unknown;
 - acceptance can be satisfied by scaffolding or a unit test without demonstrating user value;
 - it was written before the discovery evidence existed.

@@ -2,6 +2,7 @@
 
 ## Status And Decision Trace
 
+- Status: DEFERRED
 - Research recorded: 2026-07-28.
 - Question: which GCP-facing connections could provide a private development
   deployment without presenting it as an accepted SaaS architecture?

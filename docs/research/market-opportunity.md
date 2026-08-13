@@ -2,6 +2,7 @@
 
 ## Status And Decision Trace
 
+- Status: DEFERRED
 - Evidence checked: 2026-07-19 from public market signals; no customer
   interviews or willingness-to-pay tests have been completed.
 - Question: which value and paying workflow could differentiate Geo Planner

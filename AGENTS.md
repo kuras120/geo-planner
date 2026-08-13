@@ -8,7 +8,9 @@ touched area before planning, reviewing, or changing it. Keep detailed rules in
 
 - For non-trivial work, use Protocol A (`$plan-work`) and follow
   `docs/guidelines/project-lifecycle.md`. An explicit request to plan and
-  execute in one task counts as implementation authorization for that scope.
+  execute in one task approves the plan and authorizes implementation for that
+  named scope. Ordinary reversible decisions need no further approval; a newly
+  discovered material owner decision still blocks dependent work until accepted.
 - Use Protocol B (`$implement-change`) for implementation, Protocol C
   (`$maintain-docs`) for durable documentation, Protocol D (`$triage-inbox`)
   for loose notes or `INBOX.md`, and `$review-kotlin-backend` for read-only
@@ -30,7 +32,8 @@ touched area before planning, reviewing, or changing it. Keep detailed rules in
 
 ## Documentation Boundary
 
-- Reusable and copyable unchanged: `.agents/skills/**`,
+- Reusable but locally owned and allowed to evolve with reviewed repository needs:
+  `.agents/skills/**`,
   `docs/guidelines/engineering-guide.md`, technology engineering guides,
   `docs/guidelines/project-lifecycle.md`, `docs/guidelines/research-guide.md`, and
   `docs/guidelines/requirements-guide.md`.

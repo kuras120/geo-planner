@@ -2,6 +2,7 @@
 
 ## Status And Decision Trace
 
+- Status: DEFERRED
 - Evidence checked: 2026-07-28, without downloading map snapshots.
 - Question: which provider limits, calculations, and failure cases must inform
   bounded parcel-based AOI resolution and raster acquisition?

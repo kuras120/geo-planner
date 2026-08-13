@@ -2,6 +2,7 @@
 
 ## Status And Decision Trace
 
+- Status: DEFERRED
 - Evidence reconstructed: 2026-07-28 from the checked-in prototype and
   configuration; no fresh live-service validation was performed.
 - Question: which exact public operations, layers, formats, and legacy failure

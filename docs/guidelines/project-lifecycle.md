@@ -49,10 +49,10 @@ selection, risk acceptance, migration and cutover behavior, and other
 owner-controlled choices. Ordinary reversible implementation details inside an
 already authorized scope do not become additional approval gates.
 
-## Pre-implementation Approval
+## Plan Approval And Implementation Authorization
 
 Before implementation begins, a non-trivial project must make the applicable
-decision surfaces reviewable and record their acceptance:
+decision surfaces reviewable:
 
 1. **Scope and assumptions** — intended outcome, in-scope behavior, boundaries,
    and unresolved product assumptions.
@@ -74,12 +74,19 @@ decision surfaces reviewable and record their acceptance:
    verification, and acceptance evidence.
 
 Small copy, styling, or isolated maintenance changes may combine or omit
-surfaces that are not materially affected. The project states that explicitly
-instead of producing decorative diagrams or irrelevant mockups.
+surfaces that are not materially affected. State why they do not apply instead
+of producing decorative diagrams or irrelevant mockups.
 
-Discussion, review, project edits, and documentation requests do not authorize
-implementation. Implementation begins only when the owner explicitly approves
-it or requests planning and execution together for a named scope.
+The owner approves the plan as a whole; individual surfaces do not require
+separate approval fields or repeated confirmation. Implementation authorization
+remains distinct because discussion, review, project edits, and documentation
+requests do not authorize repository changes.
+
+An explicit request to plan and execute a named scope grants both plan approval
+and implementation authorization for that scope. Ordinary reversible decisions
+within it belong to the implementer. If planning or delivery exposes a new
+material decision reserved for the owner, pause only the dependent work until
+that decision is accepted; unrelated authorized work may continue safely.
 
 ## Lifecycle States
 
@@ -90,12 +97,16 @@ assumptions, open questions, affected flow, failure and migration behavior,
 implementation stages, tests, manual checks, and acceptance criteria.
 Dependent implementation has not started.
 
+Keep non-goals short. Include only adjacent capabilities that a reader could
+reasonably mistake as part of the outcome and whose exclusion affects the
+design. Do not inventory unrelated future work.
+
 ### `APPROVED FOR IMPLEMENTATION`
 
-The owner has explicitly authorized the named scope. Keep progress markers,
-material deviations, new risks, and newly accepted decisions current while
-implementing. Preserve user data and external evidence, and keep destructive or
-network operations explicit.
+The owner has approved the plan and explicitly authorized its named scope. Keep
+progress markers, material deviations, new risks, and newly accepted decisions
+current while implementing. Preserve user data and external evidence, and keep
+destructive or network operations explicit.
 
 ### `IMPLEMENTED`
 
@@ -113,9 +124,15 @@ continuing value.
 
 ### `DONE`
 
-Acceptance and durable documentation are complete. Delete the project file
-after confirming that no durable document links to it and all lasting decisions
-have authoritative homes.
+Acceptance and durable documentation are complete. Delete the project file only
+after confirming that:
+
+- lasting behavior, decisions, limitations, and safety boundaries are recorded
+  in their durable domain, architecture, requirements, research, or guideline
+  owners;
+- repository verification passes, or remaining failures are recorded accurately;
+- no durable document links to the temporary project;
+- temporary narration has been removed or replaced by durable facts.
 
 ## Project Template
 
@@ -125,6 +142,8 @@ have authoritative homes.
 ## Status
 
 - Phase: PROPOSED | APPROVED FOR IMPLEMENTATION | IMPLEMENTED | APPROVED FOR DOCUMENTATION | DONE
+- Plan approval: PENDING | APPROVED
+- Implementation authorization: NOT GRANTED | GRANTED
 
 ## Problem And Outcome
 
@@ -132,7 +151,13 @@ have authoritative homes.
 
 ## Decisions, Assumptions, And Open Questions
 
+## Architecture And Component Composition
+
+## UI And UX Proposal
+
 ## Data Or Runtime Flow
+
+## Failure Behavior, Safety, And Migration
 
 ## Implementation Plan
 
@@ -149,4 +174,5 @@ have authoritative homes.
 ```
 
 Use `[pending]`, `[in-progress]`, and `[done]` so interrupted work can resume
-safely.
+safely. Omit or briefly mark sections that are genuinely unaffected instead of
+creating decorative content.

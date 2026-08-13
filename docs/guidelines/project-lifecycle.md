@@ -1,102 +1,116 @@
-# Project Lifecycle And Protocols
+# Project Lifecycle
 
-Use this workflow for changes that affect behavior, data meaning, architecture, portability, external sources, or multiple repository areas. The reusable procedures are project skills under `.agents/skills/`.
+## Purpose
 
-## Single Active Plan
+Files under `docs/projects/**` are temporary records for bounded, non-trivial
+changes. A project makes its outcome, decisions, implementation state, risks,
+and acceptance evidence reviewable while work is active. It is not a permanent
+roadmap, reusable procedure, or durable architecture owner.
 
-Only one project plan may be in progress. Complete and close it before creating
-another plan, unless the owner explicitly suspends or abandons the active plan.
-A question discovered during delivery may produce bounded research or a durable
-decision referenced by the active plan; it does not by itself authorize a new
-plan or replace the next unresolved gate. After recording that supporting
-material, return to the active plan.
+The execution procedures for planning, implementation, documentation, inbox
+triage, and specialized review live in their repository skills. This guide owns
+only the lifecycle and required shape of a project record.
+
+## Single Active Project
+
+Only one project may be in progress. Complete and close it before creating
+another unless the owner explicitly suspends or abandons the active project.
+
+A question discovered during delivery may produce bounded research or a
+durable decision referenced by the project. It does not authorize another
+project or replace the next unresolved gate. After recording the supporting
+material, return to the active project.
+
+Each project represents one bounded outcome. A later substantial feature gets
+a new project written from scratch even when it follows the same delivery
+cadence or builds on the same foundation.
+
+## Project Link Boundary
+
+A project may link outward to durable requirements, domain, architecture,
+research, and guideline documents. README, AGENTS, skills, durable
+documentation, and other projects must not link to a specific project file.
+This one-way dependency keeps completed project records removable.
 
 ## Interactive Decision Gates
 
-Whenever work reaches a choice reserved for the owner, review it interactively
-before proceeding:
+Whenever work reaches a choice reserved for the owner:
 
-1. present one coherent decision cluster, not a bulk list of unrelated choices;
-2. state the evidence, exact decision, viable options, material tradeoffs, and
-   the recommended option when one is justified;
-3. ask the smallest question that resolves the gate and wait for the owner's
-   answer;
-4. record the accepted decision in the active plan and its durable owner before
+1. present one coherent decision cluster rather than unrelated choices;
+2. state the evidence, exact decision, viable alternatives, material tradeoffs,
+   and recommendation when justified;
+3. ask the smallest question that resolves the gate and wait for the answer;
+4. record the accepted decision in the project and its durable owner before
    implementing dependent work;
-5. continue with the next decision cluster only after the current one is
-   resolved.
+5. continue to the next cluster only after the current one is resolved.
 
-This applies to requirements, architecture, data contracts, source selection,
-scope, risk acceptance, migration/cutover behavior, and other owner-controlled
-choices across all projects. It does not turn ordinary reversible
-implementation details inside an already authorized scope into approval gates.
+This applies to scope, requirements, architecture, data contracts, source
+selection, risk acceptance, migration and cutover behavior, and other
+owner-controlled choices. Ordinary reversible implementation details inside an
+already authorized scope do not become additional approval gates.
 
-## Protocol A: Planning (`$plan-work`)
+## Pre-implementation Approval
 
-Create one proposal in `docs/projects/` with status `PROPOSED`. Include:
+Before implementation begins, a non-trivial project must make the applicable
+decision surfaces reviewable and record their acceptance:
 
-- problem, outcome, scope, and non-goals;
-- confirmed decisions, assumptions, and open questions;
-- affected components and data/runtime flow;
-- failure behavior, data-safety concerns, and migration impact;
-- staged implementation plan;
-- automated tests, required manual checks, and acceptance criteria.
+1. **Scope and assumptions** — intended outcome, in-scope behavior, boundaries,
+   and unresolved product assumptions.
+2. **Architecture** — component responsibilities, dependencies, state ownership,
+   and data/runtime flow. Include a proportionate composition diagram when
+   relationships between three or more components materially affect the design.
+   Keep project diagrams small and decision-focused; use a table, tree or
+   plain-text diagram according to the relationship being explained.
+3. **UI** — for user-facing changes, low-fidelity mockups of primary screens,
+   components, and relevant responsive breakpoints.
+4. **UX** — navigation and interaction flows plus applicable content, empty,
+   loading, offline, unavailable, validation, and failure states.
+5. **Delivery** — implementation stages, migration and safety behavior,
+   verification, and acceptance evidence.
 
-A project file represents one bounded change, not a permanent roadmap or reusable execution loop. Close it after that outcome is accepted. A later substantial feature receives a new plan written from scratch, even when it follows the same delivery cadence or builds on the same foundation.
+Small copy, styling, or isolated maintenance changes may combine or omit
+surfaces that are not materially affected. The project states that explicitly
+instead of producing decorative diagrams or irrelevant mockups.
 
-Project files may link outward to durable documentation. Do not create inbound links to a specific project file from `README.md`, `AGENTS.md`, skills, durable documentation, or another project plan. This keeps temporary plans removable after their decisions and implemented behavior have durable homes.
+Discussion, review, project edits, and documentation requests do not authorize
+implementation. Implementation begins only when the owner explicitly approves
+it or requests planning and execution together for a named scope.
 
-Implementation starts only after the owner explicitly approves it or explicitly requests planning and execution together for a named scope. The agent must not change a plan to `APPROVED FOR IMPLEMENTATION` based on discussion, review, plan edits, documentation requests, or inferred intent.
+## Lifecycle States
 
-## Protocol B: Implementation (`$implement-change`)
+### `PROPOSED`
 
-Implement only the authorized scope, preserve user data, and keep the proposal current. Record material deviations and new risks. Finish with offline verification and identify any network refresh or visual alignment check that remains manual.
+The project defines the problem, outcome, scope, non-goals, decisions,
+assumptions, open questions, affected flow, failure and migration behavior,
+implementation stages, tests, manual checks, and acceptance criteria.
+Dependent implementation has not started.
 
-Set the project to `IMPLEMENTED` and report changed behavior, test results, manual checks, known limitations, and follow-ups. For owner-reviewed work, wait for implementation acceptance before final documentation cleanup.
+### `APPROVED FOR IMPLEMENTATION`
 
-## Protocol C: Documentation (`$maintain-docs`)
+The owner has explicitly authorized the named scope. Keep progress markers,
+material deviations, new risks, and newly accepted decisions current while
+implementing. Preserve user data and external evidence, and keep destructive or
+network operations explicit.
 
-After implementation is accepted, update durable domain, guideline, architecture, and research documents to match behavior. Update visitor-facing README content when purpose, setup, or maturity changed. Remove the temporary proposal only after lasting decisions have a durable home.
+### `IMPLEMENTED`
 
-## Pull Request Closeout
+The requested behavior exists. Record actual verification results, manual
+checks, known limitations, migration or operational impact, and follow-ups.
+For owner-reviewed work, wait for implementation acceptance before durable
+documentation cleanup.
 
-Use `.github/pull_request_template.md` when creating or updating a pull request,
-unless the owner requests another structure. GitHub can surface the file during
-normal PR creation; API- or agent-driven creation must apply it explicitly.
-Keep the four headings even when a section is brief:
+### `APPROVED FOR DOCUMENTATION`
 
-- `What Changed`: implemented behavior and the main repository areas changed;
-- `Why`: the problem, rationale, and material accepted decisions;
-- `Impact`: migration, compatibility, operations, data safety, and user impact;
-- `Verification`: commands and checks with their actual outcomes, separating
-  passed, failed, and not-run work.
+The owner has accepted the implementation result. Transfer lasting behavior,
+decisions, rejected-alternative rationale, configuration, and safety boundaries
+to their durable owners. Remove temporary delivery narration that has no
+continuing value.
 
-Derive the description from the final diff and observed verification results,
-not from intended work alone. Never imply that a failing or skipped gate passed.
-Summarize durable decisions directly instead of linking to a temporary project
-file that will be removed during closeout.
+### `DONE`
 
-## Protocol D: Inbox Triage (`$triage-inbox`)
-
-`INBOX.md` accepts intentionally loose material. Triage it interactively into one primary destination:
-
-| Class | Destination and expected shape |
-| --- | --- |
-| Requirement | After authorized discovery, a `docs/requirements/` application-area file following `docs/guidelines/requirements-guide.md`. |
-| Backlog | Project proposal candidate with value, rough scope, dependencies, and priority rationale. |
-| Research | `docs/research/` question with provenance, evidence needed, and decision it informs. |
-| Decision | Durable domain/guideline statement with rationale and date when time-sensitive. |
-| Risk | Relevant project/domain doc with likelihood, impact, signals, and mitigation. |
-| Archive | Marked duplicate, obsolete, or rejected note with a short reason. |
-
-An inbox note is not verified fact or implementation authorization. Preserve original wording and provenance until classification is accepted. Process one coherent cluster at a time, ask the smallest useful question, write the destination, link it, and only then remove the inbox entry.
-
-## Specialized Review
-
-Use a repository-routed review skill when a change needs technology-specific
-or domain-specific scrutiny. A review skill remains read-only unless the user
-explicitly requests implementation of a named scope; implementation then
-follows Protocol B.
+Acceptance and durable documentation are complete. Delete the project file
+after confirming that no durable document links to it and all lasting decisions
+have authoritative homes.
 
 ## Project Template
 
@@ -104,6 +118,7 @@ follows Protocol B.
 # <Change Name>
 
 ## Status
+
 - Phase: PROPOSED | APPROVED FOR IMPLEMENTATION | IMPLEMENTED | APPROVED FOR DOCUMENTATION | DONE
 
 ## Problem And Outcome
@@ -115,14 +130,18 @@ follows Protocol B.
 ## Data Or Runtime Flow
 
 ## Implementation Plan
+
 1. [pending] <step>
 
 ## Verification And Acceptance
+
 - `<command>`
 - <required manual check>
 
 ## Result
+
 - <temporary implementation summary>
 ```
 
-Use `[pending]`, `[in-progress]`, and `[done]` so interrupted work can resume safely.
+Use `[pending]`, `[in-progress]`, and `[done]` so interrupted work can resume
+safely.

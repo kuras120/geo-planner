@@ -1,11 +1,23 @@
 # Current Public Integrations
 
-## Status
+## Status And Decision Trace
 
-Evidence record reconstructed from the checked-in prototype and current
-configuration on 2026-07-28. This records what the code requests; it is not a
-fresh live-service validation. Endpoints and capabilities can change, so verify
-them before implementing a new adapter.
+- Evidence reconstructed: 2026-07-28 from the checked-in prototype and
+  configuration; no fresh live-service validation was performed.
+- Question: which exact public operations, layers, formats, and legacy failure
+  behavior must inform replacement ULDK, WMS, and APP adapters?
+- Completed outputs: [ACQUIRE-001](../requirements/layer-acquisition.md) owns
+  safe acquisition, [LAYER-004](../requirements/layer-viewing.md) owns raster
+  interpretation, and the
+  [target architecture](../architecture/target-product-architecture.md) owns
+  provider-adapter and catalog boundaries.
+- Remaining work: validate the exact live endpoint, capabilities, licence,
+  coverage, and operational limits for each adapter slice.
+- Return before: implementing or materially changing any ULDK, ORTO, KIEG,
+  KINA, KIUT, or APP adapter.
+
+This document records what legacy code requests, not what a current public
+service guarantees.
 
 ## Integrations Used by the Prototype
 
@@ -55,32 +67,9 @@ planning WMS image. The ortho snapshot is the only current background image.
 `d3-geo` is a required runtime dependency for vector projection/rendering, not
 a map-data provider.
 
-## Adapter Families Needed in a Generic Product
-
-| Adapter family | Responsibility |
-| --- | --- |
-| Cadastral parcel resolver | Convert jurisdiction-specific parcel identifiers into normalized geometry and source metadata |
-| OGC map-image client | Discover capabilities and request WMS images with explicit layer, style, CRS, bbox, dimensions, and format |
-| Planning-data adapter | Normalize municipality-specific GML/XML structures into product concepts |
-| Basemap configuration | Select permitted background maps and preserve attribution |
-| Source evidence recorder | Retain request parameters, retrieval time, service identity, and uncertainty |
-
-## Portability Gap
-
-WMS is reusable, but layer names, coordinate systems, styles, formats, response
-limits, and municipal planning schemas vary. A generic implementation therefore
-needs capability discovery and provider adapters rather than a universal
-hard-coded URL builder.
-
-## Candidates Requiring Separate Validation
-
-- elevation point or terrain models suitable for quantitative analysis;
-- environmental and flood-risk services;
-- utility-network data with lawful public access;
-- planning-data services outside the prototype municipality.
-
-For each candidate, verify official ownership, terms, coverage, update cadence,
-identifiers, CRS support, failure behavior, and redistribution rights.
+Provider normalization, capability discovery, allowlisting, provenance, and
+portability are owned by the target architecture. Sources beyond the legacy
+set are evaluated in [Candidate Map Layers](additional-map-layers.md).
 
 ## KIEG Land Classification Evidence
 

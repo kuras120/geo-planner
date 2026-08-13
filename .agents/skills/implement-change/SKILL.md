@@ -5,6 +5,13 @@ description: Implement an approved or explicitly requested repository change wit
 
 # Protocol B: Implementation
 
+## Primary Guidance
+
+Read `docs/guidelines/project-lifecycle.md` completely and the active project
+record before changing behavior. The lifecycle guide owns authorization,
+progress state, implementation acceptance, and closeout; this skill owns the
+implementation procedure.
+
 1. Read `AGENTS.md` and every document it routes for the affected area, including the active approved project file when one exists.
 2. Confirm the requested scope and inspect existing user changes before editing.
 3. Implement in small vertical slices. Follow repository-owned boundaries for configuration, code, generated artifacts, and user data instead of inventing new ownership rules in the skill.

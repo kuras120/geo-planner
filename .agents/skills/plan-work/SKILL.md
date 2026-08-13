@@ -5,6 +5,13 @@ description: Plan non-trivial repository changes before implementation. Use when
 
 # Protocol A: Planning
 
+## Primary Guidance
+
+Read `docs/guidelines/project-lifecycle.md` completely. It is the authoritative
+contract for project scope, decision gates, approval, status, progress, and
+closeout. Use `docs/guidelines/research-guide.md` as the second primary guide
+when the project creates or depends on bounded research.
+
 1. Read `AGENTS.md` and every document it routes for the affected area.
 2. Inspect implemented behavior and current worktree state. Separate facts, assumptions, and open decisions.
 3. Create one cohesive proposal under `docs/projects/` using `docs/guidelines/project-lifecycle.md`.

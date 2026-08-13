@@ -7,6 +7,13 @@ description: Review Kotlin and Spring backend code or designs as a senior princi
 
 Review Kotlin backend work for correctness, idiomatic Kotlin, system boundaries, operability, and maintainability. Lead with actionable evidence and preserve the repository's ownership rules.
 
+## Primary Guidance
+
+Read `docs/guidelines/kotlin-backend-engineering-guide.md` and
+`docs/guidelines/engineering-guide.md` completely. The first defines the Kotlin
+and Spring review standard; the second defines repository-wide design, safety,
+verification, documentation, and review priorities.
+
 ## Required Context
 
 Read `AGENTS.md` and every document it routes for Kotlin/backend work, including

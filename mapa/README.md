@@ -65,6 +65,23 @@ metadata, plan source/schema, services, raster paths, and source note.
 Changing the bbox, CRS, or project location requires refreshing every bound
 source and raster, not only rebuilding HTML.
 
+The builder accepts an explicit project-map directory. The focused
+`tests.test_project_fixtures` test builds two synthetic project datasets through
+the same production template and `build_map.build(map_dir)` entry point without
+source-code changes:
+
+- `tests/fixtures/projects/single-xy`: one parcel in EPSG:2180, with XY GML
+  coordinates and XY WMS 1.3 bbox serialization;
+- `tests/fixtures/projects/multi-yx`: adjacent parcels in EPSG:2178, with YX
+  GML coordinates and YX WMS 1.3 bbox serialization.
+
+These directory names are test labels, not product IDs or real locations. The
+test proves deterministic legacy assembly for those two configurations. It
+does not prove that arbitrary CRS/provider combinations work or that acquisition
+is portable. The legacy provider adapters and fixed raster layer catalog remain
+specialized, and adding another layer kind still requires legacy interface and
+configuration changes.
+
 ## Source Refresh
 
 Source refresh is destructive to checked-in snapshots and requires an explicit

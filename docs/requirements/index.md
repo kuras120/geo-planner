@@ -5,7 +5,7 @@
 - Last updated: 2026-07-28
 - Completed means: `VERIFIED`
 - Prototype migration discovery was accepted by the owner on 2026-07-28.
-  Counts describe accepted requirements, not implementation authorization or a
+  Counts describe accepted requirements, not permission to implement them or a
   completed backlog.
 
 Create an application-area file only when discovery has produced at least one

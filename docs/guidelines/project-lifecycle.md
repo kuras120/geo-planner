@@ -49,7 +49,7 @@ selection, risk acceptance, migration and cutover behavior, and other
 owner-controlled choices. Ordinary reversible implementation details inside an
 already authorized scope do not become additional approval gates.
 
-## Plan Approval And Implementation Authorization
+## Pre-implementation Review
 
 Before implementation begins, a non-trivial project must make the applicable
 decision surfaces reviewable:
@@ -77,16 +77,16 @@ Small copy, styling, or isolated maintenance changes may combine or omit
 surfaces that are not materially affected. State why they do not apply instead
 of producing decorative diagrams or irrelevant mockups.
 
-The owner approves the plan as a whole; individual surfaces do not require
-separate approval fields or repeated confirmation. Implementation authorization
-remains distinct because discussion, review, project edits, and documentation
-requests do not authorize repository changes.
+The owner approves the plan as a whole by moving it to `APPROVED FOR
+IMPLEMENTATION`; individual surfaces do not require separate fields or repeated
+confirmation. Discussion, review, project edits, and documentation requests do
+not change the phase.
 
-An explicit request to plan and execute a named scope grants both plan approval
-and implementation authorization for that scope. Ordinary reversible decisions
-within it belong to the implementer. If planning or delivery exposes a new
-material decision reserved for the owner, pause only the dependent work until
-that decision is accepted; unrelated authorized work may continue safely.
+An explicit request to plan and execute a named scope lets the project move
+directly to `APPROVED FOR IMPLEMENTATION`. Ordinary reversible decisions within
+it belong to the implementer. If planning or delivery exposes a new material
+decision reserved for the owner, pause only the dependent work until that
+decision is accepted; unrelated approved work may continue safely.
 
 ## Lifecycle States
 
@@ -142,8 +142,6 @@ after confirming that:
 ## Status
 
 - Phase: PROPOSED | APPROVED FOR IMPLEMENTATION | IMPLEMENTED | APPROVED FOR DOCUMENTATION | DONE
-- Plan approval: PENDING | APPROVED
-- Implementation authorization: NOT GRANTED | GRANTED
 
 ## Problem And Outcome
 

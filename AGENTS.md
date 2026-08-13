@@ -8,9 +8,10 @@ touched area before planning, reviewing, or changing it. Keep detailed rules in
 
 - For non-trivial work, use Protocol A (`$plan-work`) and follow
   `docs/guidelines/project-lifecycle.md`. An explicit request to plan and
-  execute in one task approves the plan and authorizes implementation for that
-  named scope. Ordinary reversible decisions need no further approval; a newly
-  discovered material owner decision still blocks dependent work until accepted.
+  execute in one task lets the project enter `APPROVED FOR IMPLEMENTATION` for
+  that named scope. Ordinary reversible decisions need no further approval; a
+  newly discovered material owner decision still blocks dependent work until
+  accepted.
 - Use Protocol B (`$implement-change`) for implementation, Protocol C
   (`$maintain-docs`) for durable documentation, Protocol D (`$triage-inbox`)
   for loose notes or `INBOX.md`, and `$review-kotlin-backend` for read-only

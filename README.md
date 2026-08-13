@@ -41,5 +41,5 @@ Use `mise run assemble` to produce backend and frontend application artifacts.
 - [Target product architecture](docs/architecture/target-product-architecture.md)
 - [Map domain and safety contracts](docs/domain/map-domain.md)
 - [Requirements portfolio](docs/requirements/index.md)
-- [Project lifecycle and work protocols](docs/guidelines/project-lifecycle.md)
+- [Project lifecycle](docs/guidelines/project-lifecycle.md)
 - [Legacy map operation](mapa/README.md)

@@ -6,7 +6,8 @@ This document describes the accepted target boundaries for the replacement appli
 
 ## System Boundary
 
-Geo Planner evolves from the local Python/HTML prototype into a thin Angular/OpenLayers client backed by a Kotlin/Spring Boot modular monolith:
+Geo Planner evolves from the local Python/HTML prototype into a thin
+Angular/OpenLayers client backed by one Kotlin/Spring Boot application:
 
 ```text
 thin Angular/OpenLayers client
@@ -29,6 +30,49 @@ thin Angular/OpenLayers client
 ```
 
 The frontend owns presentation, OpenLayers rendering, forms, and transient interaction state. The backend owns authoritative projects and overlays, trusted provider configuration, acquisition, validation, caching, provenance, and export assembly.
+
+## Frontend Technology Decision
+
+Angular was selected because it matches the owner's experience and provides a
+coherent structure for an application expected to grow beyond one map page.
+OpenLayers is used directly behind application-owned adapters because the
+product needs WMS, multiple projections, raster and vector rendering, editing,
+and explicit control of map behavior. An Angular wrapper would add another
+compatibility boundary without owning those spatial requirements.
+
+React remained viable but did not provide a benefit that justified defining
+more application conventions locally. MapLibre GL JS becomes worth
+re-evaluating if vector tiles replace WMS, mixed projections, and raster
+evidence as the dominant workload. SvelteKit was not selected because its
+smaller alignment with the owner's experience and established application
+conventions outweighed its component brevity. The generated HTML application
+remains migration evidence and a legacy runtime, not a target frontend.
+
+Reassess this decision only if the dominant map delivery model changes, a
+mobile-native client becomes a primary requirement, the application proves
+permanently too small for Angular, or OpenLayers loses a required spatial
+capability.
+
+## Backend Technology Decision
+
+The backend uses Kotlin, Spring Boot, Spring MVC, Gradle Kotlin DSL, and Kotest.
+Spring MVC is the simplest model that satisfies the current HTTP contracts and
+blocking provider and persistence integrations. Ktor remained viable but would
+require more application conventions and integrations to be assembled locally.
+WebFlux is not justified by the present workload; reassess it only when measured
+concurrency or streaming behavior cannot be handled clearly and safely with the
+current model.
+
+The application is not currently organized or described as a modular
+monolith. Keep capability boundaries clear in code, but introduce explicitly
+enforced domain modules only when several distinct domains and their dependency
+boundaries create a demonstrated need. Do not create empty modules in
+anticipation of that growth.
+
+Spring Security, PostGIS, a message broker, or other infrastructure enters the
+architecture only with an accepted requirement, an operational owner, and a
+verification strategy. The build and pinned toolchain own exact JDK, Kotlin,
+Spring, Gradle, and test-library versions.
 
 PostgreSQL state and filesystem/object artifact storage are adapters behind
 deployment-neutral

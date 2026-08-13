@@ -40,6 +40,23 @@
 - Finish changes with the repository verification entry point routed by
   `AGENTS.md`; report any manual checks or unavailable gates separately.
 
+## Technical Documentation
+
+- Present evidence and current facts before conclusions or proposals.
+- Describe an accepted model positively: state what the system does and which
+  boundary it adopts. Do not define it by listing rejected mechanisms.
+- Put considered but unselected approaches under **Alternatives Considered**. Give
+  each one an explicit status such as **Rejected**, **Rejected for now**, or
+  **Deferred**, followed by the reason and, when useful, the condition for revisiting
+  it.
+- Keep open decisions separate from findings, accepted decisions, and alternatives.
+- Use the order **Findings**, **Decision** or **Accepted Model**, **Alternatives
+  Considered**, and **Open Decisions** when all four are present.
+- Use Mermaid for durable architecture, data-flow, state, or interaction
+  diagrams when the relationships are materially clearer visually than in
+  prose or a compact table. Keep diagrams focused, label boundaries and
+  direction explicitly, and update them with the model they document.
+
 ## Specialized Guides
 
 - `angular-engineering-guide.md` defines transferable Angular, API-client,

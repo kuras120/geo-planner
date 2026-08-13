@@ -118,6 +118,23 @@ the area index and regenerate the portfolio tables:
 The `verify-requirements` mise task runs the read-only check and rejects stale
 statistics.
 
+## Pull Request Closeout
+
+Use `.github/pull_request_template.md` when creating or updating a pull request
+unless the owner requests another structure. GitHub can surface it during
+normal PR creation; API- or agent-driven creation must apply it explicitly.
+Keep the four headings even when a section is brief:
+
+- `What Changed`: implemented behavior and main repository areas changed;
+- `Why`: the problem, rationale, and material accepted decisions;
+- `Impact`: migration, compatibility, operations, data safety, and user impact;
+- `Verification`: actual commands and checks, separating passed, failed, and
+  not-run work.
+
+Derive the description from the final diff and observed verification, not
+intended work. Never imply that a failing or skipped gate passed. Summarize
+durable decisions directly instead of linking to a temporary project file.
+
 ## Generated And Local Files
 
 Build output, test reports, browser artifacts, local runtime state, and generated

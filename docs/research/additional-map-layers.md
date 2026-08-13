@@ -1,8 +1,23 @@
 # Candidate Map Layers
 
-Status checked: 20 July 2026. Service capabilities and legal meaning must be rechecked before implementation.
+## Status And Decision Trace
 
-## Recommended Priority
+- Evidence checked: 2026-07-20 from the official sources below.
+- Question: which source layer should be evaluated as the first catalog
+  extension after the accepted MVP layer set?
+- Completed output: candidate families, likely integration shapes, and primary
+  interpretation risks are linked from the
+  [map domain](../domain/map-domain.md). No candidate has been accepted for
+  delivery.
+- Open decision: select one layer for source validation, requirements discovery,
+  and an implementation proposal.
+- Return before: creating a requirement or project for any additional layer, or
+  treating one as available in the trusted catalog.
+
+Service capabilities, licensing, coverage, update cadence, reliability, and
+legal meaning must be rechecked before selecting or implementing a layer.
+
+## Candidate Evaluation Order
 
 | Priority | Layer | Value | Integration shape | Main caution |
 | --- | --- | --- | --- | --- |
@@ -30,5 +45,6 @@ Status checked: 20 July 2026. Service capabilities and legal meaning must be rec
 ## Evaluation Rule
 
 Promote a source to the trusted catalog only after capability, licensing,
-coverage, update-cadence, and reliability review. Delivery order belongs to an
-owner-approved feature plan.
+coverage, update-cadence, reliability, provenance, and uncertainty review. The
+table is an evaluation order, not an accepted roadmap; delivery requires an
+accepted requirement and project.

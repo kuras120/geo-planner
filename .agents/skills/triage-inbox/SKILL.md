@@ -5,6 +5,13 @@ description: Interactively turn loose repository notes or pasted material into r
 
 # Protocol D: Inbox Triage
 
+## Primary Guidance
+
+Read `docs/guidelines/requirements-guide.md` and
+`docs/guidelines/research-guide.md` completely before routing an item to either
+destination. Read `docs/guidelines/project-lifecycle.md` when an item becomes a
+bounded project candidate rather than research or a requirement.
+
 1. Read `AGENTS.md`, the repository inbox when one exists, relevant durable docs, and active project records. Do not treat an inbox statement as verified fact or implementation approval.
 2. Process one coherent cluster at a time. Restate it briefly and ask only the decision needed to classify it when intent is ambiguous.
 3. Assign each item to exactly one primary destination:

@@ -1,6 +1,6 @@
 # Prototype Behavior Inventory
 
-## Status And Evidence
+## Status And Decision Trace
 
 Observed on 2026-07-25 and expanded through code/configuration tracing on
 2026-07-28 from:
@@ -12,26 +12,22 @@ Observed on 2026-07-25 and expanded through code/configuration tracing on
 - `mapa/project-config.json` and `mapa/map-config.json`;
 - the generated map served by `edit-map.sh` on loopback.
 
-This is migration evidence for the current prototype, not a statement that
-every behavior should be retained. Owner decisions must separate intended
-product behavior from prototype constraints before requirements are accepted.
+- Question: what does the retained legacy application observably do, and which
+  evidence must remain available for implementation comparison and cutover?
+- Completed outputs: owner classification and accepted target behavior are
+  recorded in [requirements](../requirements/index.md); migration state and
+  cutover evidence are tracked in the
+  [parity ledger](prototype-migration-parity-ledger.md); current legacy runtime
+  flow is owned by [Map Build Flow](../architecture/map-build-flow.md).
+- Remaining use: compare each replacement capability against observed legacy
+  success, degraded, failure, interaction, persistence, and spatial behavior.
+- Return when: implementing a corresponding capability, changing legacy
+  behavior or characterization tests, advancing a parity row, or proposing
+  legacy cutover.
 
-## Inventory Depth
-
-The migration unit is a user capability or source layer, not a function name.
-Every retained item must eventually answer:
-
-1. what the user is trying to learn or accomplish;
-2. which inputs, source snapshot, CRS, and project configuration it uses;
-3. what appears on screen and what interaction is possible;
-4. which build, browser, persistence, and provider paths implement it;
-5. what the user sees for missing, empty, stale, partial, or invalid data;
-6. whether the behavior is intended, accidental, obsolete, or still undecided;
-7. which delivery stage and requirement domain own it.
-
-The sections below apply this depth to the current prototype. Low-level
-cardinality such as “a LineString requires two points” is supporting evidence,
-not a complete feature description.
+This is migration evidence, not a requirement that every prototype behavior be
+retained. Requirements and the parity ledger identify accepted replacements
+and explicitly discarded constraints.
 
 ## User-visible Surface
 
@@ -143,10 +139,10 @@ Finishing assigns a generated ID, the entered name or `Szkic`, and category
 This is geometrically coherent but interactionally under-specified. The user
 must choose semantic intent before drawing, the preview does not explain
 open-versus-closed geometry, a visually closed LineString is never converted,
-and an unfinished Polygon can resemble a path until completion. The owner has
-flagged this as a migration-design question: retain multi-vertex lines, but do
-not automatically preserve the prototype's mode and completion UX merely
-because its geometry is valid.
+and an unfinished Polygon can resemble a path until completion. The accepted
+replacement retains multi-vertex lines with explicit geometry intent and
+finish/cancel/undo behavior; the prototype interaction is evidence, not the
+target contract.
 
 Undo point affects only the current draft. Undo last feature removes the last
 entry from the editable local list, which is not necessarily the last feature
@@ -161,9 +157,10 @@ Manual-feature identity is derived in this order:
 3. serialized geometry.
 
 A local feature replaces an embedded feature with the same identity. A second
-deduplication pass collapses identical serialized geometries. This merge and
-replacement behavior is an implementation rule that requires an owner decision
-before it becomes a target contract.
+deduplication pass collapses identical serialized geometries. The accepted
+replacement uses backend-assigned immutable identity and permits geometric
+duplicates, so this merge rule remains legacy evidence rather than a target
+contract.
 
 ## Persistence And Export
 
@@ -264,6 +261,6 @@ multi-vertex LineString round-trip. It does not yet characterize:
 - local-storage failure behavior;
 - hot-reload state loss and failure visibility.
 
-These gaps are the input to the next trace and characterization stages. No
-functional migration requirement should treat an unreviewed prototype accident
-as accepted behavior.
+These gaps identify legacy evidence that may still be required for parity or
+cutover. They do not reopen accepted target behavior or make an uncharacterized
+prototype accident a product contract.

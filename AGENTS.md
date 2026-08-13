@@ -32,7 +32,7 @@ touched area before planning, reviewing, or changing it. Keep detailed rules in
 
 - Reusable and copyable unchanged: `.agents/skills/**`,
   `docs/guidelines/engineering-guide.md`, technology engineering guides,
-  `docs/guidelines/project-lifecycle.md`, and
+  `docs/guidelines/project-lifecycle.md`, `docs/guidelines/research-guide.md`, and
   `docs/guidelines/requirements-guide.md`.
 - Repository-specific and recreated for another repository: root `README.md`,
   `AGENTS.md`, `docs/guidelines/repository-guide.md`, and all content under
@@ -74,6 +74,7 @@ touched area before planning, reviewing, or changing it. Keep detailed rules in
 | Product concepts, spatial data, provenance, uncertainty, or safety | relevant `docs/domain/**` and `docs/requirements/**` |
 | Runtime boundaries, persistence, storage, API contracts, or integrations | relevant `docs/architecture/**` and `docs/research/**` |
 | Requirements discovery or writing | `docs/guidelines/requirements-guide.md`; create requirement files only after owner-authorized discovery |
+| Research creation, review, or closeout | `docs/guidelines/research-guide.md`, relevant durable docs, and the active project when applicable |
 | Angular feature, API client, component, state, rendering adapter, or frontend test | `docs/guidelines/angular-engineering-guide.md`, `docs/architecture/target-product-architecture.md`, accepted requirements, and a feature-specific plan |
 | Planned Kotlin/Spring backend, provider adapter, or persistence | accepted requirements, `docs/guidelines/kotlin-backend-engineering-guide.md`, relevant architecture and research, and a backend plan |
 | Kotlin/Spring backend review | `$review-kotlin-backend` and all backend documents routed above |

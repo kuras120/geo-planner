@@ -52,10 +52,11 @@
 - Keep open decisions separate from findings, accepted decisions, and alternatives.
 - Use the order **Findings**, **Decision** or **Accepted Model**, **Alternatives
   Considered**, and **Open Decisions** when all four are present.
-- Use Mermaid for durable architecture, data-flow, state, or interaction
-  diagrams when the relationships are materially clearer visually than in
-  prose or a compact table. Keep diagrams focused, label boundaries and
-  direction explicitly, and update them with the model they document.
+- In durable documents under `docs/architecture/**`, use Mermaid when component
+  relationships, dependencies, state ownership, or runtime flows are materially
+  easier to assess graphically. Keep each diagram focused and explain the important
+  boundaries in the surrounding text. Temporary project plans use the simpler
+  composition views defined by the project lifecycle.
 
 ## Specialized Guides
 

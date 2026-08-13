@@ -59,10 +59,15 @@ decision surfaces reviewable and record their acceptance:
 2. **Architecture** — component responsibilities, dependencies, state ownership,
    and data/runtime flow. Include a proportionate composition diagram when
    relationships between three or more components materially affect the design.
-   Keep project diagrams small and decision-focused; use a table, tree or
-   plain-text diagram according to the relationship being explained.
+   Keep project diagrams small and decision-focused; use a table, tree, or fenced
+   plain-text diagram according to the relationship being explained. Project plans
+   favor these quick, directly readable views; durable architecture documentation
+   uses the Mermaid convention defined by the engineering guide.
 3. **UI** — for user-facing changes, low-fidelity mockups of primary screens,
-   components, and relevant responsive breakpoints.
+   components, and relevant responsive breakpoints. Include PNG previews for
+   material UI changes. Present mobile screens in portrait and desktop screens in
+   landscape at representative viewport dimensions so each layout can be assessed
+   in its intended form factor.
 4. **UX** — navigation and interaction flows plus applicable content, empty,
    loading, offline, unavailable, validation, and failure states.
 5. **Delivery** — implementation stages, migration and safety behavior,

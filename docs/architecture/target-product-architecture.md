@@ -1,6 +1,6 @@
 # Target Product Architecture
 
-## Status
+## Status And Scope
 
 This document is the entry point for accepted target system boundaries. The
 repository contains Angular and Kotlin/Spring Boot application foundations plus

@@ -62,7 +62,7 @@ decision surfaces reviewable:
    Keep project diagrams small and decision-focused; use a table, tree, or fenced
    plain-text diagram according to the relationship being explained. Project plans
    favor these quick, directly readable views; durable architecture documentation
-   uses the Mermaid convention defined by the engineering guide.
+   uses the repository's durable architecture convention.
 3. **UI** — for user-facing changes, low-fidelity mockups of primary screens,
    components, and relevant responsive breakpoints. Include PNG previews for
    material UI changes. Present mobile screens in portrait and desktop screens in

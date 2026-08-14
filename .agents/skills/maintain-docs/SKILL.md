@@ -5,15 +5,12 @@ description: Create or update durable repository documentation so it matches imp
 
 # Protocol C: Documentation
 
-## Primary Guidance
+## Primary Guide
 
-Read `docs/guidelines/engineering-guide.md`, especially Technical
-Documentation. When creating, compacting, or closing research, also read
-`docs/guidelines/research-guide.md` completely. The repository guide and routed
-domain/architecture/requirements documents still decide project-specific
-ownership.
+- `docs/guidelines/engineering-guide.md` defines the structure and quality
+  rules for technical documentation.
 
-1. Read `AGENTS.md`, the implementation, and every routed document for the affected area; describe observed behavior, not intentions.
+1. Read `AGENTS.md`, the implementation, and every document it routes for the affected area; describe observed behavior, not intentions.
 2. Keep the root README lean: purpose, safety boundary, quick start, and essential durable entry points. Do not make temporary project files permanent navigation.
 3. Follow repository-defined document ownership. When the repository uses the conventional `docs/` layout, keep commands in its repository guide, functional requirements in `requirements/`, invariants and terminology in `domain/`, design flow in `architecture/`, reusable evidence in `research/`, and temporary delivery state in `projects/`.
 4. Treat `AGENTS.md` as owner-controlled permanent policy. Never modify it unless the owner explicitly requests that exact change or approves proposed wording. Keep task-specific or temporary instructions elsewhere.

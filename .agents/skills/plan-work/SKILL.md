@@ -5,12 +5,12 @@ description: Plan non-trivial repository changes before implementation. Use when
 
 # Protocol A: Planning
 
-## Primary Guidance
+## Primary Guides
 
-Read `docs/guidelines/project-lifecycle.md` completely. It is the authoritative
-contract for project scope, decision gates, approval, status, progress, and
-closeout. Use `docs/guidelines/research-guide.md` as the second primary guide
-when the project creates or depends on bounded research.
+- `docs/guidelines/project-lifecycle.md` defines project structure, decision
+  gates, approval, progress, and closeout.
+- `docs/guidelines/engineering-guide.md` defines the technical, safety,
+  verification, and documentation standards applied to the proposal.
 
 1. Read `AGENTS.md` and every document it routes for the affected area.
 2. Inspect implemented behavior and current worktree state. Separate facts, assumptions, and open decisions.

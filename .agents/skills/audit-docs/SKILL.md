@@ -7,17 +7,14 @@ description: Audit and compact repository documentation while preserving durable
 
 Reduce documentation entropy. Prefer one authoritative home for each fact or rule and delete repetition after preserving unique evidence.
 
-## Primary Guidance
+## Primary Guide
 
-Read `docs/guidelines/research-guide.md` and
-`docs/guidelines/project-lifecycle.md` completely. They define when research
-and temporary project files remain useful, how their outcomes become durable,
-and when deletion is correct. Use `docs/guidelines/engineering-guide.md` for
-technical-writing structure while compacting durable documents.
+- `docs/guidelines/engineering-guide.md` defines the quality and structure
+  expected from technical documentation.
 
 ## Guardrails
 
-- Read `AGENTS.md`, the documentation and lifecycle guidance it routes, and the documentation-maintenance skill.
+- Read `AGENTS.md`, every document it routes for documentation work, and the documentation-maintenance skill.
 - Do not modify `AGENTS.md` without explicit owner authorization for the exact change.
 - Preserve user edits and sourced evidence. Do not delete an active project merely to reduce file count.
 - Never add a durable inbound link to a specific `docs/projects/**` file.

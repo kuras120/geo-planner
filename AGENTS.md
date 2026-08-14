@@ -35,7 +35,8 @@ touched area before planning, reviewing, or changing it. Keep detailed rules in
 
 - Reusable but locally owned and allowed to evolve with reviewed repository needs:
   `.agents/skills/**`,
-  `docs/guidelines/engineering-guide.md`, technology engineering guides,
+  `docs/guidelines/engineering-guide.md`, domain and architecture documentation
+  guides, technology engineering guides,
   `docs/guidelines/project-lifecycle.md`, `docs/guidelines/research-guide.md`, and
   `docs/guidelines/requirements-guide.md`.
 - Repository-specific and recreated for another repository: root `README.md`,
@@ -46,6 +47,9 @@ touched area before planning, reviewing, or changing it. Keep detailed rules in
   application may keep `mapa/README.md` as the single exception while it remains
   runnable. Put other operational detail in the repository guide and durable
   technical detail in its owning docs category.
+- Do not link agent-facing reusable guides from the root README. The
+  repository guide is the only guideline linked there because it owns human
+  setup and command discovery.
 
 ## Repository Map
 
@@ -75,8 +79,8 @@ touched area before planning, reviewing, or changing it. Keep detailed rules in
 | Task or touched area | Read before work |
 | --- | --- |
 | Any repository change | `docs/guidelines/repository-guide.md` and `docs/guidelines/engineering-guide.md` |
-| Product concepts, spatial data, provenance, uncertainty, or safety | relevant `docs/domain/**` and `docs/requirements/**` |
-| Runtime boundaries, persistence, storage, API contracts, or integrations | relevant `docs/architecture/**` and `docs/research/**` |
+| Product concepts, spatial data, provenance, uncertainty, or safety | `docs/guidelines/domain-guide.md`, relevant `docs/domain/**`, and `docs/requirements/**` |
+| Runtime boundaries, persistence, storage, API contracts, or integrations | `docs/guidelines/architecture-guide.md`, relevant `docs/architecture/**`, and `docs/research/**` |
 | Requirements discovery or writing | `docs/guidelines/requirements-guide.md`; create requirement files only after owner-authorized discovery |
 | Research creation, review, or closeout | `docs/guidelines/research-guide.md`, relevant durable docs, and the active project when applicable |
 | Angular feature, API client, component, state, rendering adapter, or frontend test | `docs/guidelines/angular-engineering-guide.md`, `docs/architecture/target-product-architecture.md`, accepted requirements, and a feature-specific plan |
@@ -84,7 +88,7 @@ touched area before planning, reviewing, or changing it. Keep detailed rules in
 | Kotlin/Spring backend review | `$review-kotlin-backend` and all backend documents routed above |
 | Non-trivial planning and delivery | `docs/guidelines/project-lifecycle.md` and the active `docs/projects/**` file |
 | Loose notes, links, ideas, or requirements | `INBOX.md`, `$triage-inbox`, and relevant requirement/domain/research docs |
-| Documentation or repository routing | `$maintain-docs` plus implemented behavior and affected durable docs |
+| Documentation or repository routing | `$maintain-docs`, the relevant category guide, implemented behavior, and affected durable docs |
 | Legacy application use or migration evidence | `mapa/README.md`, the minimum necessary implementation files, relevant domain docs, and migration research |
 
 ## Repository-Specific Instructions

@@ -3,9 +3,9 @@
 ## Status And Scope
 
 This document owns the terminology, evidence classes, spatial invariants, and
-safety meaning of the retained map workflow. Its configuration and lifecycle
-details describe the current Python/HTML application, not the complete target
-product model.
+safety meaning of the retained map workflow. It describes legacy meaning, not
+the complete target product model. Runtime, build, parser, and persistence flow
+are owned by [Map Build Flow](../architecture/map-build-flow.md).
 
 The Spatial Evidence domain model is defined in
 [Spatial Evidence Domain](spatial-evidence.md); accepted behavior is indexed in
@@ -23,17 +23,16 @@ Every displayed statement has one of three evidence classes:
 
 The interface must not blur these classes. Unverified ownership, access, utility, or development claims remain qualified in their status or description.
 
-## Project Contract
+## Legacy Project Identity And Spatial Contract
 
-`mapa/project-config.json` is the single source of project-specific build and acquisition settings:
+`mapa/project-config.json` is the single source of legacy project identity and
+spatial meaning:
 
 - `projectId` is a stable lowercase identifier and namespaces browser storage;
 - `title`, `description`, `locale`, and `sourceNote` define project-facing text;
-- `outputFile` names the standalone generated map;
 - `crs`, `bbox`, `wms130AxisOrder`, and `rasterSize` define the spatial frame;
 - `precinctId` and `parcels` define ULDK requests and parcel metadata;
-- `plan` identifies the GML file, schema namespace, source date, and coordinate order;
-- `services` and `rasters` define acquisition endpoints and local raster paths.
+- `plan` identifies the GML file, schema namespace, source date, and coordinate order.
 
 `mapa/map-config.json` owns presentation only. It must not contain the bbox, CRS, parcel identity, source URLs, or facts about a property.
 
@@ -42,24 +41,34 @@ The interface must not blur these classes. Unverified ownership, access, utility
 - Coordinates embedded in the current map, source parcel files, manual overlays, and raster footprint must use the configured CRS.
 - `bbox` uses `[minX, minY, maxX, maxY]` regardless of WMS axis order.
 - `wms130AxisOrder` controls request serialization, not the internal coordinate model.
-- `plan.coordinateOrder` describes pairs in `gml:posList`; the builder normalizes them to `[x, y]`.
+- Source coordinate order is explicit; normalized planning coordinates use
+  `[x, y]`.
 - Raster files do not carry georeferencing in the HTML. Each is stretched over the configured bbox and must be refreshed after bbox or CRS changes.
 - Parcel numbers and source filenames are unique inside one project.
 - A new `projectId` must be used for a spatially distinct project to prevent browser sketch leakage.
 
-## Data Lifecycles
+## Evidence And User Data Meaning
 
-`sources/` and `assets/` are snapshots. `update-sources.sh` replaces them through explicit network calls. `build-map.sh` reads snapshots but never downloads data.
+`sources/` and `assets/` are external-evidence snapshots, not disposable build
+output. Their source identity and observation date qualify any interpretation.
 
-`manual-overlays.json` is persistent local user data and is ignored by Git. If it is missing, the build creates it from the tracked empty `manual-overlays.example.json`; initialization never replaces an existing file. The localhost editor writes the local file atomically after validating a GeoJSON-like `FeatureCollection`. When a generated file is opened directly, new sketches stay in browser storage under a project-specific key until exported.
+`manual-overlays.json` and project-namespaced browser sketches are private local
+user data. They are not fixtures, source evidence, or generated artifacts and
+must not be replaced by initialization or ordinary verification.
 
-Generated HTML embeds configuration, parsed vectors, rasters, and local overlays at build time. It is ignored by Git because it may contain private user notes, and it must be rebuilt whenever one of those inputs changes.
+Generated HTML is a derived delivery artifact. It may contain embedded evidence
+and private notes, so it is not an authoritative data owner and is never tracked.
 
 ## Supported Geometry
 
-The parcel parser accepts WKT `POLYGON` and `MULTIPOLYGON`, including multiple rings. The browser renderer supports Point, LineString, Polygon, and their Multi variants for display; interactive drawing creates the three single-geometry variants.
+Legacy parcel evidence supports Polygon and MultiPolygon geometry, including
+multiple rings. The displayed model supports Point, LineString, Polygon, and
+their Multi variants; interactive sketches use the three single-geometry types.
 
-The planning parser currently targets the configured APP schema namespace and extracts `StrefaPlanistyczna` and `ObszarUzupelnieniaZabudowy`. Its handling of complex GML surfaces remains conservative: confirm holes and multi-surface semantics visually against the authoritative source.
+Planning evidence distinguishes `StrefaPlanistyczna` and
+`ObszarUzupelnieniaZabudowy`. Complex GML holes and multi-surface semantics
+remain uncertain and require visual confirmation against the authoritative
+source.
 
 ## Layer Semantics
 
@@ -74,7 +83,8 @@ The planning parser currently targets the configured APP schema namespace and ex
 - power, water, sewer: indicative utility raster previews;
 - manual: user-authored points, lines, and areas with optional status and description.
 
-Candidate layers and their evidence/sourcing risks are evaluated in `docs/research/additional-map-layers.md`.
+Candidate layers and their evidence/sourcing risks are evaluated in
+[Candidate Map Layers](../research/additional-map-layers.md).
 
 The land-class raster supports visual screening only. County KIEG coverage may
 be missing, incomplete, or differently current, and the displayed marking does

@@ -6,16 +6,11 @@ touched area before planning, reviewing, or changing it. Keep detailed rules in
 
 ## Required Workflow
 
-- For non-trivial work, use Protocol A (`$plan-work`) and follow
-  `docs/guidelines/project-lifecycle.md`. An explicit request to plan and
-  execute in one task lets the project enter `APPROVED FOR IMPLEMENTATION` for
-  that named scope. Ordinary reversible decisions need no further approval; a
-  newly discovered material owner decision still blocks dependent work until
-  accepted.
-- Use Protocol B (`$implement-change`) for implementation, Protocol C
-  (`$maintain-docs`) for durable documentation, Protocol D (`$triage-inbox`)
-  for loose notes or `INBOX.md`, and `$review-kotlin-backend` for read-only
-  principal-level backend review.
+- For non-trivial work, follow `docs/guidelines/project-lifecycle.md`. An
+  explicit request to plan and execute in one task lets the project enter
+  `APPROVED FOR IMPLEMENTATION` for that named scope. Ordinary reversible
+  decisions need no further approval; a newly discovered material owner
+  decision still blocks dependent work until accepted.
 - Respect stream ownership: Codex implements the Angular frontend under owner
   review; the owner implements the Kotlin backend under Codex review. Do not
   modify backend production code unless explicitly requested for a named scope.
@@ -85,10 +80,10 @@ touched area before planning, reviewing, or changing it. Keep detailed rules in
 | Research creation, review, or closeout | `docs/guidelines/research-guide.md`, relevant durable docs, and the active project when applicable |
 | Angular feature, API client, component, state, rendering adapter, or frontend test | `docs/guidelines/angular-engineering-guide.md`, `docs/architecture/target-product-architecture.md`, accepted requirements, and a feature-specific plan |
 | Planned Kotlin/Spring backend, provider adapter, or persistence | accepted requirements, `docs/guidelines/kotlin-backend-engineering-guide.md`, relevant architecture and research, and a backend plan |
-| Kotlin/Spring backend review | `$review-kotlin-backend` and all backend documents routed above |
+| Kotlin/Spring backend review | all backend documents routed above |
 | Non-trivial planning and delivery | `docs/guidelines/project-lifecycle.md` and the active `docs/projects/**` file |
-| Loose notes, links, ideas, or requirements | `INBOX.md`, `$triage-inbox`, and relevant requirement/domain/research docs |
-| Documentation or repository routing | `$maintain-docs`, the relevant category guide, implemented behavior, and affected durable docs |
+| Loose notes, links, ideas, or requirements | `INBOX.md` and relevant requirement/domain/research docs |
+| Documentation or repository routing | the relevant category guide, implemented behavior, and affected durable docs |
 | Legacy application use or migration evidence | `mapa/README.md`, the minimum necessary implementation files, relevant domain docs, and migration research |
 
 ## Repository-Specific Instructions

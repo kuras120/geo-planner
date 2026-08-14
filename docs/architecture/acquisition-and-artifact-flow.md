@@ -21,7 +21,7 @@ flowchart LR
     TEMP["Bounded temporary storage"]
     VALIDATOR["Response and spatial validator"]
     ARTIFACT["ArtifactStore promotion"]
-    STATE["RuntimeStateStore manifest"]
+    STATE["RuntimeStateStore jobs + manifests"]
     CLIENT["Progress and per-layer result"]
 
     COMMAND --> ORCHESTRATOR
@@ -31,7 +31,8 @@ flowchart LR
     PROVIDER -->|"stream"| TEMP
     TEMP --> VALIDATOR
     VALIDATOR -->|"complete result"| ARTIFACT
-    ARTIFACT --> STATE
+    ORCHESTRATOR -->|"job transitions + outcomes"| STATE
+    ARTIFACT -->|"ready manifest"| STATE
     ORCHESTRATOR --> CLIENT
     STATE --> CLIENT
 ```
@@ -62,17 +63,24 @@ implementation slice against the dated research evidence.
 
 ```mermaid
 flowchart TD
-    START["Validated AOI + catalog layer"] --> LOAD["Load descriptor and capabilities"]
+    START["Validated AOI + catalog layer"] --> CREATE["Persist QUEUED job"]
+    CREATE --> LOAD["Load descriptor and capabilities"]
     LOAD --> PLAN["Select CRS, format, resolution, and bounded requests"]
     PLAN --> FETCH["Stream responses to temporary storage"]
     FETCH --> CHECK["Validate status, MIME, signature, dimensions, spatial metadata, and OGC errors"]
     CHECK --> TRANSFORM["Explicit mosaic or reprojection when required"]
     TRANSFORM --> PROMOTE["Checksum and complete-only promotion"]
-    PROMOTE --> RECORD["Commit manifest and acquisition record"]
+    PROMOTE --> RECORD["Commit manifest, acquisition record, and READY result"]
     RECORD --> EXPOSE["Expose controlled artifact or tile delivery"]
 
     CHECK -->|"invalid or incomplete"| FAIL["Preserve last usable artifact and report layer failure"]
+    FAIL --> TERMINAL["Commit terminal job and layer result"]
 ```
+
+`RuntimeStateStore` records job creation, progress, cancellation, and every
+terminal job or layer outcome independently of artifact promotion. Promotion
+adds a ready manifest only after complete validation; failure, cancellation,
+and no coverage still leave authoritative durable results.
 
 Large extents use deterministic aligned tiling within the accepted product and
 provider budgets. The system never silently coarsens an accepted resolution.

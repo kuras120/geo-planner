@@ -44,11 +44,16 @@ flowchart LR
     BACKEND -. "later slices" .-> SKETCHES
     BACKEND -. "later slices" .-> ANALYSIS
     SIMULATOR -. "accepted contract examples" .-> MAP
+
+    classDef target stroke-dasharray: 6 4;
+    class MAP,ACQUISITION,SKETCHES,ANALYSIS target
 ```
 
-Solid boxes describe repository state. Dotted arrows describe planned delivery,
-not implemented runtime calls. The legacy application remains the only working
-map product until the applicable requirements and parity gates are verified.
+The `LEGACY` and `FOUNDATION` nodes describe current repository state. Dashed
+`TARGET` nodes are accepted capabilities that are not yet implemented. Dotted
+arrows describe planned delivery, not runtime calls. The legacy application
+remains the only working map product until the applicable requirements and
+parity gates are verified.
 
 ## System Boundary
 

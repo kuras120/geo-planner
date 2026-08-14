@@ -39,6 +39,8 @@ Non-goals:
   or repeated skill-specific guide lists.
 - Skills name only their direct procedural guide dependencies. `AGENTS.md`
   decides which repository and category context applies to the touched area.
+- Skills consume routed context without referring back to `AGENTS.md`; the root
+  policy remains the sole owner of routing and its loading mechanism.
 - Existing documents should be compacted or moved only where ownership is
   clearly wrong. No open owner decision remains.
 
@@ -83,6 +85,8 @@ turn proposals into current behavior.
   shape, evolution rules, and review checklists.
 - Routed category work centrally through `AGENTS.md` while keeping the guides
   out of README and removing duplicated category routing from general skills.
+- Removed explicit `AGENTS.md` references from every skill so procedures consume
+  routed context without duplicating how it is supplied.
 - Standardized all current domain and architecture documents on a clear
   `Status And Scope` section.
 - Kept legacy identity, spatial meaning, evidence classes, geometry semantics,

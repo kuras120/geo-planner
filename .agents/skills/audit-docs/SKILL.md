@@ -1,6 +1,6 @@
 ---
 name: audit-docs
-description: Audit and compact repository documentation while preserving durable decisions and evidence. Use for documentation review or cleanup, after documentation-heavy changes, before a milestone, or when README, AGENTS, docs, and skills appear duplicated, stale, overgrown, misrouted, or hard to maintain.
+description: Audit and compact repository documentation while preserving durable decisions and evidence. Use for documentation review or cleanup, after documentation-heavy changes, before a milestone, or when root guidance, docs, and skills appear duplicated, stale, overgrown, misrouted, or hard to maintain.
 ---
 
 # Documentation Audit
@@ -14,18 +14,17 @@ Reduce documentation entropy. Prefer one authoritative home for each fact or rul
 
 ## Guardrails
 
-- Read `AGENTS.md`, every document it routes for documentation work, and the documentation-maintenance skill.
-- Do not modify `AGENTS.md` without explicit owner authorization for the exact change.
+- Read every document routed for documentation work and the documentation-maintenance skill.
 - Preserve user edits and sourced evidence. Do not delete an active project merely to reduce file count.
 - Never add a durable inbound link to a specific `docs/projects/**` file.
 - Treat line count as a signal, not a target. Clarity and ownership matter more than arbitrary brevity.
 
 ## Audit
 
-1. Inventory the root README, AGENTS, durable documentation, and repository skills. Record line counts, headings, links, status/date, and likely owner category.
+1. Inventory the root README, root agent policy, durable documentation, and repository skills. Record line counts, headings, links, status/date, and likely owner category.
 2. Assign one responsibility:
    - README: purpose, safety, quick start, essential entry points;
-   - AGENTS: owner-approved permanent agent policy and routing;
+   - root agent policy: owner-approved permanent instructions and routing;
    - domain: current terminology, contracts, invariants, and meaning;
    - architecture: current or target runtime/data flow and boundaries;
    - guidelines: reusable ways of working and engineering standards;
@@ -37,7 +36,7 @@ Reduce documentation entropy. Prefer one authoritative home for each fact or rul
    - the same rule or decision in multiple owners;
    - proposals presented as current behavior;
    - plans or implementation sequences inside research/guidelines;
-   - one-off tasks inside AGENTS;
+   - one-off tasks inside root agent policy;
    - detailed research/project links in root README;
    - stale open questions, completed remediation history, orphan files/links;
    - specific project links outside their own plan;
@@ -57,5 +56,5 @@ Reduce documentation entropy. Prefer one authoritative home for each fact or rul
 
 - Search for removed filenames, duplicate key phrases, specific `docs/projects/*.md` inbound links, unresolved TODOs, and broken relative Markdown targets.
 - Compare pre/post line counts and explain material deletions.
-- Run `git diff --check`, validate changed skills, check documentation links, and run the repository verification entry point routed by `AGENTS.md`.
+- Run `git diff --check`, validate changed skills, check documentation links, and run the repository verification entry point.
 - Report each document as retained, compressed, merged, deleted, or temporary, plus any remaining ambiguity requiring owner judgment.

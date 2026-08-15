@@ -8,16 +8,6 @@ and data flow, persistence, failure recovery, security, and deployment
 boundaries. They describe current implementation or accepted target design;
 they are not product requirements, research comparisons, or delivery plans.
 
-## Ownership Boundary
-
-| Architecture owns | Keep elsewhere |
-| --- | --- |
-| Components, ports, adapters, and dependency direction | Product terminology, identity, and invariants → domain |
-| Runtime/data flow and state ownership | User outcomes, limits, and acceptance criteria → requirements |
-| Persistence, consistency, restart, and migration mechanics | Provider comparison and mutable external facts → research |
-| Failure, security, privacy, and operational boundaries | Implementation stages and temporary risks → projects |
-| Current topology and accepted target composition | Setup commands and repository topology → repository guide |
-
 Exact API shapes belong to an accepted contract artifact such as OpenAPI and
 its implementing slice. Do not preserve speculative endpoint tables in durable
 architecture.

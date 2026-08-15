@@ -7,16 +7,6 @@ persistence, providers, and deployment. Create or split one only when a stable
 set of concepts or invariants needs an authoritative owner; a document does not
 automatically declare a bounded context, module, or service.
 
-## Ownership Boundary
-
-| Domain owns | Keep elsewhere |
-| --- | --- |
-| Product terminology and concept identity | Components, adapters, runtime calls, and deployment → architecture |
-| Business and data invariants | Observable user outcomes and acceptance criteria → requirements |
-| Domain states and valid transitions | Evidence, comparisons, source volatility, and uncertainty → research |
-| Safety meaning and claims the product may make | Delivery stages, temporary risks, and sequencing → projects |
-| Relationships between domain concepts | Commands, setup, and repository topology → repository guide |
-
 Configuration or serialized fields belong in domain only when they form a
 stable product data contract. File paths, framework types, parser procedures,
 HTTP shapes, and storage-provider details do not.

@@ -31,9 +31,19 @@ Use the repository-owned indexing command documented in `AGENTS.md` or its
 routed repository guide. The aggregate verification task must reject stale
 generated summaries. Stable requirement IDs are never reused.
 
-Only `VERIFIED` counts as completed. `IMPLEMENTED` means the behavior exists but
-has not yet passed end-to-end acceptance. `REJECTED` and `DEFERRED` remain
-visible in status statistics but do not count as completed.
+## Requirement Statuses
+
+| Status | Meaning |
+| --- | --- |
+| `DRAFT` | Evidence-backed candidate that has not been accepted. |
+| `ACCEPTED` | Accepted requirement; implementation is not authorized by this status. |
+| `IMPLEMENTED` | Behavior exists but has not passed end-to-end acceptance. |
+| `VERIFIED` | Behavior passed end-to-end acceptance and counts as completed. |
+| `DEFERRED` | Valid requirement intentionally postponed. |
+| `REJECTED` | Requirement retained for traceability but not selected for delivery. |
+
+`DEFERRED` and `REJECTED` remain visible in portfolio statistics but do not
+count as completed.
 
 ## Delivery Stages
 
@@ -105,7 +115,7 @@ Non-functional behavior may appear as an acceptance constraint of a functional s
 ```markdown
 ## <AREA-ID> — <Short verb-object capability>
 
-- Status: DRAFT | ACCEPTED | IMPLEMENTED | VERIFIED | DEFERRED | REJECTED
+- Status: <requirement status>
 - Priority: MUST | SHOULD | COULD
 - Delivery stage: <repository-defined stage>
 - Source evidence: <files, observed behavior, provider documentation, authorized decision>

@@ -27,9 +27,8 @@ The portfolio index links the application-area files and aggregates:
 
 Update the area index and any portfolio summary in the same change as a
 requirement addition, removal, status change, stage change, split, or merge.
-Use the repository-owned indexing command documented in `AGENTS.md` or its
-routed repository guide. The aggregate verification task must reject stale
-generated summaries. Stable requirement IDs are never reused.
+Use the repository-owned indexing command. The aggregate verification task
+must reject stale generated summaries. Stable requirement IDs are never reused.
 
 ## Requirement Statuses
 
@@ -82,18 +81,10 @@ Examples of appropriate requirement subjects:
 - preserve an optional integration failure as a visible warning while retaining other usable results;
 - import a concrete legacy artifact without duplicating records.
 
-## What Does Not Belong
-
-Keep these elsewhere:
-
-- Gradle reproducibility, linting, Kotest conventions, module layout, and Kotlin style → engineering guidelines;
-- SSRF policy, persistence strategy, API layering, and runtime topology → architecture/security guidelines;
-- whether PostgreSQL, RabbitMQ, or WebFlux is justified → technology research and architecture decisions;
-- implementation steps, sequencing, ownership, and temporary risks → a project plan;
-- unverified ideas or raw notes → `INBOX.md`;
-- source evaluation and licence uncertainty → research.
-
-Non-functional behavior may appear as an acceptance constraint of a functional story when it is necessary to deliver its value, but it must not be disguised as a standalone product story such as “As a developer, I want a reproducible build.”
+Non-functional behavior belongs here only as an acceptance constraint necessary
+to deliver functional value. Do not disguise a framework or tooling concern as
+a standalone product story such as “As a developer, I want a reproducible
+build.”
 
 ## Discovery Workflow
 

@@ -1,6 +1,6 @@
 # Local Artifact Data Root Contract
 
-## Status
+## Status And Scope
 
 Accepted migration boundary for the future local-MVP and self-hosted backend.
 The data root is the filesystem implementation of large-artifact storage, not

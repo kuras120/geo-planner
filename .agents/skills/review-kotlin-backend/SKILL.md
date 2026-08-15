@@ -16,8 +16,8 @@ verification, documentation, and review priorities.
 
 ## Required Context
 
-Read `AGENTS.md` and every document it routes for Kotlin/backend work, including
-relevant engineering guidance, accepted contracts and requirements, architecture,
+Read every document routed for Kotlin/backend work, including relevant
+engineering guidance, accepted contracts and requirements, architecture,
 research, and the active project record when present.
 
 Inspect the actual diff, call sites, tests, Gradle configuration, and failure paths. Do not infer correctness from an isolated snippet when repository evidence is available.

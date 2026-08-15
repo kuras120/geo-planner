@@ -15,18 +15,32 @@ Its operating instructions live in `mapa/README.md`.
 
 ## Quick Start
 
+Install the pinned tools and local dependencies once:
+
 ```bash
 mise install
 mise run setup
+```
+
+Start the backend and frontend in separate terminals:
+
+```bash
+# terminal 1
 mise run backend
+
+# terminal 2
 mise run frontend
 ```
 
-Run `mise run simulator` instead of the backend for frontend work against
-accepted deterministic contract scenarios. Run the UI workshop with
-`mise run storybook`.
+Open `http://localhost:4200`. The current replacement is an application
+foundation; the retained working map is started separately according to
+[Legacy map operation](mapa/README.md).
 
-The repository-wide verification entry point is:
+For focused development, run `mise run simulator` instead of the backend when
+an accepted deterministic contract scenario exists, or `mise run storybook`
+to start the UI workshop.
+
+After making changes, run the repository-wide verification gate:
 
 ```bash
 mise run verify
@@ -37,9 +51,9 @@ Use `mise run assemble` to produce backend and frontend application artifacts.
 ## Documentation
 
 - [Repository setup and commands](docs/guidelines/repository-guide.md)
-- [Engineering standards](docs/guidelines/engineering-guide.md)
 - [Target product architecture](docs/architecture/target-product-architecture.md)
-- [Map domain and safety contracts](docs/domain/map-domain.md)
+- [Acquisition and artifact flow](docs/architecture/acquisition-and-artifact-flow.md)
+- [Spatial Evidence domain](docs/domain/spatial-evidence.md)
+- [Legacy map model and safety contracts](docs/domain/legacy-map-model.md)
 - [Requirements portfolio](docs/requirements/index.md)
-- [Project lifecycle](docs/guidelines/project-lifecycle.md)
 - [Legacy map operation](mapa/README.md)

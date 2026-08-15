@@ -2,6 +2,7 @@
 
 ## Status And Decision Trace
 
+- Status: ACTIVE
 Observed on 2026-07-25 and expanded through code/configuration tracing on
 2026-07-28 from:
 

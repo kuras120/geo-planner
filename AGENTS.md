@@ -6,13 +6,11 @@ touched area before planning, reviewing, or changing it. Keep detailed rules in
 
 ## Required Workflow
 
-- For non-trivial work, use Protocol A (`$plan-work`) and follow
-  `docs/guidelines/project-lifecycle.md`. An explicit request to plan and
-  execute in one task counts as implementation authorization for that scope.
-- Use Protocol B (`$implement-change`) for implementation, Protocol C
-  (`$maintain-docs`) for durable documentation, Protocol D (`$triage-inbox`)
-  for loose notes or `INBOX.md`, and `$review-kotlin-backend` for read-only
-  principal-level backend review.
+- For non-trivial work, follow `docs/guidelines/project-lifecycle.md`. An
+  explicit request to plan and execute in one task lets the project enter
+  `APPROVED FOR IMPLEMENTATION` for that named scope. Ordinary reversible
+  decisions need no further approval; a newly discovered material owner
+  decision still blocks dependent work until accepted.
 - Respect stream ownership: Codex implements the Angular frontend under owner
   review; the owner implements the Kotlin backend under Codex review. Do not
   modify backend production code unless explicitly requested for a named scope.
@@ -30,8 +28,10 @@ touched area before planning, reviewing, or changing it. Keep detailed rules in
 
 ## Documentation Boundary
 
-- Reusable and copyable unchanged: `.agents/skills/**`,
-  `docs/guidelines/engineering-guide.md`, technology engineering guides,
+- Reusable but locally owned and allowed to evolve with reviewed repository needs:
+  `.agents/skills/**`,
+  `docs/guidelines/engineering-guide.md`, domain and architecture documentation
+  guides, technology engineering guides,
   `docs/guidelines/project-lifecycle.md`, `docs/guidelines/research-guide.md`, and
   `docs/guidelines/requirements-guide.md`.
 - Repository-specific and recreated for another repository: root `README.md`,
@@ -42,6 +42,9 @@ touched area before planning, reviewing, or changing it. Keep detailed rules in
   application may keep `mapa/README.md` as the single exception while it remains
   runnable. Put other operational detail in the repository guide and durable
   technical detail in its owning docs category.
+- Do not link agent-facing reusable guides from the root README. The
+  repository guide is the only guideline linked there because it owns human
+  setup and command discovery.
 
 ## Repository Map
 
@@ -71,16 +74,16 @@ touched area before planning, reviewing, or changing it. Keep detailed rules in
 | Task or touched area | Read before work |
 | --- | --- |
 | Any repository change | `docs/guidelines/repository-guide.md` and `docs/guidelines/engineering-guide.md` |
-| Product concepts, spatial data, provenance, uncertainty, or safety | relevant `docs/domain/**` and `docs/requirements/**` |
-| Runtime boundaries, persistence, storage, API contracts, or integrations | relevant `docs/architecture/**` and `docs/research/**` |
+| Product concepts, spatial data, provenance, uncertainty, or safety | `docs/guidelines/domain-guide.md`, relevant `docs/domain/**`, and `docs/requirements/**` |
+| Runtime boundaries, persistence, storage, API contracts, or integrations | `docs/guidelines/architecture-guide.md`, relevant `docs/architecture/**`, and `docs/research/**` |
 | Requirements discovery or writing | `docs/guidelines/requirements-guide.md`; create requirement files only after owner-authorized discovery |
 | Research creation, review, or closeout | `docs/guidelines/research-guide.md`, relevant durable docs, and the active project when applicable |
 | Angular feature, API client, component, state, rendering adapter, or frontend test | `docs/guidelines/angular-engineering-guide.md`, `docs/architecture/target-product-architecture.md`, accepted requirements, and a feature-specific plan |
 | Planned Kotlin/Spring backend, provider adapter, or persistence | accepted requirements, `docs/guidelines/kotlin-backend-engineering-guide.md`, relevant architecture and research, and a backend plan |
-| Kotlin/Spring backend review | `$review-kotlin-backend` and all backend documents routed above |
+| Kotlin/Spring backend review | all backend documents routed above |
 | Non-trivial planning and delivery | `docs/guidelines/project-lifecycle.md` and the active `docs/projects/**` file |
-| Loose notes, links, ideas, or requirements | `INBOX.md`, `$triage-inbox`, and relevant requirement/domain/research docs |
-| Documentation or repository routing | `$maintain-docs` plus implemented behavior and affected durable docs |
+| Loose notes, links, ideas, or requirements | `INBOX.md` and relevant requirement/domain/research docs |
+| Documentation or repository routing | the relevant category guide, implemented behavior, and affected durable docs |
 | Legacy application use or migration evidence | `mapa/README.md`, the minimum necessary implementation files, relevant domain docs, and migration research |
 
 ## Repository-Specific Instructions

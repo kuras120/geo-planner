@@ -58,8 +58,12 @@ description = "Run the complete backend simulator quality gate"
 run = "npm --prefix backend-simulator run verify"
 
 [tasks.verify-requirements]
-description = "Check the generated requirements portfolio index"
-run = "python3 scripts/update_requirements_index.py --check"
+description = "Test the requirements-index helper and check the generated portfolio index"
+run = [
+  "python3 -m py_compile scripts/update_requirements_index.py scripts/test_update_requirements_index.py",
+  "python3 -m unittest discover -s scripts -p 'test_update_requirements_index.py'",
+  "python3 scripts/update_requirements_index.py --check",
+]
 
 [tasks.verify-legacy]
 description = "Run the retained legacy Python/map offline quality gate"

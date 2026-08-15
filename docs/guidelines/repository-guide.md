@@ -115,8 +115,8 @@ the area index and regenerate the portfolio tables:
 ./scripts/update_requirements_index.py
 ```
 
-The `verify-requirements` mise task runs the read-only check and rejects stale
-statistics.
+The `verify-requirements` mise task compiles and unit-tests the index helper,
+then runs the read-only check and rejects stale statistics.
 
 ## Pull Request Closeout
 
@@ -146,6 +146,12 @@ Use `mapa/README.md` for its build, editor, interaction, configuration, source
 refresh, and safety instructions. New application work must not change legacy
 code, configuration, templates, or tracked data incidentally. Source refresh
 always requires an explicit request because it replaces checked-in evidence.
+
+Before writing migration requirements, authorized discovery must inspect the
+implemented legacy behavior, external integrations, data, errors, and user
+workflows. Produce requirements only after the behavior inventory,
+characterization evidence, and integration analysis are available. Discard
+unsupported drafts instead of retaining a speculative migration backlog.
 
 ## Troubleshooting
 

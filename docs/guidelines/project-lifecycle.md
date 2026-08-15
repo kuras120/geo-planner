@@ -49,32 +49,44 @@ selection, risk acceptance, migration and cutover behavior, and other
 owner-controlled choices. Ordinary reversible implementation details inside an
 already authorized scope do not become additional approval gates.
 
-## Pre-implementation Approval
+## Pre-implementation Review
 
 Before implementation begins, a non-trivial project must make the applicable
-decision surfaces reviewable and record their acceptance:
+decision surfaces reviewable:
 
 1. **Scope and assumptions** — intended outcome, in-scope behavior, boundaries,
    and unresolved product assumptions.
 2. **Architecture** — component responsibilities, dependencies, state ownership,
    and data/runtime flow. Include a proportionate composition diagram when
    relationships between three or more components materially affect the design.
-   Keep project diagrams small and decision-focused; use a table, tree or
-   plain-text diagram according to the relationship being explained.
+   Keep project diagrams small and decision-focused; use a table, tree, or fenced
+   plain-text diagram according to the relationship being explained. Project plans
+   favor these quick, directly readable views; durable architecture documentation
+   uses the repository's durable architecture convention.
 3. **UI** — for user-facing changes, low-fidelity mockups of primary screens,
-   components, and relevant responsive breakpoints.
+   components, and relevant responsive breakpoints. Include PNG previews for
+   material UI changes. Present mobile screens in portrait and desktop screens in
+   landscape at representative viewport dimensions so each layout can be assessed
+   in its intended form factor.
 4. **UX** — navigation and interaction flows plus applicable content, empty,
    loading, offline, unavailable, validation, and failure states.
 5. **Delivery** — implementation stages, migration and safety behavior,
    verification, and acceptance evidence.
 
 Small copy, styling, or isolated maintenance changes may combine or omit
-surfaces that are not materially affected. The project states that explicitly
-instead of producing decorative diagrams or irrelevant mockups.
+surfaces that are not materially affected. State why they do not apply instead
+of producing decorative diagrams or irrelevant mockups.
 
-Discussion, review, project edits, and documentation requests do not authorize
-implementation. Implementation begins only when the owner explicitly approves
-it or requests planning and execution together for a named scope.
+The owner approves the plan as a whole by moving it to `APPROVED FOR
+IMPLEMENTATION`; individual surfaces do not require separate fields or repeated
+confirmation. Discussion, review, project edits, and documentation requests do
+not change the phase.
+
+An explicit request to plan and execute a named scope lets the project move
+directly to `APPROVED FOR IMPLEMENTATION`. Ordinary reversible decisions within
+it belong to the implementer. If planning or delivery exposes a new material
+decision reserved for the owner, pause only the dependent work until that
+decision is accepted; unrelated approved work may continue safely.
 
 ## Lifecycle States
 
@@ -85,12 +97,16 @@ assumptions, open questions, affected flow, failure and migration behavior,
 implementation stages, tests, manual checks, and acceptance criteria.
 Dependent implementation has not started.
 
+Keep non-goals short. Include only adjacent capabilities that a reader could
+reasonably mistake as part of the outcome and whose exclusion affects the
+design. Do not inventory unrelated future work.
+
 ### `APPROVED FOR IMPLEMENTATION`
 
-The owner has explicitly authorized the named scope. Keep progress markers,
-material deviations, new risks, and newly accepted decisions current while
-implementing. Preserve user data and external evidence, and keep destructive or
-network operations explicit.
+The owner has approved the plan and explicitly authorized its named scope. Keep
+progress markers, material deviations, new risks, and newly accepted decisions
+current while implementing. Preserve user data and external evidence, and keep
+destructive or network operations explicit.
 
 ### `IMPLEMENTED`
 
@@ -108,9 +124,15 @@ continuing value.
 
 ### `DONE`
 
-Acceptance and durable documentation are complete. Delete the project file
-after confirming that no durable document links to it and all lasting decisions
-have authoritative homes.
+Acceptance and durable documentation are complete. Delete the project file only
+after confirming that:
+
+- lasting behavior, decisions, limitations, and safety boundaries are recorded
+  in their durable domain, architecture, requirements, research, or guideline
+  owners;
+- repository verification passes, or remaining failures are recorded accurately;
+- no durable document links to the temporary project;
+- temporary narration has been removed or replaced by durable facts.
 
 ## Project Template
 
@@ -127,7 +149,13 @@ have authoritative homes.
 
 ## Decisions, Assumptions, And Open Questions
 
+## Architecture And Component Composition
+
+## UI And UX Proposal
+
 ## Data Or Runtime Flow
+
+## Failure Behavior, Safety, And Migration
 
 ## Implementation Plan
 
@@ -144,4 +172,5 @@ have authoritative homes.
 ```
 
 Use `[pending]`, `[in-progress]`, and `[done]` so interrupted work can resume
-safely.
+safely. Omit or briefly mark sections that are genuinely unaffected instead of
+creating decorative content.

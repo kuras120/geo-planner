@@ -8,6 +8,10 @@ architecture choice, source selection, implementation slice, or product
 decision. It is not an implementation plan, backlog, or permanent history of
 completed work.
 
+Each research document answers one cohesive question. Split independent
+technologies or decisions into separate records when they can be evaluated or
+revisited independently.
+
 Follow the technical-writing rules in
 [Engineering Guide](engineering-guide.md#technical-documentation). Present
 evidence before conclusions, distinguish accepted and unselected alternatives,
@@ -33,6 +37,7 @@ Progress describes evidence and decision coverage, not implementation tasks.
 
 - Record provenance, observation date, source version, scope, and material
   limitations for time-sensitive or external evidence.
+- Prefer primary and authoritative sources for technical claims.
 - Distinguish repository observation, owner decision, external fact, inference,
   and proposal.
 - Revalidate mutable services, capabilities, laws, prices, product features, and
@@ -80,7 +85,9 @@ deletion:
 
 ## Status And Decision Trace
 
+- Status: ACTIVE | DEFERRED
 - Evidence checked: <date and scope>
+- Provenance: <owner context and source origin>
 - Question: <exact question>
 - Completed outputs: <durable links or none>
 - Open decisions: <remaining choices or none>

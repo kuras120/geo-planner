@@ -2,14 +2,15 @@
 
 ## Status And Decision Trace
 
+- Status: DEFERRED
 - Evidence reconstructed: 2026-07-28 from the checked-in prototype and
   configuration; no fresh live-service validation was performed.
 - Question: which exact public operations, layers, formats, and legacy failure
   behavior must inform replacement ULDK, WMS, and APP adapters?
 - Completed outputs: [ACQUIRE-001](../requirements/layer-acquisition.md) owns
   safe acquisition, [LAYER-004](../requirements/layer-viewing.md) owns raster
-  interpretation, and the
-  [target architecture](../architecture/target-product-architecture.md) owns
+  interpretation, and
+  [acquisition flow](../architecture/acquisition-and-artifact-flow.md) owns
   provider-adapter and catalog boundaries.
 - Remaining work: validate the exact live endpoint, capabilities, licence,
   coverage, and operational limits for each adapter slice.
@@ -68,8 +69,8 @@ planning WMS image. The ortho snapshot is the only current background image.
 a map-data provider.
 
 Provider normalization, capability discovery, allowlisting, provenance, and
-portability are owned by the target architecture. Sources beyond the legacy
-set are evaluated in [Candidate Map Layers](additional-map-layers.md).
+portability are owned by the acquisition architecture. Sources beyond the
+legacy set are evaluated in [Candidate Map Layers](additional-map-layers.md).
 
 ## KIEG Land Classification Evidence
 

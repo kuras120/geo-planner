@@ -2,14 +2,16 @@
 
 ## Status And Decision Trace
 
+- Status: DEFERRED
 - Evidence checked: 2026-07-28, without downloading map snapshots.
 - Question: which provider limits, calculations, and failure cases must inform
   bounded parcel-based AOI resolution and raster acquisition?
 - Completed outputs:
   [PROJECT-001](../requirements/projects-and-aoi.md) owns parcel AOI behavior;
   [ACQUIRE-001](../requirements/layer-acquisition.md) owns raster acquisition;
-  [target architecture](../architecture/target-product-architecture.md) owns
-  the accepted AOI, budget, streaming, and artifact boundaries.
+  [Spatial Evidence domain](../domain/spatial-evidence.md) owns AOI meaning;
+  and [acquisition flow](../architecture/acquisition-and-artifact-flow.md) owns
+  streaming, validation, and artifact promotion boundaries.
 - Remaining questions: whether users manipulate an expert bbox directly or
   only context geometry, and how surrounding parcels are displayed without
   becoming project subjects.
@@ -75,5 +77,4 @@ have different limits and resolutions for the same project extent.
 | Layer has no AOI data | Distinguish valid no-data from provider failure and unsupported coverage. |
 
 These cases supplement the accepted requirements with provider-validation
-evidence; they do not redefine the product limits owned by those requirements
-and target architecture.
+evidence; they do not redefine the product limits owned by those requirements.

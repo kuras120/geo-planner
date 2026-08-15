@@ -2,6 +2,7 @@
 
 ## Status And Decision Trace
 
+- Status: ACTIVE
 - Evidence baseline reviewed: 2026-07-28; migration status reviewed on
   2026-08-13.
 - Question: which legacy capabilities and safety boundaries must be proven

@@ -27,13 +27,22 @@ The portfolio index links the application-area files and aggregates:
 
 Update the area index and any portfolio summary in the same change as a
 requirement addition, removal, status change, stage change, split, or merge.
-Use the repository-owned indexing command documented in `AGENTS.md` or its
-routed repository guide. The aggregate verification task must reject stale
-generated summaries. Stable requirement IDs are never reused.
+Use the repository-owned indexing command. The aggregate verification task
+must reject stale generated summaries. Stable requirement IDs are never reused.
 
-Only `VERIFIED` counts as completed. `IMPLEMENTED` means the behavior exists but
-has not yet passed end-to-end acceptance. `REJECTED` and `DEFERRED` remain
-visible in status statistics but do not count as completed.
+## Requirement Statuses
+
+| Status | Meaning |
+| --- | --- |
+| `DRAFT` | Evidence-backed candidate that has not been accepted. |
+| `ACCEPTED` | Accepted requirement; implementation is not authorized by this status. |
+| `IMPLEMENTED` | Behavior exists but has not passed end-to-end acceptance. |
+| `VERIFIED` | Behavior passed end-to-end acceptance and counts as completed. |
+| `DEFERRED` | Valid requirement intentionally postponed. |
+| `REJECTED` | Requirement retained for traceability but not selected for delivery. |
+
+`DEFERRED` and `REJECTED` remain visible in portfolio statistics but do not
+count as completed.
 
 ## Delivery Stages
 
@@ -48,9 +57,8 @@ story.
 
 - Only the authority named by repository policy can approve a project for implementation or requirements discovery.
 - Do not infer approval from a request to edit, review, expand, or discuss a plan.
-- Do not create migration requirements before approved discovery has inspected the implemented behavior, external integrations, data, errors, and user workflows.
-- For migration work, produce requirements after inventory, characterization evidence, and integration analysis are available.
-- Requirements created without that evidence must be discarded rather than promoted as a speculative backlog.
+- Create requirements only from authorized discovery and sufficient evidence;
+  discard unsupported drafts instead of promoting them as a speculative backlog.
 - Creating or accepting a requirement does not authorize implementation. A selected coherent feature still receives its own temporary project plan.
 
 ## What Belongs In Requirements
@@ -73,27 +81,19 @@ Examples of appropriate requirement subjects:
 - preserve an optional integration failure as a visible warning while retaining other usable results;
 - import a concrete legacy artifact without duplicating records.
 
-## What Does Not Belong
-
-Keep these elsewhere:
-
-- Gradle reproducibility, linting, Kotest conventions, module layout, and Kotlin style → engineering guidelines;
-- SSRF policy, persistence strategy, API layering, and runtime topology → architecture/security guidelines;
-- whether PostgreSQL, RabbitMQ, or WebFlux is justified → technology research and architecture decisions;
-- implementation steps, sequencing, ownership, and temporary risks → a project plan;
-- unverified ideas or raw notes → `INBOX.md`;
-- source evaluation and licence uncertainty → research.
-
-Non-functional behavior may appear as an acceptance constraint of a functional story when it is necessary to deliver its value, but it must not be disguised as a standalone product story such as “As a developer, I want a reproducible build.”
+Non-functional behavior belongs here only as an acceptance constraint necessary
+to deliver functional value. Do not disguise a framework or tooling concern as
+a standalone product story such as “As a developer, I want a reproducible
+build.”
 
 ## Discovery Workflow
 
-1. Inspect the actual current or legacy workflow and record what the user does, sees, saves, and exports.
-2. Trace the code and configuration that implement it.
+1. Inspect the actual workflow and record what the user does, sees, saves, and exports.
+2. Trace supporting implementation and configuration when existing behavior is evidence.
 3. Identify every external source and exact operation, layer, document, request input, and response form.
 4. Capture success, no-data, optional failure, hard failure, stale data, and privacy behavior.
 5. Decide with the owner which behavior is intentional, accidental, obsolete, or missing.
-6. Group retained behavior by cohesive application area.
+6. Group accepted behavior by cohesive application area.
 7. Write concrete functional stories only from accepted evidence.
 8. Review stories one application area at a time, following the interactive
    decision gates in `project-lifecycle.md`. Present a compact area index, then
@@ -106,7 +106,7 @@ Non-functional behavior may appear as an acceptance constraint of a functional s
 ```markdown
 ## <AREA-ID> — <Short verb-object capability>
 
-- Status: DRAFT | ACCEPTED | IMPLEMENTED | VERIFIED | DEFERRED | REJECTED
+- Status: <requirement status>
 - Priority: MUST | SHOULD | COULD
 - Delivery stage: <repository-defined stage>
 - Source evidence: <files, observed behavior, provider documentation, authorized decision>
@@ -144,7 +144,7 @@ A requirement is not ready for owner acceptance when:
 
 - it could apply unchanged to almost any backend;
 - its value is primarily a framework/tooling concern;
-- it does not name the migrated workflow or integration;
+- it does not name the concrete workflow or integration;
 - inputs, outputs, and failure behavior are unknown;
 - acceptance can be satisfied by scaffolding or a unit test without demonstrating user value;
 - it was written before the discovery evidence existed.

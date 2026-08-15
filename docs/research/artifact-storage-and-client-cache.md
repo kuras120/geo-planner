@@ -2,6 +2,7 @@
 
 ## Status And Decision Trace
 
+- Status: DEFERRED
 - Evidence checked: 2026-07-28.
 - Question: how should a hosted deployment deliver large spatial artifacts and
   use browser storage without making an evictable cache authoritative?
